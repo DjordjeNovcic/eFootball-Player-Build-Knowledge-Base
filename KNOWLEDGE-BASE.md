@@ -1382,6 +1382,52 @@ or another booster that fixes actual weaknesses.
 
 # 12. Progression Point Efficiency
 
+## Verified formula (confirmed 26 Aug 2026 against 11 controlled test builds)
+
+Training points are spent through 7 categories: Shooting, Passing, Dribbling,
+Dexterity, Lower Body Strength, Aerial Strength, Defending (plus GK1/GK2/GK3 for
+goalkeepers, untested here). Each category has its own level, 0 to a max of **20**.
+
+**Cost per category level is tiered, not flat** — confirmed exactly against 8
+distinct Lower Body Strength levels (4, 8, 9, 12, 13, 16, 17, 20), every one matching
+this table with zero deviation:
+
+| Level range | Cost per level | Cumulative points at top of range |
+|---|---|---|
+| 1–4 | 1 | 4 |
+| 5–8 | 2 | 12 |
+| 9–12 | 3 | 24 |
+| 13–16 | 4 | 40 |
+| 17–20 (max) | 5 | 60 |
+
+Maxing one single category (level 20) costs 60 of the 64 points available at Level
+Cap 33 — leaving exactly 4 points to spend elsewhere. Total point budget scales with
+a card's own Level Cap (33 → 64 confirmed); the per-level cost table itself is
+assumed universal across cards, not re-verified at other Level Caps.
+
+**Category level → raw stat gain is a clean 1:1 ratio — NOT diminishing.** Every
+level invested in a category adds exactly +1 to each of its associated raw stats,
+confirmed across Shooting (levels 0/1/2/3), Passing (levels 0/1/2), and Lower Body
+Strength (levels 4 through 20, every single-level step tested). There is no second
+layer of diminishing returns at the stat level — all the nonlinearity is in the
+points-per-level cost table above, not in the resulting stat gain.
+
+Confirmed category → stat mappings:
+
+- **Shooting** → Finishing, Place Kicking, Curl (each +1 per level)
+- **Passing** → Low Pass, Lofted Pass (each +1 per level)
+- **Lower Body Strength** → Speed, Kicking Power, Stamina (each +1 per level, does
+  NOT touch Acceleration, Physical Contact, Balance, or Jump)
+- **Dexterity + Dribbling combined** → Offensive Awareness, Ball Control, Dribbling,
+  Tight Possession, Acceleration, Balance (confirmed as a set of 6 stats moving
+  together when both categories were raised by 1 level simultaneously; which
+  specific 3 stats belong to Dexterity vs. Dribbling is NOT yet isolated — needs a
+  test with only one of the two raised while the other stays at 0)
+- **Aerial Strength, Defending, GK1/GK2/GK3** — not tested yet (always 0 in the
+  available data)
+
+## General efficiency guidance
+
 Always inspect the cost of progression levels.
 
 Do not chase one stat if moving one progression category from 10 -> 12 costs many points for only a minor practical benefit.
