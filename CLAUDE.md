@@ -35,6 +35,11 @@ Section 12 has a complete, verified points-per-category-level cost table and
 category→stat mapping for all 10 categories (including GK1/2/3) — use it to give
 exact category-point allocations in the Build line, not just target stats.
 
+The Build line's 7 numbers must always sum to the player's exact full point budget —
+never leave points unspent. If priority categories don't use every last point, dump
+the remainder into Aerial Strength or Defending (section 12's hard rule) rather than
+leaving any idle.
+
 Respond using the exact format from section 15 of `KNOWLEDGE-BASE.md`:
 
 ```

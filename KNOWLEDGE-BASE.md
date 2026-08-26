@@ -1435,6 +1435,23 @@ This mapping is now complete — there are no remaining unconfirmed categories. 
 a target raw stat increase, look up which category to spend in, then use the cost
 table above to compute the exact points required for that category level.
 
+## Hard rule: always spend every point
+
+Never leave points unspent in a Build line — the total must always sum to exactly
+the player's full budget. If the priority categories don't consume the last 1-3
+points cleanly, park the remainder in whichever secondary category is least harmful
+to the role rather than leaving it idle:
+
+- **Aerial Strength** (Jump/Physical Contact/Heading) is usually the least wasteful
+  dump for a technical/dribbling player — Physical Contact has some use for
+  shielding the ball even outside an aerial role.
+- **Defending** (DA/DE/Tackling/Aggression) is the alternative dump, useful mainly
+  because it can help claw a low Defensive Awareness back toward the 70 threshold
+  (section 3) where the Acceleration penalty in defensive scenarios stops applying.
+
+Both start at level 0, so raising either from 0 to 1 always costs exactly 1 point —
+useful for absorbing a leftover of exactly 1.
+
 ## General efficiency guidance
 
 Always inspect the cost of progression levels.
