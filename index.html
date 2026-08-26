@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player Build Base — eFootball Build Lab</title>
+<meta name="description" content="Design, rate and save custom eFootball player builds — stats, playing style and skills, all in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="turf" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="hero__stripe" aria-hidden="true"></div>
+  <div class="hero__inner">
+    <p class="hero__eyebrow">// EFOOTBALL BUILD LAB</p>
+    <h1 class="hero__title">PLAYER<span>BUILD</span>BASE</h1>
+    <p class="hero__sub">Tune the stats. Pick the style. Ship the perfect card — saved right in your browser, no account needed.</p>
+  </div>
+</header>
+
+<main class="layout">
+
+  <section class="panel" aria-labelledby="builder-heading">
+    <div class="panel__head">
+      <h2 id="builder-heading">01 — BUILD</h2>
+      <button type="button" id="randomizeBtn" class="btn btn--ghost">Randomize</button>
+    </div>
+
+    <form id="buildForm" autocomplete="off">
+
+      <div class="field-row">
+        <label class="field">
+          <span class="field__label">Build name</span>
+          <input type="text" id="buildName" placeholder="e.g. Bergkamp-esque SS" maxlength="40" required>
+        </label>
+
+        <label class="field field--tight">
+          <span class="field__label">Position</span>
+          <select id="position"></select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field__label">Playing style</span>
+        <select id="playstyle"></select>
+      </label>
+
+      <div class="group" id="statGroups"></div>
+
+      <fieldset class="group group--skills">
+        <legend class="group__title">Skills <span class="group__hint">— pick up to <span id="skillCap">6</span></span></legend>
+        <div class="chips" id="skillChips"></div>
+      </fieldset>
+
+      <div class="submit-row">
+        <div class="overall-preview">
+          <span class="overall-preview__num" id="livePreviewOverall">—</span>
+          <span class="overall-preview__label">OVR</span>
+        </div>
+        <button type="submit" class="btn btn--primary">Save build</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel panel--card" aria-labelledby="card-heading">
+    <div class="panel__head">
+      <h2 id="card-heading">02 — CARD</h2>
+    </div>
+    <div class="card-stage">
+      <article class="player-card" id="playerCard" data-tier="bronze">
+        <div class="player-card__sheen" aria-hidden="true"></div>
+        <div class="player-card__top">
+          <div class="player-card__ovr" id="cardOvr">60</div>
+          <div class="player-card__pos" id="cardPos">CF</div>
+        </div>
+        <h3 class="player-card__name" id="cardName">New build</h3>
+        <p class="player-card__style" id="cardStyle">—</p>
+        <div class="radar" id="radar"></div>
+        <div class="player-card__skills" id="cardSkills"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel panel--wide" aria-labelledby="saved-heading">
+    <div class="panel__head">
+      <h2 id="saved-heading">03 — SAVED BUILDS</h2>
+      <div class="panel__actions">
+        <button type="button" id="importBtn" class="btn btn--ghost">Import</button>
+        <input type="file" id="importFile" accept="application/json" hidden>
+        <button type="button" id="clearAllBtn" class="btn btn--ghost btn--danger">Clear all</button>
+      </div>
+    </div>
+    <div class="saved-grid" id="savedGrid">
+      <p class="empty-state" id="emptyState">No builds saved yet — configure one above and hit <em>Save build</em>.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>Player Build Base — a fan-made eFootball companion tool. Not affiliated with KONAMI. Builds are stored locally in your browser only.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
