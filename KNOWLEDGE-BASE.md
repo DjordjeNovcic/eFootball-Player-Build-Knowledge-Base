@@ -731,6 +731,19 @@ A 195 cm CF with Bullet Header should usually be built differently from a 170 cm
 
 ---
 
+## Blitz Curler
+
+If a player has Blitz Curler, budget for it — but only up to a point.
+
+The skill itself already modifies the shot path (does not change stats), so the raw
+stat requirement is lower than for a player without it. Stat importance order for a
+Blitz Curler build: **Kicking Power > Curl > Finishing**.
+
+Do not max all three — push Kicking Power and Curl first, and treat Finishing as the
+stat you're most willing to leave a few points short on.
+
+---
+
 ## Aerial Superiority
 
 Useful only when the player model and aerial stats support it.
@@ -805,6 +818,9 @@ For the strongest Double Touch setup:
 - Sole Control
 - Flip Flap
 
+Together these three enable a "trap cancel" — genuinely elite close dribbling, not
+just three separate feints stacked on top of each other.
+
 This combination is especially valuable for:
 
 - Messi
@@ -819,6 +835,16 @@ Less important for:
 
 - huge target men
 - pure CBs
+
+---
+
+## Cut Behind & Turn
+
+Strong for beating a marker who is goal-side or tight on the ball — the skill helps
+the player spin away behind the defender's back rather than just turning in place.
+
+Worth prioritizing for dribblers who regularly get closed down 1v1 (wingers, AMFs,
+SS), less relevant for target men who rarely try to spin away from a marker.
 
 ---
 
