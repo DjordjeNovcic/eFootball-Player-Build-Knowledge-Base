@@ -1471,14 +1471,17 @@ Whenever a new player screenshot is provided:
 
 ## Step 1 - Identify role
 
-Determine:
+Determine, in this order (per section 18, eFootball 2027 / v6.0.0):
 
 - intended position
-- playstyle
+- Attacking Playing Style
+- Defensive Playing Style
 - starter or substitute
 - tactical purpose
 
-Do NOT build before deciding this.
+Do NOT build before deciding this. A raw stat is not equally valuable across
+playstyles even at the same position — see section 18's Hole Player vs Creative
+Playmaker comparison for why.
 
 ---
 
@@ -1571,11 +1574,14 @@ When analyzing a player, respond like this:
 
 ## Role
 
+Name the position, Attacking Playing Style, and Defensive Playing Style (section 18)
+separately — a card can carry one of each.
+
 Example:
 
-**SS Hole Player**
+**SS — Attacking: Hole Player, Defensive: Covering Role**
 
-Short explanation of why this is the best role.
+Short explanation of why this is the best combination.
 
 ## Build
 
@@ -1706,3 +1712,158 @@ that manager's Booster targets, if relevant to the role — otherwise 0.** Alway
 the currently-assigned manager's Booster pair before finalizing a build's Target
 Stats — it can let the raw progression target be 1 point lower on whichever of the
 two stats is relevant.
+
+---
+
+# 18. Playing Styles (eFootball 2027 / v6.0.0)
+
+As of eFootball 2027 / v6.0.0, Konami split Playing Style into two independent
+components: an **Attacking Playing Style** and a **Defensive Playing Style**. A card
+can carry one of each at the same time — reading both is now part of reading what a
+card actually does. This section is sourced from external v6.0.0 guides, not from
+Amadeusz in-game testing like most of this document — treat specifics as good
+working knowledge rather than test-verified fact.
+
+Section 7's role priorities describe the attacking-side profile. Defensive Playing
+Style is an additional, independent layer on top of that — read both before building.
+
+## Attacking Playing Styles
+
+| Playstyle | Positions | Behavior |
+|---|---|---|
+| Goal Poacher | CF | Lives on the last defender's shoulder. Constantly looks for depth, through balls, and runs in behind. Rarely drops for the ball. |
+| Fox in the Box | CF | Stays central and close to the box. Less deep-running, more looking for space to finish, rebounds, cutbacks, and low crosses. |
+| Target Man | CF | Comes to the ball, plays with his back to goal, holds it up for support. Less interested in attacking space in behind. |
+| Dummy Runner | CF / SS / AMF | Makes unconventional movements to drag markers and open space for others. Frequently changes direction and zone. |
+| Deep-Lying Forward | CF / SS | Drops between the lines for the ball, combines with AMF/CMF, then attacks forward again. A CF that participates in build-up. |
+| Creative Playmaker | SS / WF / AMF / LMF / RMF | Seeks the ball. Finds pockets of space, moves laterally, offers passing options, and orchestrates play. Fewer aggressive runs than Hole Player. |
+| Prolific Winger | LWF / RWF | Stays wide, receives on the flank, attacks the full-back 1v1, then goes to goal or crosses. |
+| Roaming Flank | WF / LMF / RMF | Starts wide but often drifts inside — effectively an inverted winger. |
+| Cross Specialist | WF / LMF / RMF | Holds width and actively seeks crossing position. Rarely comes inside. |
+| Classic No. 10 | SS / AMF | A more static creator. Doesn't make many aggressive runs, looks for the ball between the lines, dictates the attack. |
+| Hole Player | SS / AMF / LMF / RMF / CMF | Actively seeks the "hole" in the defense and runs from deep. Often gets ahead of the ball and finishes in the box. |
+| Box-to-Box | LMF / RMF / CMF / DMF | Shuttles up and down the whole match. Joins the attack, tracks back, covers a huge area. |
+| Anchor Man | DMF | Stays in front of the CBs. Very rarely leaves the central zone to attack — cover for the rest of midfield. |
+| Orchestrator | CMF / DMF | Drops deep for the ball and organizes build-up from deep. Wants the ball to feet more than off-ball runs. |
+| Build Up | CB | Offers as a safe outlet from the back line and participates in playing out. Less chaotic than an aggressive CB. |
+| Extra Frontman | CB | A much more adventurous CB. Joins the attack high up when he sees the chance, can end up deep in the opponent's half. |
+| Offensive Full-back / Wingback | LB / RB | Overlaps down the line, goes high, provides width, looks for crossing position. |
+| Defensive Full-back | LB / RB | Stays back. Rarely overlaps, prioritizes defensive shape. |
+| Full-back Finisher | LB / RB | Unlike a classic offensive full-back, often comes inside, underlaps, appears centrally or around the box. |
+| High Line GK | GK | New attacking GK style. When your team has possession, the keeper stands higher and moves closer to the back line as an extra passing option. Not the same as Sweeper GK. |
+
+### Hole Player vs Creative Playmaker
+
+Hole Player — "Give me space to run into":
+
+- moves more without the ball
+- attacks the box more aggressively
+- more often gets beyond the DMF/CB line
+- OA + Acceleration matter enormously
+- ideal for a Gullit / Bellingham / Hazard type
+
+Creative Playmaker — "Give me the ball to make something happen":
+
+- comes toward the ball more
+- looks for the pocket between the lines
+- more passing and combination play
+- fewer aggressive runs
+- Ball Control + Passing + Tight Possession + Balance matter more
+
+### Goal Poacher vs Fox in the Box
+
+Goal Poacher attacks space behind the CB — favors OA, Acceleration, Speed, Finishing.
+
+Fox in the Box attacks space inside and around the box — favors OA, Finishing, Ball
+Control, Physical, and aerial stats if tall.
+
+Example: Eto'o as Goal Poacher and Ibrahimović as Fox in the Box should not share the
+same build even though both are CFs.
+
+### Goal Poacher vs Deep-Lying Forward
+
+Poacher runs AWAY from the ball, looking for depth. DLF goes TOWARD the ball first,
+receives, plays, then attacks forward again — makes DLF a strong second-striker
+pairing alongside a Poacher.
+
+Example: Messi as DLF SS + Eto'o as Goal Poacher CF — Messi comes to the ball,
+Eto'o immediately attacks the line.
+
+### Offensive Full-back vs Full-back Finisher
+
+Offensive Full-back goes outside, overlaps, holds the line, crosses.
+
+Full-back Finisher underlaps more, comes inside, behaves almost like an extra
+CMF/AMF in some sequences.
+
+Example: Offensive Wingback fits Cafu; Full-back Finisher would be a completely
+different profile for him.
+
+## Defensive Playing Styles
+
+New in eFootball 2027 / v6.0.0 — these automatically affect player behavior when the
+opponent has the ball, independent of the Attacking Playing Style.
+
+| Style | Behavior |
+|---|---|
+| Front Line Pressure | Forwards aggressively press the GK/CB to force a mistake. |
+| Front Line Poacher | Hunts passing lanes high up the pitch rather than blindly chasing the ball carrier — looks for interceptions. |
+| Attack Outlet | Barely tracks back. Stays high, saves stamina, ready for the counter. |
+| Pass Disruptor | Focuses on closing passing lanes and interceptions rather than the ball carrier. Interesting for midfielders. |
+| Box-to-Box | Actively presses and tracks back across a large area. |
+| All-Action Defender | Extremely aggressive track-back. Chases back and covers huge distance — more "relentless worker" than a presser. |
+| Anchor Man | Holds the central defensive zone in front of the defense. Doesn't step out unnecessarily. |
+| Covering Role | Prioritizes covering the space a teammate leaves. Tracks runs in behind and closes gaps. |
+| High Line Master | Maintains the defensive line and shape. Doesn't step out much, manages depth and open space. |
+| The Destroyer | Opposite of Covering Role. Steps out of the line, presses aggressively, and goes for the duel/tackle. |
+| Sweeper GK | Comes out very aggressively when the ball is played behind a high line — Neuer-style. |
+| Offensive GK | More proactive, more willing to come off his line to close down the attacker/space. |
+| Defensive GK | Stays closer to goal, takes fewer risks coming out, relies more on positioning/shot-stopping. |
+
+### Destroyer vs Covering Role
+
+The Destroyer prioritizes the player/run in front of him and goes aggressively for
+the duel. Covering Role prioritizes the run in behind and the space a teammate left.
+
+### CB pairing philosophy
+
+| Style | Mentality |
+|---|---|
+| Build Up | "I hold position and play the ball out." |
+| Destroyer | "I step out and win the ball." |
+| Covering Role | "You step out, I'll cover behind you." |
+| High Line Master | "We hold the line and shape." |
+| Extra Frontman | "If we can attack, I'm joining too." |
+
+**Destroyer + Build Up/Covering Role beats Destroyer + Destroyer** as a CB pairing —
+two Destroyers can both step out of the line at the same time, leaving nobody covering.
+
+## AI Playing Styles — a separate concept
+
+Not the same as Attacking/Defensive Playing Style. These affect tendencies when the
+AI is controlling the player's actions, especially on the ball:
+
+| AI Style | Tendency |
+|---|---|
+| Trickster | Uses dribbling/feints more often |
+| Mazing Run | Likes to carry the ball through opponents |
+| Speeding Bullet | Uses speed and explosive ball-carrying |
+| Incisive Run | Cuts inside from the flank toward goal |
+| Long Ball Expert | Looks for long passes / switches of play more often |
+| Early Crosser | Crosses early, without waiting to reach the byline |
+| Long Ranger | Looks for shots from distance more often |
+
+Ronaldinho Gaucho's card (analyzed earlier in this project) has "Mazing Run" as its
+COM Skill — this is the mechanism that skill belongs to.
+
+## Updated analysis order
+
+When budgeting a player, the order should now be:
+
+**position → Attacking Playstyle → Defensive Playstyle → player model → skills →
+stats/thresholds → booster.**
+
+A given raw stat is not equally valuable across playstyles even at the same position.
+90 Offensive Awareness is not worth the same to a Creative Playmaker as it is to a
+Hole Player — a Hole Player will use that OA (and Acceleration) far more often for
+off-ball runs.

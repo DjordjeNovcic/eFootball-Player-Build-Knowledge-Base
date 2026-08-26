@@ -13,9 +13,14 @@ If the user pastes a player screenshot, describes a player's stats/skills, or as
 "what build should this player have" / "analyze this player" in this project, read
 `KNOWLEDGE-BASE.md` and follow it — do not eyeball stats or optimize for overall rating.
 
-Follow section 14's workflow in order: identify role → inspect player model → inspect
-natural skills → identify wasted stats → build around the thresholds in section 3 →
-pick the booster last (section 11) → pick additional skills last (section 9).
+Follow section 14's workflow in order: position → Attacking Playing Style →
+Defensive Playing Style (section 18) → inspect player model → inspect natural
+skills → identify wasted stats → build around the thresholds in section 3 → pick
+the booster last (section 11) → pick additional skills last (section 9).
+
+A card can carry both an Attacking and a Defensive Playing Style at once (section
+18) — read both before setting Target Stats, since the same raw stat (e.g. 90 OA)
+is not equally valuable across playstyles even at the same position.
 
 Every player has 2 booster slots (section 10): slot 1 is fixed to the card (read it
 off the screenshot, never suggest changing it) and slot 2 is the only one to actually
