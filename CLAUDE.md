@@ -17,6 +17,10 @@ Follow section 14's workflow in order: identify role → inspect player model �
 natural skills → identify wasted stats → build around the thresholds in section 3 →
 pick the booster last (section 11) → pick additional skills last (section 9).
 
+Every player has 2 booster slots (section 10): slot 1 is fixed to the card (read it
+off the screenshot, never suggest changing it) and slot 2 is the only one to actually
+recommend — pick it so it doesn't duplicate stats slot 1 already covers.
+
 If the user names or shows the squad's currently-assigned manager, factor in section
 17's Manager Booster (a flat +1/+1 on top of the player's own booster) when setting
 Target Stats — it can let a raw progression target sit 1 point lower on whichever of

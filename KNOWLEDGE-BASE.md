@@ -1044,6 +1044,22 @@ All 29 boosters below (including the 2 GK ones) were cross-checked directly agai
 the live in-game "Select Booster" screen on 26 Aug 2026 — every entry matched except
 Goalkeeping +1 and Saving +1, which the original source spreadsheet omitted entirely.
 
+## Every player has 2 booster slots
+
+1. **Slot 1 — natural booster.** Fixed to that specific card. It is not chosen and
+   cannot be changed, and its magnitude is not necessarily +1 — confirmed example:
+   Ronaldinho Gaucho's natural booster is **Technique +4** (Ball Control +4,
+   Dribbling +4, Tight Possession +4, Low Pass +4), not the standard +1. Treat this
+   as a fixed property of the card, not a decision to make.
+2. **Slot 2 — assignable booster.** Chosen by the player from the full list below,
+   always a flat +1 to its four stats. This is the only slot section 11's "choose by
+   exact stats" guidance actually applies to.
+
+Both slots apply simultaneously and stack with the manager's Booster (section 17)
+and the player's own trained stats. Only one confirmed example of a natural-booster
+magnitude exists so far (+4) — do not assume every card's natural booster is also +4
+until more examples are checked.
+
 ## Accuracy +1
 
 - Low Pass +1
@@ -1331,6 +1347,10 @@ Excellent for technical AMF/SS players.
 ---
 
 # 11. Choosing the Booster
+
+This section is about slot 2 only — the assignable booster. Slot 1 (the card's
+natural booster) is fixed and cannot be changed; check what it already covers first
+so slot 2 doesn't waste points duplicating stats slot 1 already boosts.
 
 Do NOT choose the booster by name.
 
