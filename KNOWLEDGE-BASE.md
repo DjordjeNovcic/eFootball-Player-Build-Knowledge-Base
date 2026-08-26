@@ -879,16 +879,127 @@ Do not force unnecessary attacking skills.
 
 ---
 
-## Important limitation
+## Additional Skill slot limit
 
-Do NOT assume every natural player skill can be added manually.
+A player can have a maximum of **5 Additional Skills** added via the Skill Training
+Program, on top of whatever skills the card already has natively.
 
-Examples observed as non-addable:
+Do not plan a build around more than 5 additional skills — it is a hard cap.
 
-- Aerial Forte
-- Long Reach Tackle
+---
 
-Always verify whether a skill exists in the additional-skill pool.
+## Addable skills vs Show Time skills
+
+Do NOT assume every skill that exists in the game can be added manually.
+
+eFootball splits skills into two pools:
+
+1. **Regular skills** — addable via Skill Training, subject to GP cost and Player
+   Type eligibility.
+2. **Show Time skills** — exclusive to specific Epic / Big Time / themed player
+   cards. These CANNOT be added through Skill Training, no matter the GP spent.
+
+### Show Time skills (NOT addable — card-exclusive only)
+
+- Phenomenal Finishing
+- Phenomenal Pass
+- Blitz Curler
+- Visionary Pass
+- Bullet Header
+- Momentum Dribbling
+- Edged Crossing
+- Fortress
+- Game-changing Pass
+- Aerial Fort
+- Acceleration Burst
+- Long-reach Tackle
+- GK Directing Defence
+- Low Screamer
+- GK Spirit Roar
+- Willpower
+- Magnetic Feet
+- Attack Trigger
+
+If a player already has one of these natively, treat it as a fixed asset of that
+specific card — it is never something you can add to a different player, and it is
+never something you should plan to add later.
+
+### Addable skills (regular pool — can be trained onto eligible players)
+
+Dribbling:
+
+- Double Touch
+- Scissors Feint
+- Flip Flap
+- Marseille Turn
+- Sombrero
+- Chop Turn
+- Cut Behind & Turn
+- Scotch Move
+- Sole Control
+
+Shooting:
+
+- Heading
+- Long-range Curler
+- Chip Shot Control
+- Knuckle Shot
+- Dipping Shot
+- Rising Shot
+- Long-range Shooting
+- Acrobatic Finishing
+- Heel Trick
+- First-time Shot
+
+Passing:
+
+- One-touch Pass
+- Through Passing
+- Weighted Pass
+- Pinpoint Crossing
+- Outside Curler
+- Rabona
+- No Look Pass
+- Low Lofted Pass
+
+GK & Others:
+
+- GK Low Punt
+- GK High Punt
+- Long Throw
+- GK Long Throw
+- Penalty Specialist
+- GK Penalty Saver
+- Gamesmanship
+
+Defending:
+
+- Man Marking
+- Track Back
+- Interception
+- Blocker
+- Aerial Superiority
+- Sliding Tackle
+- Acrobatic Clearance
+
+Miscellaneous:
+
+- Captaincy
+- Super-sub
+- Fighting Spirit
+
+Being addable does not mean worth adding — check the list below before spending GP.
+
+### Addable but generally not worth adding
+
+- **Sombrero** — unpredictable
+- **Scotch Move** — considered the weakest skill move
+- **Rising Shot** — actually reduces scoring chance; the ball often rises above the crossbar
+- **Rabona** — no gameplay benefit, animation only
+- **No Look Pass** — same as above, animation only
+- **Long Throw** — not worth spending GP via Player Fusion for this alone
+- **Penalty Specialist** — same as above
+- **Captaincy** — supposed stamina boost was not observed in testing
 
 ---
 

@@ -58,16 +58,19 @@
     { label: "JMP", keys: ["jumping"] },
   ];
 
+  // Only skills addable via Skill Training — excludes the 18 card-exclusive "Show Time"
+  // skills (Phenomenal Finishing, Momentum Dribbling, Willpower, etc.), which can never
+  // be manually added regardless of GP spent.
   const SKILLS = [
-    "Long Range Drive", "Long Range Shooting", "Chip Shot Control", "Heel Trick", "First-time Shot", "Rabona",
-    "Marseille Turn", "Sombrero Flick", "Scissors Feint", "Flip Flap", "Double Touch", "Cut Behind & Turn", "Sole Control",
-    "No Look Pass", "Through Passing", "Long Ball", "Pinpoint Crossing", "Outside Curler", "Rising Shots", "Acrobatic Finishing",
-    "Weighted Pass", "Low Punt Trajectory", "One-touch Pass", "Long Throw", "Man Marking", "Interception", "Aerial Superiority",
-    "Offensive Header", "Blocker", "Acrobatic Clear", "Track Back", "Captaincy", "Super-sub", "Fighting Spirit", "Speed Merchant",
-    "Gamesmanship", "Injury Resilience",
+    "Double Touch", "Scissors Feint", "Flip Flap", "Marseille Turn", "Sombrero", "Chop Turn", "Cut Behind & Turn", "Scotch Move", "Sole Control",
+    "Heading", "Long-range Curler", "Chip Shot Control", "Knuckle Shot", "Dipping Shot", "Rising Shot", "Long-range Shooting", "Acrobatic Finishing", "Heel Trick", "First-time Shot",
+    "One-touch Pass", "Through Passing", "Weighted Pass", "Pinpoint Crossing", "Outside Curler", "Rabona", "No Look Pass", "Low Lofted Pass",
+    "GK Low Punt", "GK High Punt", "Long Throw", "GK Long Throw", "Penalty Specialist", "GK Penalty Saver", "Gamesmanship",
+    "Man Marking", "Track Back", "Interception", "Blocker", "Aerial Superiority", "Sliding Tackle", "Acrobatic Clearance",
+    "Captaincy", "Super-sub", "Fighting Spirit",
   ];
 
-  const SKILL_CAP = 6;
+  const SKILL_CAP = 5;
   const STAT_MIN = 30;
   const STAT_MAX = 99;
   const STAT_DEFAULT = 60;
