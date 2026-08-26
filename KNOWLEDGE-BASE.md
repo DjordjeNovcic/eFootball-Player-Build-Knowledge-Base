@@ -882,7 +882,8 @@ Do not force unnecessary attacking skills.
 ## Additional Skill slot limit
 
 A player can have a maximum of **5 Additional Skills** added via the Skill Training
-Program, on top of whatever skills the card already has natively.
+Program, on top of whatever skills the card already has natively. Confirmed directly
+in-game — the Additional Skills picker itself shows a "0/5" counter.
 
 Do not plan a build around more than 5 additional skills — it is a hard cap.
 
@@ -895,30 +896,38 @@ Do NOT assume every skill that exists in the game can be added manually.
 eFootball splits skills into two pools:
 
 1. **Regular skills** — addable via Skill Training, subject to GP cost and Player
-   Type eligibility.
-2. **Show Time skills** — exclusive to specific Epic / Big Time / themed player
+   Type eligibility. The 44-skill list below was directly confirmed by scrolling
+   through the live in-game Additional Skills picker.
+2. **Show Time skills** — exclusive to specific Epic / Show Time / Big Time player
    cards. These CANNOT be added through Skill Training, no matter the GP spent.
+
+A card's natural (pre-installed) skills are NOT necessarily all Show Time skills —
+a player typically has around 10 natural skills, and that native set is usually a mix
+of ordinary skills (e.g. Heading, which is also in the addable pool below) and, on
+special cards, one or more Show Time skills. Only the Show Time ones are irreplaceable
+identity of that specific card; the ordinary ones a card lacks can be added to it (or
+to any other eligible player) via Skill Training.
 
 ### Show Time skills (NOT addable — card-exclusive only)
 
-- Phenomenal Finishing
-- Phenomenal Pass
-- Blitz Curler
-- Visionary Pass
-- Bullet Header
-- Momentum Dribbling
-- Edged Crossing
-- Fortress
-- Game-changing Pass
-- Aerial Fort
-- Acceleration Burst
-- Long-reach Tackle
-- GK Directing Defence
-- Low Screamer
-- GK Spirit Roar
-- Willpower
-- Magnetic Feet
-- Attack Trigger
+- **Phenomenal Finishing** — massively boosts a player's ability to finish with all shot types
+- **Phenomenal Pass** — boosts the accuracy/speed of all passes
+- **Blitz Curler** — adds more accuracy and an ever-sharper curve to Controlled Shots (50%+ power)
+- **Visionary Pass** — temporarily boosts the receiver's first-time ball control and one-touch shots/passes after a pass
+- **Bullet Header** — boosts the accuracy and power of headers
+- **Momentum Dribbling** — keeps tight control of the ball when dribbling, translating into faster ball speed and quicker transitions between moves
+- **Edged Crossing** — boosts the accuracy of crosses
+- **Fortress** — increases defensive and physical performance if leading at the start of the second half
+- **Game-changing Pass** — boosts the accuracy of passes if losing at halftime
+- **Aerial Fort** — further boosts aerial prowess
+- **Acceleration Burst** — allows a higher acceleration boost off the dribble
+- **Long-reach Tackle** — massively improves range and success rate on standing tackles
+- **GK Directing Defense** — increases the defensive abilities of your defenders
+- **Low Screamer** — enables powerful low screamers (Stunning Shot under 50% power)
+- **GK Spirit Roar** — boosts the physicality of your defenders
+- **Willpower** — continuously boosts shooting ability the more shots taken
+- **Magnetic Feet** — keeps control of the ball while heavily marked
+- **Attack Trigger** *(new)* — increases the Attacking Awareness of all teammates while the player is on the ball
 
 If a player already has one of these natively, treat it as a fixed asset of that
 specific card — it is never something you can add to a different player, and it is
