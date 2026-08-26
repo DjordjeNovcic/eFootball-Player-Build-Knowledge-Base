@@ -1939,3 +1939,111 @@ A given raw stat is not equally valuable across playstyles even at the same posi
 90 Offensive Awareness is not worth the same to a Creative Playmaker as it is to a
 Hole Player — a Hole Player will use that OA (and Acceleration) far more often for
 off-ball runs.
+
+---
+
+# 19. Skill Mechanics Reference (raw Amadeusz testing data)
+
+This is the primary empirical source section 8's guidance was distilled from. Each
+skill's "Actual effect" is what Amadeusz's in-game testing found — not the marketing
+description in the game's own tooltip. **A blank "actual effect" means untested, not
+confirmed-to-do-nothing** — don't treat a blank cell as proof of no effect.
+
+Important distinction: **the game's own skill description is not itself evidence of
+a measurable effect.** Amadeusz tests a specific, narrow claim (e.g. "does this change
+the Dribbling/Ball Control/Tight Possession stats or their in-game behavior") — a
+skill can have zero measured effect on the exact thing tested while still doing
+something real that just wasn't the specific test performed. Treat "not observed
+during testing" as **unconfirmed**, not as **disproven**.
+
+## Dribbling
+
+| Skill | Actual effect |
+|---|---|
+| Double Touch | Also recovers the player's balance; the main advantage of "DT Boom" is that the GK's sideways shuffle doesn't react to the extra width Double Touch creates |
+| Scissors Feint | (untested) |
+| Flip Flap | Unlocks ball roll with Double Touch and Sole Control; creates more width but the animation is slower |
+| Marseille Turn | (untested) |
+| Sombrero | (untested) |
+| Chop Turn | (untested) |
+| Cut Behind & Turn | Also adds a Cruyff turn fake-shot animation |
+| Scotch Move | (untested) |
+| Sole Control | Dribbling, first-touch, and tight-control improvements were **not observed** in testing focused on those specific stats/behaviors. Confirmed value is unlocking ball roll together with Double Touch + Flip Flap. The game's own description ("control the ball more using the soles of his feet when executing feints and turns") describes a different, narrower claim about feint/turn execution specifically — that was not the thing tested, so it is unconfirmed, not disproven. Reasonable to keep for a player who regularly receives with their back to goal and has to turn away from a marker, even without the other two combo pieces. |
+| Momentum Dribbling *(Show Time)* | Increases Touch Frequency beyond the normal stat limit, compared to a player with identical stats but no skill; heavily nerfed after initial release |
+| Acceleration Burst *(Show Time)* | Adds new sharp-touch animations. Sharp touch is a feint, so it's governed by dribbling stats, not Acceleration |
+| Magnetic Feet *(Show Time)* | Activates when possessing the ball with an opponent within 5 metres |
+
+## Shooting
+
+| Skill | Actual effect |
+|---|---|
+| Heading | Increases the likelihood of downward (more accurate) headers. Does not change animation or stats |
+| Bullet Header *(Show Time)* | Greatly reduces headed-shot error when under physical pressure from defenders. Does not change animations |
+| Long-range Curler | Equivalent to +10%+ Finishing and Kicking Power, plus Curl. Not a Type 3 stat skill, so it can exceed the 99 cap; can compensate for a weak-foot debuff. Works on any curl shot, not just long-range |
+| Blitz Curler *(Show Time)* | Modifies curl-shot trajectory to a high dipping shot aimed at the top corners. Does NOT change stats. Stat importance: KP > Curl > Finishing |
+| Chip Shot Control | (untested) |
+| Knuckle Shot | Knuckleball movement; increases scoring chance, less than Dipping Shot. Usable at free kicks too. Activate: Stunning Shot at 50-65% power |
+| Dipping Shot | Ball travels straight with vertical dip; the largest scoring-chance increase of the 3 stunning-shot skills because the straight trajectory targets bottom corners more easily. Activate: Stunning Shot at 20-50% power, ideally 40-50% |
+| Rising Shot | Ball rises sharply — satisfying but actually *decreases* overall scoring chance because it often clears the crossbar. Activate: Stunning Shot at 65%+ power |
+| Long-range Shooting | +10% Finishing on shots from outside the box; does not add Kicking Power |
+| Low Screamer *(Show Time)* | Low driven shot, most effective at 40-50% power. +5.5% ball speed (≈ +25 Kicking Power equivalent). Does not change the shot or animation speed |
+| Acrobatic Finishing | Adds acrobatic shot animations (bicycle kick, scorpion kick, etc.) |
+| Heel Trick | Not found to affect the likelihood of heel shots or passes — more testing required |
+| First-time Shot | "One-touch Pass" for shooting — reduces error on a shot taken first-time |
+| Phenomenal Finishing *(Show Time)* | Greatly reduces shot error from an awkward body position. Does not change animation or stats |
+| Willpower *(Show Time)* | +1 Finishing and +1 Kicking Power every shot taken, up to +8 total. Headers don't count |
+
+## Passing
+
+| Skill | Actual effect |
+|---|---|
+| One-touch Pass | "First-time Shot" for passing — reduces error on a pass played without controlling the ball first |
+| Through Passing | +20% to both passing stats on a low or lofted through ball. Does not affect Curl or Kicking Power |
+| Weighted Pass | Ball drops steeply and lands closer to the receiver, more accurate. Only activates on a lofted pass/through pass from your own defensive half |
+| Pinpoint Crossing | +10% to both passing stats depending on which cross button is used. Does not affect Curl or Kicking Power |
+| Edged Crossing *(Show Time)* | Changes ball rotation from horizontal to vertical; activates on the weak foot when WF Accuracy is "Very High"; greatly increases ball speed on a normal cross |
+| Outside Curler | Enables trivela kicks, with the animation starting 3 frames earlier than normal. Slower but significantly more accurate — applies to shots and passes |
+| Rabona | Rabona animation for shots and passes only |
+| No Look Pass | Purely a "looking away" animation with no gameplay benefit |
+| Game-changing Pass *(Show Time)* | +10% to both passing stats while drawing or losing in the 2nd half |
+| Visionary Pass *(Show Time)* | A weaker First-time Shot + One-touch Pass for the **receiver** of the pass, plus improved first touch quality. Only helps the person receiving the pass, not the passer |
+| Phenomenal Pass *(Show Time)* | Phenomenal Finishing, but for passes — reduces pass error from an awkward body position |
+| Low Lofted Pass | Ball travels lower and takes a shorter path, faster and more accurate. Does not activate on a lofted through pass or a cross |
+
+## GK & Others
+
+| Skill | Actual effect |
+|---|---|
+| GK Low Punt | Changes the goal-kick punt path to fly lower and faster |
+| GK High Punt | Increases distance and speed of the high kick — useful with a tall striker up front to flick on |
+| Long Throw | Max throw range increases from 21m to 29m |
+| GK Long Throw | Increases a goalkeeper's max throw range |
+| Penalty Specialist | +10 (flat, not %) to Finishing and Place Kicking when taking a penalty |
+| GK Penalty Saver | Predicted increase to goalkeeping stats during a penalty save |
+| GK Directing Defence *(Show Time)* | Predicted increase to Tackling — testing confirmed it does NOT increase Defensive Awareness |
+| GK Spirit Roar *(Show Time)* | Predicted increase to Physical Contact |
+| Gamesmanship | Easier to win fouls — useful for players with low Balance |
+
+## Defending
+
+| Skill | Actual effect |
+|---|---|
+| Man Marking | (untested) |
+| Track Back | (untested) |
+| Interception | (untested) |
+| Blocker | (untested) |
+| Aerial Superiority | Increases the chance of winning an aerial duel when both players have similar Jump Height. Duels won via this skill in shooting scenarios have low accuracy and do NOT help with scoring |
+| Sliding Tackle | Predicted increase to the Tackling stat specifically when performing a sliding tackle |
+| Long-reach Tackle *(Show Time)* | Adds new tackling animations and increases standing-tackle range |
+| Fortress *(Show Time)* | +5% Defensive Awareness and Tackling while leading, active from any point in the 2nd half (possibly also Defensive Engagement/Aggression, needs more testing) |
+| Acrobatic Clearance | Adds acrobatic clearance animations (e.g. bicycle-kick clearance) |
+| Aerial Fort *(Show Time)* | Lets a defender reach their maximum Jump Height on every clearance. Useless if the attacker's Jump Height is considerably higher |
+
+## Miscellaneous
+
+| Skill | Actual effect |
+|---|---|
+| Captaincy | Supposed stamina increase — no effect was actually observed in testing |
+| Attack Trigger *(Show Time)* | Unknown-magnitude increase to teammates' Attacking Awareness (see section 18 for the confirmed newer description: raises it for all teammates while the player is on the ball) |
+| Super-sub | +5% Finishing and +1% Speed/Acceleration. Does NOT raise the Condition arrow by a step, despite common belief |
+| Fighting Spirit | Reduces shot/pass error when opponents are nearby. Stamina-related effects were not observed in testing |
