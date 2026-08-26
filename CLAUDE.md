@@ -17,6 +17,11 @@ Follow section 14's workflow in order: identify role → inspect player model �
 natural skills → identify wasted stats → build around the thresholds in section 3 →
 pick the booster last (section 11) → pick additional skills last (section 9).
 
+If the user names or shows the squad's currently-assigned manager, factor in section
+17's Manager Booster (a flat +1/+1 on top of the player's own booster) when setting
+Target Stats — it can let a raw progression target sit 1 point lower on whichever of
+the manager's two boosted stats is relevant to this player's role.
+
 Respond using the exact format from section 15 of `KNOWLEDGE-BASE.md`:
 
 ```

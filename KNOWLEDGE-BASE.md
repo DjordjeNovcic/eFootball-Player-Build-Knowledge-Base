@@ -1579,3 +1579,75 @@ The best build is the build where:
 all work together.
 
 Always optimize for actual match impact.
+
+---
+
+# 17. Manager (Coach) Effects
+
+Managers affect players through two completely separate mechanics. Do not conflate them.
+
+## 1. Manager Booster — direct stat increase, team-wide
+
+Every manager grants a fixed **+1 to exactly two specific stats**, applied to the whole
+squad for as long as that manager is assigned. This functions like the individual
+player Booster (section 10), but at squad level instead of per-card, and it **stacks**
+with each player's own individual Booster.
+
+The bonus is always +1/+1 regardless of which manager — only the two stats chosen
+differ between managers.
+
+Observed examples:
+
+| Manager | Boosted Stats |
+|---|---|
+| F. Beckenbauer | Dribbling +1, Defensive Awareness +1 |
+| R. Martínez | Finishing +1, Attacking Awareness +1 |
+| Fabio Capello | Finishing +1, Defensive Awareness +1 |
+| Xabi Alonso | Ball Control +1, Finishing +1 |
+| Frank Lampard | Low Pass +1, Defensive Engagement +1 |
+
+Because this applies to the entire squad, picking a manager to maximize ONE player's
+build is a team-level tradeoff, not an isolated decision — every player gets the same
+two stats boosted, not just the one you are optimizing for. Pick the manager whose
+pair best matches your squad's overall needs or your most important player's role,
+using the same "choose by exact stats, not by name" principle as section 11.
+
+Note: section 3 mentions "Extra point with 89 manager" for the Passing threshold.
+The screens observed here show Team Playstyle Proficiency (0-100 per tactic), not an
+overall manager rating/level — it is unconfirmed whether a manager's own quality/level
+scales the Booster beyond the flat +1/+1 seen in all 5 examples above.
+
+## 2. Coaching Affinity — training-speed multiplier, NOT a stat increase
+
+Coaching Affinity increases match Experience Points gained by a specific player
+segment (by position group, age bracket, or card rarity) by 200% or 400%. This makes
+that segment level up faster — it does NOT add stat points directly and does NOT
+affect overall rating by itself.
+
+Observed examples:
+
+| Manager | Coaching Affinity | Effect |
+|---|---|---|
+| F. Beckenbauer | DF Players+ | DF and GK players gain 400% more match XP |
+| R. Martínez | Star Players+ | 5★ PV players gain 200% more match XP |
+| Fabio Capello | Veteran Players+ | Players 30+ gain 200% more match XP |
+| Xabi Alonso | MF Players+ | MF players gain 400% more match XP |
+| Frank Lampard | Young Players+ | Players 23 or below gain 200% more match XP |
+
+Only relevant while actively training/leveling a player through matches — irrelevant
+for a player who is already fully progressed.
+
+## Team Playstyle Proficiency — separate from both of the above
+
+Every manager also has a 0-100 proficiency rating across 6 Team Playstyles: Possession
+Game, Quick Counter, Long Ball Counter, Out Wide, Long Ball, Overload. This affects how
+well the TEAM executes that tactic collectively. It is a team-tactics setting, not an
+individual player stat, and does not factor into single-player build optimization.
+
+## Practical takeaway for player analysis
+
+When asked how much a manager adds to a specific player: **+1 to whichever two stats
+that manager's Booster targets, if relevant to the role — otherwise 0.** Always check
+the currently-assigned manager's Booster pair before finalizing a build's Target
+Stats — it can let the raw progression target be 1 point lower on whichever of the
+two stats is relevant.
