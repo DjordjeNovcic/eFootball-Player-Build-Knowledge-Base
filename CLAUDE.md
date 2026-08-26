@@ -31,11 +31,9 @@ If the user names or shows the squad's currently-assigned manager, factor in sec
 Target Stats — it can let a raw progression target sit 1 point lower on whichever of
 the manager's two boosted stats is relevant to this player's role.
 
-Section 12 now has a verified exact points-per-category-level cost table and
-category→stat mapping (Shooting, Passing, Lower Body Strength confirmed 1:1) — use
-it to give exact category allocations in the Build line, not just target stats. But
-Dexterity vs. Dribbling's individual split is still unconfirmed, so treat those two
-as a combined pool until that gap is closed.
+Section 12 has a complete, verified points-per-category-level cost table and
+category→stat mapping for all 10 categories (including GK1/2/3) — use it to give
+exact category-point allocations in the Build line, not just target stats.
 
 Respond using the exact format from section 15 of `KNOWLEDGE-BASE.md`:
 

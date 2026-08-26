@@ -1382,11 +1382,11 @@ or another booster that fixes actual weaknesses.
 
 # 12. Progression Point Efficiency
 
-## Verified formula (confirmed 26 Aug 2026 against 11 controlled test builds)
+## Verified formula (confirmed 26 Aug 2026 against 22 controlled test builds)
 
-Training points are spent through 7 categories: Shooting, Passing, Dribbling,
-Dexterity, Lower Body Strength, Aerial Strength, Defending (plus GK1/GK2/GK3 for
-goalkeepers, untested here). Each category has its own level, 0 to a max of **20**.
+Training points are spent through 10 categories: Shooting, Passing, Dribbling,
+Dexterity, Lower Body Strength, Aerial Strength, Defending, GK1, GK2, GK3. Each
+category has its own level, 0 to a max of **20**.
 
 **Cost per category level is tiered, not flat** — confirmed exactly against 8
 distinct Lower Body Strength levels (4, 8, 9, 12, 13, 16, 17, 20), every one matching
@@ -1412,19 +1412,28 @@ Strength (levels 4 through 20, every single-level step tested). There is no seco
 layer of diminishing returns at the stat level — all the nonlinearity is in the
 points-per-level cost table above, not in the resulting stat gain.
 
-Confirmed category → stat mappings:
+Confirmed category → stat mappings — every one of the 10 categories isolated with a
+single-level, all-others-zero test, each producing exactly +1 on its stats and zero
+change anywhere else:
 
-- **Shooting** → Finishing, Place Kicking, Curl (each +1 per level)
-- **Passing** → Low Pass, Lofted Pass (each +1 per level)
-- **Lower Body Strength** → Speed, Kicking Power, Stamina (each +1 per level, does
-  NOT touch Acceleration, Physical Contact, Balance, or Jump)
-- **Dexterity + Dribbling combined** → Offensive Awareness, Ball Control, Dribbling,
-  Tight Possession, Acceleration, Balance (confirmed as a set of 6 stats moving
-  together when both categories were raised by 1 level simultaneously; which
-  specific 3 stats belong to Dexterity vs. Dribbling is NOT yet isolated — needs a
-  test with only one of the two raised while the other stays at 0)
-- **Aerial Strength, Defending, GK1/GK2/GK3** — not tested yet (always 0 in the
-  available data)
+- **Shooting** → Finishing, Place Kicking, Curl
+- **Passing** → Low Pass, Lofted Pass
+- **Dribbling** → Ball Control, Dribbling, Tight Possession
+- **Dexterity** → Offensive Awareness, Acceleration, Balance
+- **Lower Body Strength** → Speed, Kicking Power, Stamina
+- **Aerial Strength** → Jump, Physical Contact, Heading
+- **Defending** → Defensive Awareness, Defensive Engagement, Tackling, Aggression
+- **GK1** → GK Awareness (Goalkeeping), Jump
+- **GK2** → GK Parrying, GK Reach
+- **GK3** → GK Catching, GK Reflexes
+
+Note Jump is shared: both Aerial Strength and GK1 raise it independently — an
+outfield player only ever has access to Aerial Strength, but a goalkeeper could in
+theory pull Jump from either category.
+
+This mapping is now complete — there are no remaining unconfirmed categories. Given
+a target raw stat increase, look up which category to spend in, then use the cost
+table above to compute the exact points required for that category level.
 
 ## General efficiency guidance
 
