@@ -2022,7 +2022,7 @@ during testing" as **unconfirmed**, not as **disproven**.
 | GK Penalty Saver | Predicted increase to goalkeeping stats during a penalty save |
 | GK Directing Defence *(Show Time)* | Predicted increase to Tackling — testing confirmed it does NOT increase Defensive Awareness |
 | GK Spirit Roar *(Show Time)* | Predicted increase to Physical Contact |
-| Gamesmanship | Easier to win fouls — useful for players with low Balance |
+| Gamesmanship | Easier to win fouls when shielding the ball or clipped during close physical duels/dribbling, including inside the box (can draw penalties). Target profile is agile dribblers/wingers with LOW Physical Contact who get out-muscled in tight spaces — NOT physically dominant players. A player with high Physical Contact already holds up under contact and doesn't need the crutch. Consistent with our own low-Balance note above: this skill helps the physically vulnerable, not the physically dominant. Community reports inconsistent results (referees often don't call it) — treat as a situational, not a slam-dunk, pick even for the right profile. |
 
 ## Defending
 
