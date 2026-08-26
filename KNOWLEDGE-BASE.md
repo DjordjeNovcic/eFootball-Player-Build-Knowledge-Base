@@ -1005,6 +1005,10 @@ Being addable does not mean worth adding — check the list below before spendin
 
 # 10. Booster Knowledge Base
 
+All 29 boosters below (including the 2 GK ones) were cross-checked directly against
+the live in-game "Select Booster" screen on 26 Aug 2026 — every entry matched except
+Goalkeeping +1 and Saving +1, which the original source spreadsheet omitted entirely.
+
 ## Accuracy +1
 
 - Low Pass +1
@@ -1131,6 +1135,15 @@ Being addable does not mean worth adding — check the list below before spendin
 
 ---
 
+## Goalkeeping +1
+
+- Goalkeeping (GK Awareness) +1
+- GK Catching +1
+- GK Parrying +1
+- GK Reflexes +1
+
+---
+
 ## Hard Worker +1
 
 - Acceleration +1
@@ -1206,6 +1219,15 @@ Excellent for:
 - Low Pass +1
 - Defensive Awareness +1
 - Tackling +1
+
+---
+
+## Saving +1
+
+- Goalkeeping (GK Awareness) +1
+- GK Parrying +1
+- GK Reflexes +1
+- GK Reach +1
 
 ---
 
