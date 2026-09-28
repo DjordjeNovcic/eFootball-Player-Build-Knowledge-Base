@@ -93,7 +93,8 @@ async function start() {
     state.docs = {};
     state.lastPushed = {};
     state.first = true;
-    lab.setRepoSquad(!user || !OWNER_UID || user.uid === OWNER_UID);
+    // The repo squad is the owner's: shown only when the owner is signed in.
+    lab.setRepoSquad(!!user && (!OWNER_UID || user.uid === OWNER_UID));
     lab.setAuth({ enabled: true, signedIn: !!user });
     if (user) closeDialog();
     if (user) console.info(`[cloud] signed in — uid ${user.uid}`);

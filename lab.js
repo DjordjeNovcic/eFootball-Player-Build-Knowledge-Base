@@ -119,7 +119,14 @@
   const isMe = () => root.active === "me";
   // The repo squad (data/players.js + USER-SQUAD notes) belongs to the site owner; cloud.js
   // switches it off when someone else signs in, so their "My squad" starts empty.
-  let repoSquad = true;
+  // Owner-only: cloud.js sets it on the owner's sign-in and remembers it on that device
+  // (so the owner's squad shows instantly); everyone else never sees it. With cloud sync
+  // not configured at all, the site is single-user and always shows it.
+  const OWNER_FLAG = "efb-build-lab-owner";
+  let repoSquad = (() => {
+    if (!document.querySelector('script[src^="cloud.js"]')) return true;
+    try { return localStorage.getItem(OWNER_FLAG) === "1"; } catch { return false; }
+  })();
   // "My squad" of the site owner (or anyone signed out, as a demo) = the repo squad with its
   // USER-SQUAD notes and seven managers. Everyone else's "My squad" works like a friend's.
   const ownsRepo = () => isMe() && repoSquad;
@@ -361,6 +368,8 @@
           </div>
         </article>`;
     }).join("") || (players.length ? `<p class="empty-state">No cards match.</p>`
+      : isMe() && auth.enabled && !auth.signedIn
+        ? `<p class="empty-state"><b>Sign in</b> (top right) to build your squad — it's saved to your account and follows you to every device.</p>`
       : isMe()
         ? `<p class="empty-state">Your squad is empty — click <b>+ Add player</b> above to bring in your cards from eFHUB, then pick your managers in the Managers tab.</p>`
         : `<p class="empty-state">No cards in ${esc(store.name)}'s squad yet — click <b>+ Add player</b> above.</p>`);
@@ -803,7 +812,7 @@
     const current = managerKey(me ? KB.CURRENT_MANAGER : store.manager);
     $("#mgrMeta").textContent = me
       ? "Seven owned cards · team booster is a flat +1/+1 on the whole squad (§17)"
-      : `${list.length} owned by ${store.name} · pick them from eFHUB's ${ALL_MANAGERS.filter((m) => m.key.startsWith("ef:")).length} manager cards below`;
+      : `${list.length} owned by ${isMe() ? "you" : store.name} · pick them from eFHUB's ${ALL_MANAGERS.filter((m) => m.key.startsWith("ef:")).length} manager cards below`;
     const head = `<tr><th>Manager</th><th>Team booster</th>${KB.TACTICS.map((t) => `<th class="num">${t}</th>`).join("")}${me ? "" : "<th></th>"}</tr>`;
     const row = (m, owned) => `
       <tr class="${m.key === current ? "is-current" : ""}">
@@ -814,7 +823,7 @@
           ? `<button type="button" class="btn btn--icon" data-mgr-current="${esc(m.key)}">Set current</button> <button type="button" class="btn btn--icon btn--danger" data-mgr-toggle="${esc(m.key)}">Remove</button>`
           : `<button type="button" class="btn btn--icon btn--solid" data-mgr-toggle="${esc(m.key)}">+ Owned</button>`}</td>`}
       </tr>`;
-    $("#mgrTable").innerHTML = `<thead>${head}</thead><tbody>${list.map((m) => row(m, true)).join("") || `<tr><td colspan="9"><em>No managers yet — add ${esc(store.name)}'s cards from the list below.</em></td></tr>`}</tbody>`;
+    $("#mgrTable").innerHTML = `<thead>${head}</thead><tbody>${list.map((m) => row(m, true)).join("") || `<tr><td colspan="9"><em>No managers yet — mark the ones ${isMe() ? "you own" : `${esc(store.name)} owns`} in the list below.</em></td></tr>`}</tbody>`;
     $("#mgrPickerBox").hidden = me;
     $("#mgrLinkBox").hidden = !me;
     if (!me) {
@@ -1704,7 +1713,7 @@
   }
 
   function renderProfileBar() {
-    $("#demoBanner").hidden = !(auth.enabled && !auth.signedIn && ownsRepo());
+    $("#demoBanner").hidden = !(auth.enabled && !auth.signedIn);
   }
 
   function refreshAll() {
@@ -1811,6 +1820,7 @@
     },
     switchTo: () => {}, // single squad per account
     setRepoSquad(on) {
+      try { if (on) localStorage.setItem(OWNER_FLAG, "1"); else localStorage.removeItem(OWNER_FLAG); } catch { /* private mode */ }
       if (repoSquad === on) return;
       repoSquad = on;
       if (!on && root.profiles.me.manager === KB.CURRENT_MANAGER) root.profiles.me.manager = "";
@@ -1818,10 +1828,11 @@
       route();
     },
     isRepoSquad: () => repoSquad,
-    clearLocal() { try { localStorage.removeItem(STORE_KEY); } catch { /* private mode */ } },
+    clearLocal() { try { localStorage.removeItem(STORE_KEY); localStorage.removeItem(OWNER_FLAG); } catch { /* private mode */ } },
     setAuth(state) {
       Object.assign(auth, state);
       renderProfileBar();
+      renderSquad();
       if (auth.signedIn && isMe() && !repoSquad && !players.length) $("#addPanel").hidden = false;
     },
   };
