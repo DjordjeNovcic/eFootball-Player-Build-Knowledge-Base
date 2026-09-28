@@ -284,10 +284,10 @@ window.Recommender = (deps) => {
     };
     // Skill choices the user already made in Build Lab come first (USER-SQUAD §4).
     const note = notesFor(p.id);
-    [...(note?.prefSkills || []), ...(note?.snapshot?.skills || [])].forEach((n) => {
+    [...(note?.prefSkills || []), ...(note?.snapshot?.skills || []), ...(deps.myPicks ? deps.myPicks(p.id) : [])].forEach((n) => {
       if (out.length >= 5 || out.includes(n) || has(n)) return;
       out.push(n);
-      why[n] = "Your saved choice for this card (USER-SQUAD §4)."
+      why[n] = "Your choice for this card."
         + (n === "Through Passing" && f.lowPass < 82 ? ` Low Pass is ${f.lowPass}, below the 82 it needs (§3).` : "")
         + (n === "Double Touch" && p.height >= 188 ? " Less valuable on a tall target man (§8)." : "")
         + (n === "Heel Trick" ? " No measured effect yet (§19)." : "");
@@ -355,7 +355,8 @@ window.Recommender = (deps) => {
       push("One-touch Pass", "Quick combinations (§9 attacking).");
       if (["creativePlaymaker", "classicNo10", "deepLyingForward"].includes(key)) push("Through Passing", "Creator — +20% passing stats on through balls (§19).");
       if (striker && f.lowPass >= 78) push("Through Passing", `Long Ball Counter lay-offs and through balls — +20% passing stats (§19); Low Pass ${f.lowPass}${f.lowPass < 82 ? ", a bit under the 82 it wants (§3)" : ""}.`);
-      if (["prolificWinger", "roamingFlank", "holePlayer", "creativePlaymaker", "dummyRunner"].includes(key)) push("Cut Behind & Turn", "Beats a tight marker 1v1 (§8).");
+      if (["prolificWinger", "roamingFlank", "holePlayer", "creativePlaymaker", "dummyRunner"].includes(key) || (key === "goalPoacher" && p.height <= 182))
+        push("Cut Behind & Turn", "Beats a tight marker 1v1 and spins in behind (§8).");
       if (key === "crossSpecialist") push("Pinpoint Crossing", "+10% passing stats on crosses.");
       push("Outside Curler", "Strong-foot trivela shots and passes (§9 attacking).");
       if (!has("Long-range Curler")) push("Long-range Shooting", "+10% Finishing from outside the box (§9 attacking).");

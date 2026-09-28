@@ -19,6 +19,10 @@ Two parts:
     5 additional skills → verdict, in the §15 format. Never optimised for OVR.
   - **My Builds** — your builds next to the recommended ones (status, OVR delta); start
     from a recommendation and tweak it in the Trainer.
+  - **Additional skills live on the player** (up to 5, as in the game): your picks (★ —
+    from USER-SQUAD or edited in the Trainer) first, the rest filled from the knowledge
+    base; untouched lists follow rule improvements, edited ones stay as chosen. Shown on
+    each My Squad card.
   - **Trainer** — spend progression points per category (level 0–20, tiered cost from
     KNOWLEDGE-BASE §12), pick the slot-2 booster, manager and up to 5 additional skills,
     and see final stats, KB thresholds and the per-position OVR. The stat pipeline matches

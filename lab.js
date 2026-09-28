@@ -98,7 +98,8 @@
   const FRIEND_FILES = window.FRIEND_SQUADS || {};
   function blankProfile(kind, name, extra = {}) {
     return { kind, name, builds: {}, manager: kind === "me" ? KB.CURRENT_MANAGER : "", tactic: "Long Ball Counter",
-      lineups: [], activeLineup: null, positions: {}, customPlayers: {}, removed: [], ownedManagers: [], ...extra };
+      lineups: [], activeLineup: null, positions: {}, customPlayers: {}, removed: [], ownedManagers: [],
+      playerSkills: {}, skillSource: {}, ...extra };
   }
   function normaliseProfile(p, kind, name) {
     return { ...blankProfile(kind, name), ...p, kind, name: p.name || name };
@@ -174,6 +175,42 @@
     const extra = positionsOf(p);
     return [p.position, ...POS_ORDER.filter((pos) => pos !== p.position && extra[pos])]
       .map((pos) => ({ pos, prof: profAt(p, pos) }));
+  }
+
+  /* ---------------------------------------------------------
+     Additional skills — trained on the player (not per build), up to 5.
+     Source per skill: "mine" (chosen by the user, or saved in USER-SQUAD) or "rec".
+  --------------------------------------------------------- */
+
+  const skillsOf = (id) => store.playerSkills[id] || [];
+  const skillSrc = (id, name) => store.skillSource[id]?.[name] || "rec";
+  const myPicks = (id) => skillsOf(id).filter((n) => skillSrc(id, n) === "mine");
+  function setSkills(id, list, sources) {
+    store.playerSkills[id] = list.slice(0, SKILL_CAP);
+    const touched = sources?.__touched ?? store.skillSource[id]?.__touched;
+    store.skillSource[id] = Object.fromEntries(store.playerSkills[id].map((n) => [n, sources?.[n] || skillSrc(id, n)]));
+    if (touched) store.skillSource[id].__touched = true;
+  }
+  function recommendedSkillPlan(p) {
+    const note = notesFor(p.id);
+    const saved = new Set([...(note?.prefSkills || []), ...(note?.snapshot?.skills || []), ...myPicks(p.id)]);
+    const list = REC.recs[p.id]?.skills || [];
+    return { list, sources: Object.fromEntries(list.map((n) => [n, saved.has(n) ? "mine" : "rec"])) };
+  }
+  // Every player gets a skill plan the first time it's seen: the user's own picks first,
+  // then the knowledge-base recommendation (recommend.js) up to five.
+  // Until the user edits a player's list, it follows the latest recommendation (so rule
+  // improvements reach it); once edited ("touched") it stays exactly as chosen.
+  function ensureSkillPlans() {
+    let changed = false;
+    players.forEach((p) => {
+      if (store.skillSource[p.id]?.__touched) return;
+      const plan = recommendedSkillPlan(p);
+      if (JSON.stringify(plan.list) === JSON.stringify(skillsOf(p.id))) return;
+      setSkills(p.id, plan.list, plan.sources);
+      changed = true;
+    });
+    if (changed) saveStore();
   }
 
   /* ---------------------------------------------------------
@@ -351,6 +388,7 @@
             <h3 class="squad-card__name">${esc(p.name)}</h3>
             <p class="squad-card__team">${esc(p.team || "")} · ${p.height} cm · ${esc(p.foot || "")}</p>
             <p class="squad-card__style">${esc(styleText(p))}</p>
+            ${skillsOf(p.id).length ? `<p class="squad-card__skills" title="Additional skills — ★ your pick, others recommended">${skillsOf(p.id).map((n) => `<span class="${skillSrc(p.id, n) === "mine" ? "is-mine" : ""}">${skillSrc(p.id, n) === "mine" ? "★ " : ""}${esc(n)}</span>`).join("")}</p>` : ""}
             ${styleExpectShort(p) ? `<p class="squad-card__expect" title="${esc(stylesOf(p).filter((x) => x.guide).map((x) => `${x.name}: ${x.guide.expect} ${x.guide.use}`).join("\n\n"))}">${esc(styleExpectShort(p))}</p>` : ""}
             <p class="squad-card__pos">${positionList(p).map(({ pos, prof }) => `<span class="pp pp--${prof}">${pos}</span>`).join("")}${positionsEdited(p) ? `<span class="pp-edited" title="Edited in Trainer">✎</span>` : ""}</p>
             <p class="squad-card__boost">${esc(p.booster1?.name || "No booster")}${p.booster2Fixed ? " + " + esc(p.booster2Fixed.name) : ""}</p>
@@ -501,13 +539,18 @@
     // Additional skills
     const native = playerNativeNames(p);
     const addable = KB.SKILLS.filter((s) => s.pool === "add");
-    $("#trainSkillCount").textContent = `${b.skills.length}/${SKILL_CAP}`;
+    const mine = skillsOf(p.id);
+    $("#trainSkillCount").textContent = `${mine.length}/${SKILL_CAP}`;
+    const why = REC?.recs[p.id]?.skillWhy || {};
+    $("#trainSkillPlan").innerHTML = mine.length
+      ? mine.map((n) => `<span class="tag ${skillSrc(p.id, n) === "mine" ? "tag--mine" : "tag--rec"}" title="${esc(why[n] || "")}">${skillSrc(p.id, n) === "mine" ? "★ " : ""}${esc(n)}</span>`).join("")
+      : `<em class="rec-muted">none yet</em>`;
     $("#trainSkills").innerHTML = addable.map((s) => {
       const has = native.has(norm(s.name));
-      const sel = b.skills.includes(s.name);
-      const full = b.skills.length >= SKILL_CAP && !sel;
+      const sel = mine.includes(s.name);
+      const full = mine.length >= SKILL_CAP && !sel;
       return `<button type="button" class="chip ${sel ? "is-selected" : ""} ${has || full ? "is-disabled" : ""} ${s.avoid ? "chip--warn" : ""}"
-        data-skill="${esc(s.name)}" ${has ? "disabled" : ""} title="${esc(has ? "Already native on this card" : s.avoid || s.note || s.tested || s.official || "")}">${esc(s.name)}${has ? " ✓" : ""}</button>`;
+        data-skill="${esc(s.name)}" ${has ? "disabled" : ""} title="${esc(has ? "Already native on this card" : why[s.name] || s.avoid || s.note || s.tested || s.official || "")}">${sel && skillSrc(p.id, s.name) === "mine" ? "★ " : ""}${esc(s.name)}${has ? " ✓" : ""}</button>`;
     }).join("");
     $("#trainNative").innerHTML = p.skills.map((k) => {
       const kb = KB.SKILLS.find((s) => norm(s.name) === norm(skillLabel(k)));
@@ -575,7 +618,7 @@
     if (left < 0) warns.push(`<b>${-left} points over budget</b> for level cap ${cap}.`);
     const wastedTotal = Object.values(res.wasted).reduce((a, v) => a + v, 0);
     if (wastedTotal) warns.push(`${wastedTotal} stat point(s) lost above the 99 training cap (${Object.keys(res.wasted).map(statLabel).join(", ")}).`);
-    b.skills.forEach((n) => {
+    skillsOf(p.id).forEach((n) => {
       const s = KB.SKILLS.find((x) => x.name === n);
       if (s?.avoid) warns.push(`<b>${esc(n)}</b>: ${esc(s.avoid)}`);
     });
@@ -606,10 +649,18 @@
     const chip = e.target.closest("[data-skill]");
     if (!chip || chip.disabled) return;
     const n = chip.dataset.skill;
-    const list = view.draft.skills;
+    const id = view.playerId;
+    const list = [...skillsOf(id)];
     const i = list.indexOf(n);
-    if (i >= 0) list.splice(i, 1); else if (list.length < SKILL_CAP) list.push(n);
-    renderTrainer();
+    const src = { ...(store.skillSource[id] || {}) };
+    if (i >= 0) list.splice(i, 1);
+    else if (list.length < SKILL_CAP) { list.push(n); src[n] = "mine"; }
+    // Touching the list makes the remaining ones deliberate choices too.
+    list.forEach((x) => { src[x] = "mine"; });
+    src.__touched = true;
+    setSkills(id, list, src);
+    saveStore();
+    renderTrainer(); renderSquad(); renderMyBuilds();
   });
   $("#trainPositions").addEventListener("click", (e) => {
     const c = e.target.closest("[data-pos]");
@@ -644,11 +695,15 @@
     const snap = notesFor(p.id)?.snapshot;
     if (!snap) return;
     categoriesFor(p).forEach((c, i) => { view.draft.levels[c.key] = snap.levels[i] ?? 0; });
-    if (snap.skills) view.draft.skills = snap.skills.filter((n) => !playerNativeNames(p).has(norm(n))).slice(0, SKILL_CAP);
+    if (snap.skills) {
+      const list = snap.skills.filter((n) => !playerNativeNames(p).has(norm(n))).slice(0, SKILL_CAP);
+      setSkills(p.id, list, { ...Object.fromEntries(list.map((n) => [n, "mine"])), __touched: true });
+      saveStore();
+    }
     renderTrainer();
   });
   $("#trainSave").addEventListener("click", () => {
-    store.builds[view.playerId] = { ...structuredClone(view.draft), savedAt: Date.now() };
+    store.builds[view.playerId] = { ...structuredClone(view.draft), skills: [...skillsOf(view.playerId)], savedAt: Date.now() };
     saveStore();
     renderPlayerSelect();
     $("#trainPlayer").value = view.playerId;
@@ -678,7 +733,7 @@
       `${p.name} (${p.id}) — ${view.position}`,
       `Build: ${buildLine(p, b)}  [${categoriesFor(p).map((c) => c.label).join(" / ")}]`,
       `Booster: ${p.booster1?.name || "—"} + ${b2?.name || "—"}${store.manager ? ` · Manager: ${store.manager}` : ""}`,
-      `Additional skills: ${b.skills.join(", ") || "—"}`,
+      `Additional skills: ${skillsOf(p.id).join(", ") || "—"}`,
       `OVR ${view.position}: ${compute(p, b).ratings[view.position]}`,
     ].join("\n");
     try {
@@ -1428,7 +1483,7 @@
   let REC = null; // filled at init (needs the multiplier table above)
   const makeRecommender = () => window.Recommender({
     players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
-    skillMultiplier, managerProficiency, managerObj, notesFor, context: recContext(), MAX_LEVEL, boosterPool: DATA.boosterPool,
+    skillMultiplier, managerProficiency, managerObj, notesFor, myPicks, context: recContext(), MAX_LEVEL, boosterPool: DATA.boosterPool,
   });
   const recState = { q: "", group: "ALL" };
   const mineState = { q: "", group: "ALL", onlyMine: false };
@@ -1608,10 +1663,10 @@
         if (!sameBuild(mine, rb)) changes.push("levels");
         const b2 = booster2Of(p, mine);
         if (!p.booster2Fixed && (b2?.id ?? null) !== (r.booster2 ?? null)) changes.push("booster");
-        if ([...mine.skills].sort().join() !== [...rb.skills].sort().join()) changes.push("skills");
+        if ([...skillsOf(p.id)].sort().join() !== [...rb.skills].sort().join()) changes.push("skills");
         status = changes.length ? `<span class="badge badge--amber">Tweaked: ${changes.join(", ")}</span>` : `<span class="badge badge--green">Same as recommended</span>`;
         const b2name = b2?.name || "—";
-        diffs = `<small>${esc(b2name)} · ${mine.skills.length} skills</small>`;
+        diffs = `<small>${esc(b2name)} · ${skillsOf(p.id).length} skills</small>`;
       }
       return `
         <tr>
@@ -1653,6 +1708,16 @@
       const id = edit.dataset.mineEdit;
       openInTrainer(id, store.builds[id] || recBuild(id));
     }
+  });
+  $("#trainSkillReset").addEventListener("click", () => {
+    const p = byId[view.playerId];
+    delete store.playerSkills[p.id];
+    delete store.skillSource[p.id];
+    REC = makeRecommender();
+    const plan = recommendedSkillPlan(p);
+    setSkills(p.id, plan.list, { ...plan.sources, __touched: false });
+    saveStore();
+    renderTrainer(); renderSquad(); renderMyBuilds();
   });
   $("#trainLoadRec").addEventListener("click", () => {
     const p = byId[view.playerId];
@@ -1721,6 +1786,7 @@
     rebuildPlayers();
     rebuildNativeIndex();
     REC = makeRecommender();
+    ensureSkillPlans();
     if (!byId[view.playerId]) view.playerId = null;
     renderPlayerSelect();
     renderSquad(); renderSkills(); renderManagers(); renderStyles(); renderLineup(); renderRecommended(); renderMyBuilds();
@@ -1842,6 +1908,7 @@
   --------------------------------------------------------- */
 
   REC = makeRecommender();
+  ensureSkillPlans();
   renderProfileBar();
   renderRemoved();
   renderPlayerSelect();

@@ -1261,3 +1261,15 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .auth-msg.is-err{ color: var(--ember); }
 .auth-msg.is-ok{ color: var(--lime); }
 .auth-links{ display: flex; justify-content: space-between; gap: 0.5rem; margin-top: 0.8rem; font-size: 0.8rem; flex-wrap: wrap; }
+
+/* ---------- player additional skills ---------- */
+
+.skill-plan{ display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem; }
+.tag--mine{ color: var(--ink); background: var(--lime); border-color: var(--lime); font-weight: 700; }
+.tag--rec{ color: var(--lime); border-color: rgba(212,255,63,0.45); }
+.squad-card__skills{ margin: 0.25rem 0 0; display: flex; flex-wrap: wrap; gap: 0.2rem; }
+.squad-card__skills span{
+  font-family: var(--font-cond); font-size: 0.6rem; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 0 0.3rem; border-radius: 2px; border: 1px solid rgba(212,255,63,0.35); color: var(--lime-dim);
+}
+.squad-card__skills span.is-mine{ background: var(--lime); color: var(--ink); border-color: var(--lime); font-weight: 700; }
