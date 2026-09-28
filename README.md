@@ -14,7 +14,9 @@ Two parts:
   - **Trainer** — spend progression points per category (level 0–20, tiered cost from
     KNOWLEDGE-BASE §12), pick the slot-2 booster, manager and up to 5 additional skills,
     and see final stats, KB thresholds and the per-position OVR (same formula as eFHUB).
-    Saved dated snapshots from `USER-SQUAD.md` load with one click.
+    Saved dated snapshots from `USER-SQUAD.md` load with one click. Position proficiency
+    (None / Intermediate / High) starts from the card and can be edited for positions
+    trained in-game; the Lineup picker offers players by it.
   - **Lineup** — pick a formation, manager and team playstyle, place players on the
     pitch and bench (drag & drop with mouse or touch), move position markers — the role
     follows the pitch zone or can be set by hand (e.g. DMF vs CMF on the same spot) —

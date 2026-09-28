@@ -50,14 +50,37 @@
   function loadStore() {
     try {
       const s = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-      return { builds: s.builds || {}, manager: s.manager ?? KB.CURRENT_MANAGER, lineups: s.lineups || [], activeLineup: s.activeLineup };
+      return { builds: s.builds || {}, manager: s.manager ?? KB.CURRENT_MANAGER, lineups: s.lineups || [], activeLineup: s.activeLineup, positions: s.positions || {} };
     } catch {
-      return { builds: {}, manager: KB.CURRENT_MANAGER, lineups: [] };
+      return { builds: {}, manager: KB.CURRENT_MANAGER, lineups: [], positions: {} };
     }
   }
   const store = loadStore();
   function saveStore() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { /* private mode */ }
+  }
+
+  /* ---------------------------------------------------------
+     Position proficiency — card default from eFHUB (familiarity 2 = high,
+     1 = intermediate), overridable per player for positions trained in-game.
+  --------------------------------------------------------- */
+
+  const PROF_LABEL = { primary: "Main", high: "High", mid: "Intermediate", none: "None" };
+  function cardPositions(p) {
+    return Object.fromEntries(p.additionalPositions.map((a) => [a.position, a.familiarity === 2 ? "high" : "mid"]));
+  }
+  function positionsOf(p) {
+    return store.positions[p.id] || cardPositions(p);
+  }
+  function profAt(p, pos) {
+    if (p.position === pos) return "primary";
+    return positionsOf(p)[pos] || "none";
+  }
+  const positionsEdited = (p) => !!store.positions[p.id];
+  function positionList(p) {
+    const extra = positionsOf(p);
+    return [p.position, ...POS_ORDER.filter((pos) => pos !== p.position && extra[pos])]
+      .map((pos) => ({ pos, prof: profAt(p, pos) }));
   }
 
   /* ---------------------------------------------------------
@@ -160,7 +183,7 @@
     const q = squadState.q.trim().toLowerCase();
     const list = players
       .filter((p) => squadState.group === "ALL" || POSITION_GROUP[p.position] === squadState.group)
-      .filter((p) => !q || `${p.name} ${p.team} ${p.position} ${styleText(p)} ${p.id}`.toLowerCase().includes(q))
+      .filter((p) => !q || `${p.name} ${p.team} ${positionList(p).map((x) => x.pos).join(" ")} ${styleText(p)} ${p.id}`.toLowerCase().includes(q))
       .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.overall - a.overall);
 
     const counts = players.reduce((c, p) => ((c[POSITION_GROUP[p.position]] = (c[POSITION_GROUP[p.position]] || 0) + 1), c), {});
@@ -186,6 +209,7 @@
             <h3 class="squad-card__name">${esc(p.name)}</h3>
             <p class="squad-card__team">${esc(p.team || "")} · ${p.height} cm · ${esc(p.foot || "")}</p>
             <p class="squad-card__style">${esc(styleText(p))}</p>
+            <p class="squad-card__pos">${positionList(p).map(({ pos, prof }) => `<span class="pp pp--${prof}">${pos}</span>`).join("")}${positionsEdited(p) ? `<span class="pp-edited" title="Edited in Trainer">✎</span>` : ""}</p>
             <p class="squad-card__boost">${esc(p.booster1?.name || "No booster")}${p.booster2Fixed ? " + " + esc(p.booster2Fixed.name) : ""}</p>
             ${note ? `<p class="squad-card__note">${esc(note.role)}</p>` : ""}
             <div class="squad-card__foot">
@@ -329,11 +353,19 @@
     }).join("") + (p.comSkills.length ? `<span class="tag tag--ai">AI: ${p.comSkills.map((k) => esc(skillLabel(k))).join(", ")}</span>` : "");
 
     // Position ratings
-    const fam = Object.fromEntries(p.additionalPositions.map((a) => [a.position, a.familiarity]));
     $("#trainPositions").innerHTML = POS_ORDER.map((pos) => {
-      const cls = pos === p.position ? "is-primary" : fam[pos] ? "is-extra" : "";
-      return `<button type="button" class="pos-cell ${cls} ${pos === view.position ? "is-current" : ""}" data-pos="${pos}">
+      const prof = profAt(p, pos);
+      return `<button type="button" class="pos-cell is-${prof} ${pos === view.position ? "is-current" : ""}" data-pos="${pos}" title="${PROF_LABEL[prof]} proficiency">
         <span>${pos}</span><b>${res.ratings[pos]}</b></button>`;
+    }).join("");
+
+    // Position proficiency editor
+    $("#trainProfState").textContent = positionsEdited(p) ? "edited — saved in this browser" : "card default (eFHUB)";
+    $("#trainProfReset").hidden = !positionsEdited(p);
+    $("#trainProf").innerHTML = POS_ORDER.map((pos) => {
+      const prof = profAt(p, pos);
+      return `<button type="button" class="prof-btn is-${prof}" data-prof="${pos}" ${prof === "primary" ? "disabled" : ""}
+        title="${pos}: ${PROF_LABEL[prof]}${prof === "primary" ? "" : " — tap to change"}"><b>${pos}</b><span>${PROF_LABEL[prof]}</span></button>`;
     }).join("");
 
     // Stats
@@ -407,6 +439,23 @@
     view.position = c.dataset.pos;
     renderTrainer();
   });
+  $("#trainProf").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-prof]");
+    if (!b || b.disabled) return;
+    const p = byId[view.playerId];
+    const next = { none: "mid", mid: "high", high: "none" };
+    const map = { ...positionsOf(p) };
+    const v = next[profAt(p, b.dataset.prof)];
+    if (v === "none") delete map[b.dataset.prof]; else map[b.dataset.prof] = v;
+    store.positions[p.id] = map;
+    saveStore();
+    renderTrainer(); renderSquad(); renderLineup();
+  });
+  $("#trainProfReset").addEventListener("click", () => {
+    delete store.positions[view.playerId];
+    saveStore();
+    renderTrainer(); renderSquad(); renderLineup();
+  });
   $("#trainReset").addEventListener("click", () => {
     const p = byId[view.playerId];
     view.draft = { ...emptyBuild(p), booster2: view.draft.booster2 };
@@ -471,6 +520,7 @@
     try {
       const parsed = JSON.parse(await file.text());
       Object.assign(store.builds, parsed.builds || {});
+      Object.assign(store.positions, parsed.positions || {});
       const known = new Set(store.lineups.map((l) => l.id));
       (parsed.lineups || []).forEach((l) => { if (!known.has(l.id)) store.lineups.push(l); });
       saveStore();
@@ -684,10 +734,7 @@
     const t = p.name.split(" ");
     return t[t.length - 1].length < 3 && t.length > 1 ? t.slice(-2).join(" ") : t[t.length - 1];
   }
-  function proficiency(p, pos) {
-    if (p.position === pos) return "primary";
-    return p.additionalPositions.some((a) => a.position === pos) ? "extra" : "none";
-  }
+  const proficiency = profAt;
 
   const uid = () => `l_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   function newLineup(name = "My XI") {
@@ -857,8 +904,11 @@
     const q = lu.q.trim().toLowerCase();
     const rows = players
       .filter((p) => !q || `${p.name} ${p.team} ${p.position}`.toLowerCase().includes(q))
-      .map((p) => ({ p, r: pos ? slotRating(p, pos, l) : p.overall }))
+      .map((p) => ({ p, r: pos ? slotRating(p, pos, l) : p.overall, prof: pos ? proficiency(p, pos) : "primary" }))
       .sort((a, b) => b.r - a.r);
+    const RANK = { primary: 0, high: 1, mid: 2, none: 3 };
+    const fits = rows.filter((x) => x.prof !== "none").sort((a, b) => RANK[a.prof] - RANK[b.prof] || b.r - a.r);
+    const others = rows.filter((x) => x.prof === "none");
     box.innerHTML = `
       <div class="picker__head">
         <span class="field__label">${pos ? `Pick ${pos}` : "Pick a substitute"}</span>
@@ -870,20 +920,26 @@
       ${pos && lu.sel.i > 0 ? `<div class="role-row"><span class="field__label">Role</span>${OUTFIELD_ROLES.map((r) =>
         `<button type="button" class="role-btn ${r === pos ? "is-on" : ""}" data-role="${r}">${r}</button>`).join("")}</div>` : ""}
       <input type="text" id="luSearch" placeholder="Search…" value="${esc(lu.q)}" aria-label="Search players">
-      <div class="picker__list">${rows.map(({ p, r }) => {
+      <div class="picker__list">${pos ? `<p class="picker__group">Can play ${pos} (${fits.length})</p>` : ""}${(pos ? fits : rows).map(pickRow).join("") || `<p class="empty-state">No one in the squad has ${pos} proficiency.</p>`}
+        ${pos && others.length ? (lu.showOthers || q
+          ? `<p class="picker__group">Out of position (${others.length}) <button type="button" class="linkish" data-lu="others">hide</button></p>${others.map(pickRow).join("")}`
+          : `<button type="button" class="btn btn--icon picker__more" data-lu="others">Show ${others.length} out-of-position players</button>`) : ""}
+      </div>`;
+
+    function pickRow({ p, r, prof }) {
         const where = l.xi.includes(p.id) ? "XI" : l.bench.includes(p.id) ? "Bench" : "";
-        const prof = pos ? proficiency(p, pos) : "primary";
         const fit = pos ? styleFit(p, pos) : [];
         return `<button type="button" class="pick ${p.id === current ? "is-current" : ""}" data-pick="${p.id}">
           <b class="pick__r pick__r--${prof}">${r}</b>
           <span class="pick__name">${esc(p.name)}<small>${p.position} ${p.overall} · ${esc(styleText(p))}</small></span>
           <span class="pick__tags">
             ${pos && prof === "none" ? `<span class="badge badge--ember">no ${pos}</span>` : ""}
+            ${pos && (prof === "high" || prof === "mid") ? `<span class="badge ${prof === "high" ? "badge--green" : ""}">${PROF_LABEL[prof]}</span>` : ""}
             ${fit.some((f) => !f.ok) ? `<span class="badge badge--amber">style off</span>` : ""}
             ${store.builds[p.id] ? `<span class="badge">★ build</span>` : ""}
             ${where ? `<span class="badge badge--lime">${where}</span>` : ""}
           </span></button>`;
-      }).join("")}</div>`;
+    }
   }
 
   function renderSubs(l, slots) {
@@ -928,6 +984,7 @@
     const role = e.target.closest("[data-role]");
     if (role && lu.sel?.area === "xi") { layoutOf(l)[lu.sel.i][0] = role.dataset.role; saveLineup(); renderLineup(); return; }
     if (act?.dataset.lu === "cancel") { lu.sel = null; renderLineup(); }
+    if (act?.dataset.lu === "others") { lu.showOthers = !lu.showOthers; renderPicker(l, layoutOf(l)); }
     if (act?.dataset.lu === "clear") {
       if (lu.sel.area === "xi") l.xi[lu.sel.i] = null; else l.bench.splice(lu.sel.i, 1);
       lu.sel = null; saveLineup(); renderLineup();

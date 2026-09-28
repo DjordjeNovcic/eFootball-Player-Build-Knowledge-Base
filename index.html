@@ -131,6 +131,11 @@
       <div class="panel">
         <div class="panel__head"><h2>RATINGS</h2><p class="panel__meta">Tap a position to rate the build there</p></div>
         <div class="pos-grid" id="trainPositions"></div>
+        <div class="group">
+          <h3 class="group__title">Position proficiency <span class="group__hint">— <span id="trainProfState"></span>. Tap to cycle None → Intermediate → High.</span></h3>
+          <div class="prof-grid" id="trainProf"></div>
+          <button type="button" class="btn btn--icon" id="trainProfReset" hidden>Reset to card default</button>
+        </div>
         <div class="stats-legend">
           <span><i class="lg lg--base"></i>card base</span>
           <span><i class="lg lg--gain"></i>training + boosters</span>
@@ -194,7 +199,8 @@
         <div class="pitch" id="luPitch"></div>
         <div class="slot-legend">
           <span><i class="dot dot--primary"></i>main position</span>
-          <span><i class="dot dot--extra"></i>extra position</span>
+          <span><i class="dot dot--high"></i>high</span>
+          <span><i class="dot dot--mid"></i>intermediate</span>
           <span><i class="dot dot--none"></i>no proficiency</span>
           <span><i class="dot dot--style"></i>style inactive here</span>
         </div>
