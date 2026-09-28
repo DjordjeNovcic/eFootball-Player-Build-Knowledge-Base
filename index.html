@@ -232,14 +232,7 @@
       </div>
 
       <div class="panel">
-        <div class="panel__head"><h2>RATINGS</h2><p class="panel__meta">Tap a position to rate the build there</p></div>
-        <div class="pmap" id="trainPositions"></div>
-        <details class="prof-editor">
-          <summary><span class="group__title">Edit position proficiency</span> <span class="group__hint">— <span id="trainProfState"></span></span></summary>
-          <p class="source-note">Tap a position to cycle None → Intermediate → High (e.g. positions trained in-game).</p>
-          <div class="prof-grid" id="trainProf"></div>
-          <button type="button" class="btn btn--icon" id="trainProfReset" hidden>Reset to card default</button>
-        </details>
+        <div class="panel__head"><h2>STATS</h2><p class="panel__meta">Changes from your last click light up</p></div>
         <div class="stats-legend">
           <span><i class="lg lg--base"></i>card</span>
           <span><i class="lg lg--gain"></i><span class="pill pill--train">+n</span> training</span>
@@ -248,6 +241,14 @@
           <span><i class="hit">✓90</i> target reached</span>
         </div>
         <div id="trainStats"></div>
+        <h3 class="group__title group__title--spaced">Position ratings <span class="group__hint">— tap a position to rate the build there</span></h3>
+        <div class="pmap" id="trainPositions"></div>
+        <details class="prof-editor">
+          <summary><span class="group__title">Edit position proficiency</span> <span class="group__hint">— <span id="trainProfState"></span></span></summary>
+          <p class="source-note">Tap a position to cycle None → Intermediate → High (e.g. positions trained in-game).</p>
+          <div class="prof-grid" id="trainProf"></div>
+          <button type="button" class="btn btn--icon" id="trainProfReset" hidden>Reset to card default</button>
+        </details>
       </div>
     </div>
     </div>

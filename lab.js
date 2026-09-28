@@ -465,6 +465,12 @@
     const left = budget - used;
     const res = compute(p, b);
     const note = notesFor(p.id);
+    // What changed since the last render of this player (so a +/− click shows its effect).
+    const prev = view.prev?.id === p.id ? view.prev : null;
+    const diffOf = (k) => (prev ? res.final[k] - prev.final[k] : 0);
+    const posDiff = (pos) => (prev ? res.ratings[pos] - prev.ratings[pos] : 0);
+    view.prev = { id: p.id, final: { ...res.final }, ratings: { ...res.ratings } };
+    const chg = (d) => (d ? `<span class="chg ${d > 0 ? "chg--up" : "chg--down"}">${d > 0 ? "▲" : "▼"}${Math.abs(d)}</span>` : "");
 
     // Header card
     $("#trainHead").innerHTML = `
@@ -477,7 +483,7 @@
         ${note ? `<p class="train-head__note">${esc(note.role)}</p>` : ""}
       </div>
       <div class="train-head__ovr">
-        <span class="train-head__ovr-num">${res.ratings[view.position]}</span>
+        <span class="train-head__ovr-num">${res.ratings[view.position]}${chg(posDiff(view.position))}</span>
         <span class="train-head__ovr-lbl">${view.position} · card ${p.overall}</span>
       </div>`;
 
@@ -561,8 +567,9 @@
     // Position ratings — laid out like the pitch (attack on top)
     const tile = (pos) => {
       const prof = profAt(p, pos);
-      return `<button type="button" class="pmap__tile is-${prof} ${pos === view.position ? "is-current" : ""}" data-pos="${pos}" title="${pos} · ${PROF_LABEL[prof]} proficiency">
-        <span>${pos}</span><b>${res.ratings[pos]}</b></button>`;
+      const d = posDiff(pos);
+      return `<button type="button" class="pmap__tile is-${prof} ${pos === view.position ? "is-current" : ""} ${d ? "is-changed" : ""}" data-pos="${pos}" title="${pos} · ${PROF_LABEL[prof]} proficiency">
+        <span>${pos}</span><b>${res.ratings[pos]}</b>${chg(d)}</button>`;
     };
     const stack = (list) => `<div class="pmap__stack">${list.map(tile).join("")}</div>`;
     $("#trainPositions").innerHTML = `
@@ -598,7 +605,7 @@
             ? `<span class="need need--waste" title="Points past the 99 training cap are lost">${res.wasted[k]} lost</span>`
             : miss ? `<span class="need" title="${esc(miss.note)}">${miss.at} −${miss.at - fin}</span>` : "";
           return `
-            <div class="srow">
+            <div class="srow ${diffOf(k) ? "is-changed" : ""}">
               <span class="srow__label">${statLabel(k)}${hit.length ? `<i class="hit" title="${hit.map((t) => `${t.at} ✓ ${esc(t.note)}`).join(" · ")}">✓${hit[hit.length - 1].at}</i>` : ""}</span>
               <span class="srow__bar">
                 <i class="seg seg--base" style="width:${pct(base)}%"></i>
@@ -607,7 +614,7 @@
                 ${ticks}
               </span>
               <span class="srow__pills">${trained > base ? `<span class="pill pill--train">+${trained - base}</span>` : ""}${boost ? `<span class="pill pill--boost">+${boost}</span>` : ""}</span>
-              <span class="srow__val tier-bg-${statTier(fin)}">${fin}</span>
+              <span class="srow__val tier-bg-${statTier(fin)}">${fin}${chg(diffOf(k))}</span>
               <span class="srow__need">${need}</span>
             </div>`;
         }).join("")}
