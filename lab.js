@@ -124,7 +124,11 @@
   // The repo squad (data/players.js + USER-SQUAD notes) belongs to the site owner; cloud.js
   // switches it off when someone else signs in, so their "My squad" starts empty.
   let repoSquad = true;
-  const notesFor = (id) => (isMe() && repoSquad ? KB.SQUAD_NOTES[id] : null);
+  // "My squad" of the site owner (or anyone signed out, as a demo) = the repo squad with its
+  // USER-SQUAD notes and seven managers. Everyone else's "My squad" works like a friend's.
+  const ownsRepo = () => isMe() && repoSquad;
+  const notesFor = (id) => (ownsRepo() ? KB.SQUAD_NOTES[id] : null);
+  const auth = { enabled: false, signedIn: false };
 
   function rebuildPlayers() {
     const removed = new Set(store.removed);
@@ -202,7 +206,7 @@
     return `${KB.TACTICS[i]} ${m.prof[i]}`;
   };
   function profileManagers() {
-    if (isMe()) return ALL_MANAGERS.filter((m) => m.key.startsWith("kb:"));
+    if (ownsRepo()) return ALL_MANAGERS.filter((m) => m.key.startsWith("kb:"));
     const owned = ALL_MANAGERS.filter((m) => m.key.startsWith("ef:") && store.ownedManagers.includes(m.key));
     return owned.length ? owned : ALL_MANAGERS.filter((m) => m.key.startsWith("ef:"));
   }
@@ -361,7 +365,9 @@
           </div>
         </article>`;
     }).join("") || (players.length ? `<p class="empty-state">No cards match.</p>`
-      : `<p class="empty-state">No cards in ${esc(store.name)}'s squad yet — click <b>+ Add player</b> above.</p>`);
+      : isMe()
+        ? `<p class="empty-state">Your squad is empty — click <b>+ Add player</b> above to bring in your cards from eFHUB, then pick your managers in the Managers tab.</p>`
+        : `<p class="empty-state">No cards in ${esc(store.name)}'s squad yet — click <b>+ Add player</b> above.</p>`);
   }
 
   $("#squadSearch").addEventListener("input", (e) => { squadState.q = e.target.value; renderSquad(); });
@@ -796,7 +802,7 @@
 
   const mgrState = { q: "" };
   function renderManagers() {
-    const me = isMe();
+    const me = ownsRepo();
     const list = me ? profileManagers() : ALL_MANAGERS.filter((m) => m.key.startsWith("ef:") && store.ownedManagers.includes(m.key));
     const current = managerKey(me ? KB.CURRENT_MANAGER : store.manager);
     $("#mgrMeta").textContent = me
@@ -961,7 +967,7 @@
 
   const uid = () => `l_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   function newLineup(name = "My XI") {
-    return { id: uid(), name, formation: "4-2-2-2", manager: isMe() ? KB.CURRENT_MANAGER : store.manager, tactic: store.tactic || "Long Ball Counter",
+    return { id: uid(), name, formation: "4-2-2-2", manager: ownsRepo() ? KB.CURRENT_MANAGER : store.manager, tactic: store.tactic || "Long Ball Counter",
       xi: Array(11).fill(null), bench: [], subs: [], notes: "" };
   }
   function activeLineup() {
@@ -1412,7 +1418,7 @@
 
   // Recommendations are rated in the profile's own context: USER-SQUAD §3 for me,
   // the chosen manager/playstyle for a friend.
-  const recContext = () => (isMe() ? { manager: KB.CURRENT_MANAGER, tactic: "Long Ball Counter" } : { manager: store.manager, tactic: store.tactic });
+  const recContext = () => (ownsRepo() ? { manager: KB.CURRENT_MANAGER, tactic: "Long Ball Counter" } : { manager: store.manager, tactic: store.tactic });
   const recContextLabel = () => { const c = recContext(); return `${managerObj(c.manager)?.name || "no manager"} at ${c.tactic}`; };
   let REC = null; // filled at init (needs the multiplier table above)
   const makeRecommender = () => window.Recommender({
@@ -1711,6 +1717,7 @@
     $("#squad-heading").textContent = isMe() ? "MY SQUAD" : `${store.name.toUpperCase()}'S SQUAD`;
     $("#friendBanner").hidden = isMe();
     $("#friendBannerName").textContent = store.name;
+    $("#demoBanner").hidden = !(auth.enabled && !auth.signedIn && ownsRepo());
   }
 
   function refreshAll() {
@@ -1725,7 +1732,7 @@
   }
 
   function renderRemoved() {
-    const all = [...(isMe() ? DATA.players : FRIEND_FILES[store.fileKey]?.players || []), ...Object.values(store.customPlayers)];
+    const all = [...(ownsRepo() ? DATA.players : isMe() ? [] : FRIEND_FILES[store.fileKey]?.players || []), ...Object.values(store.customPlayers)];
     const gone = store.removed.map((id) => all.find((p) => p.id === id)).filter(Boolean);
     $("#removedBox").hidden = !gone.length;
     $("#removedCount").textContent = gone.length;
@@ -1754,7 +1761,7 @@
       if (!chunks.length) throw new Error("Paste what the bookmarklet copied.");
       const added = [];
       const skipped = [];
-      const base = isMe() ? DATA.players : FRIEND_FILES[store.fileKey]?.players || [];
+      const base = ownsRepo() ? DATA.players : isMe() ? [] : FRIEND_FILES[store.fileKey]?.players || [];
       for (const chunk of chunks) {
         const p = await playerFromPaste(chunk);
         if (byId[p.id]) { skipped.push(p.name); continue; }
@@ -1851,6 +1858,12 @@
       route();
     },
     isRepoSquad: () => repoSquad,
+    clearLocal() { try { localStorage.removeItem(STORE_KEY); } catch { /* private mode */ } },
+    setAuth(state) {
+      Object.assign(auth, state);
+      renderProfileBar();
+      if (auth.signedIn && isMe() && !repoSquad && !players.length) $("#addPanel").hidden = false;
+    },
   };
 
   /* ---------------------------------------------------------

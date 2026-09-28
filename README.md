@@ -44,8 +44,11 @@ apply to my squad. Add a friend's cards with the bookmarklet (several pasted at 
 fine), or generate them into the repo with
 `python3 tools/fetch_players.py --friend "Name" <eFHUB IDs…>` (`data/friends.js`).
 
-**Cloud sync (optional):** with an `apiKey` in `firebase-config.js`, *Sign in with Google*
-syncs every squad through Firestore (project `efootballbuild-4a791`, rules in
+**Accounts & cloud sync:** *Sign in* (Google, or email + password with sign-up and
+password reset) gives every person their own squad — cards, managers, builds, lineups —
+while the knowledge (skills, styles, boosters, recommendations, trainer) is shared.
+Signed-out visitors see the owner's squad as a demo (`OWNER_UID` in `firebase-config.js`).
+Data syncs every squad through Firestore (project `efootballbuild-4a791`, rules in
 `firestore.rules`). Each squad is one document visible only to its members; the owner
 of a friend squad can copy an **Invite link** so the friend signs in and edits it too.
 The browser copy stays as an offline cache; the first sign-in merges it into the cloud.

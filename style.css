@@ -1233,3 +1233,31 @@ body.is-friend .hero__title span{ background: var(--amber); }
 .cloud__status.is-ok::before{ content: "● "; }
 .cloud__status.is-busy{ color: var(--amber); }
 .cloud__status.is-error{ color: var(--ember); }
+
+/* ---------- sign-in dialog ---------- */
+
+.profile-bar__note--demo{ color: var(--paper-dim); }
+.profile-bar__note--demo b{ color: var(--lime); }
+input[type="email"], input[type="password"]{
+  font-family: var(--font-body); font-size: 0.95rem; color: var(--paper); background: var(--ink);
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 0.65rem 0.75rem; outline: none; width: 100%;
+}
+input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lime); box-shadow: 0 0 0 3px rgba(212,255,63,0.15); }
+.auth-dialog{
+  width: min(92vw, 400px); padding: 1.6rem 1.6rem 1.3rem; border: 1px solid var(--line); border-radius: 6px;
+  background: linear-gradient(180deg, var(--surface), var(--surface-2)); color: var(--paper);
+  box-shadow: var(--shadow-lg);
+}
+.auth-dialog::backdrop{ background: rgba(0,0,0,0.65); backdrop-filter: blur(3px); }
+.auth-dialog h2{ margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 2rem; letter-spacing: 0.04em; color: var(--lime); }
+.auth-dialog__lead{ margin: 0.2rem 0 1.1rem; font-size: 0.85rem; color: var(--paper-dim); }
+.auth-dialog__close{ position: absolute; top: 0.8rem; right: 0.8rem; margin: 0; }
+.auth-google{ width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.6rem; color: var(--paper); }
+.auth-or{ display: flex; align-items: center; gap: 0.7rem; margin: 1rem 0 0.8rem; font-family: var(--font-cond); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--paper-dim); }
+.auth-or::before, .auth-or::after{ content: ""; flex: 1; height: 1px; background: var(--line); }
+.auth-form .field{ margin-bottom: 0.8rem; }
+.auth-form .btn--primary{ width: 100%; }
+.auth-msg{ margin: 0 0 0.7rem; min-height: 1.2em; font-size: 0.82rem; }
+.auth-msg.is-err{ color: var(--ember); }
+.auth-msg.is-ok{ color: var(--lime); }
+.auth-links{ display: flex; justify-content: space-between; gap: 0.5rem; margin-top: 0.8rem; font-size: 0.8rem; flex-wrap: wrap; }

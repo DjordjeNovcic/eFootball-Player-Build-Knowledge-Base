@@ -30,6 +30,7 @@
   <button type="button" class="btn btn--icon" id="profileRename" hidden>Rename</button>
   <button type="button" class="btn btn--icon btn--danger" id="profileDelete" hidden>Delete squad</button>
   <div class="cloud" id="cloudBox" hidden></div>
+  <p class="profile-bar__note profile-bar__note--demo" id="demoBanner" hidden>You're looking at <b>Djolo-Djolo's squad</b> as a demo. <b>Sign in</b> to build your own — everything else (skills, styles, boosters, trainer) works for your cards too.</p>
   <p class="profile-bar__note" id="friendBanner" hidden>Working on <b id="friendBannerName"></b>'s squad — builds, lineups, positions and managers are separate from yours.</p>
 </div>
 
@@ -481,6 +482,37 @@
 
 </main>
 </section>
+
+<dialog class="auth-dialog" id="authDialog" aria-labelledby="authTitle">
+  <form method="dialog" class="auth-dialog__close"><button type="submit" class="btn btn--icon" aria-label="Close">✕</button></form>
+  <h2 id="authTitle">SIGN IN</h2>
+  <p class="auth-dialog__lead">Your own squad, builds and lineups — synced across your devices.</p>
+  <button type="button" class="btn btn--ghost auth-google" id="authGoogle">
+    <svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>
+    Continue with Google
+  </button>
+  <div class="auth-or"><span>or with email</span></div>
+  <form class="auth-form" id="authForm" novalidate>
+    <label class="field auth-name" id="authNameRow" hidden>
+      <span class="field__label">Your name</span>
+      <input type="text" id="authName" autocomplete="nickname" maxlength="40" placeholder="Shown in the app">
+    </label>
+    <label class="field">
+      <span class="field__label">Email</span>
+      <input type="email" id="authEmail" autocomplete="email" required>
+    </label>
+    <label class="field">
+      <span class="field__label">Password</span>
+      <input type="password" id="authPassword" autocomplete="current-password" minlength="6" required>
+    </label>
+    <p class="auth-msg" id="authMsg" role="status"></p>
+    <button type="submit" class="btn btn--primary" id="authSubmit">Sign in</button>
+    <div class="auth-links">
+      <button type="button" class="linkish" id="authToggle">New here? Create an account</button>
+      <button type="button" class="linkish" id="authForgot">Forgot password?</button>
+    </div>
+  </form>
+</dialog>
 
 <footer class="site-footer">
   <p>eFootball Build Lab — a fan-made companion tool. Not affiliated with KONAMI. Card data from eFHUB; builds are stored locally in your browser only.</p>

@@ -50,16 +50,16 @@ function render() {
   box.hidden = false;
   box.innerHTML = u
     ? `${u.photoURL ? `<img class="cloud__avatar" src="${esc(u.photoURL)}" alt="" referrerpolicy="no-referrer">` : ""}
-       <span class="cloud__who">${esc(u.displayName || "Signed in")}</span>
+       <span class="cloud__who" title="${esc(u.email || "")}">${esc(u.displayName || u.email || "Signed in")}</span>
        <span class="cloud__status" id="cloudStatus"></span>
        ${canInvite ? `<button type="button" class="btn btn--icon" id="cloudInvite">Invite link</button>` : ""}
        ${d && active !== "me" && d.owner !== u.uid ? `<span class="badge">shared with you</span>` : ""}
        <button type="button" class="btn btn--icon" id="cloudOut">Sign out</button>`
-    : `<button type="button" class="btn btn--primary btn--small" id="cloudIn">Sign in with Google</button>
+    : `<button type="button" class="btn btn--primary btn--small" id="cloudIn">Sign in</button>
        <span class="cloud__status" id="cloudStatus">${pendingJoin() ? "Sign in to join the shared squad" : "Local only — sign in to sync across devices"}</span>`;
   if (u && state.status) setStatus(state.status.kind, state.status.text);
-  $("#cloudIn")?.addEventListener("click", signIn);
-  $("#cloudOut")?.addEventListener("click", () => state.auth.signOutFn());
+  $("#cloudIn")?.addEventListener("click", openDialog);
+  $("#cloudOut")?.addEventListener("click", signOutAndClear);
   $("#cloudInvite")?.addEventListener("click", invite);
 }
 
@@ -74,7 +74,15 @@ async function start() {
   state.auth = {
     signInFn: () => auth.signInWithPopup(a, new auth.GoogleAuthProvider()),
     signOutFn: () => auth.signOut(a),
+    emailIn: (email, pw) => auth.signInWithEmailAndPassword(a, email, pw),
+    emailUp: async (email, pw, name) => {
+      const cred = await auth.createUserWithEmailAndPassword(a, email, pw);
+      if (name) await auth.updateProfile(cred.user, { displayName: name });
+      return cred;
+    },
+    reset: (email) => auth.sendPasswordResetEmail(a, email),
   };
+  bindDialog();
   lab.onChange(schedulePush);
   lab.onDelete(onLocalDelete);
   render();
@@ -86,18 +94,96 @@ async function start() {
     state.lastPushed = {};
     state.first = true;
     lab.setRepoSquad(!user || !OWNER_UID || user.uid === OWNER_UID);
+    lab.setAuth({ enabled: true, signedIn: !!user });
+    if (user) closeDialog();
     if (user) console.info(`[cloud] signed in — uid ${user.uid}`);
     render();
     if (user) connect();
   });
 }
 
-async function signIn() {
-  try {
-    await state.auth.signInFn();
-  } catch (err) {
-    if (err?.code !== "auth/popup-closed-by-user") setStatus("error", `Sign-in failed: ${err?.code || err}`);
-  }
+// Save what's pending, sign out, and drop this browser's copy so the next person using
+// the device doesn't see (or inherit) this account's squads.
+async function signOutAndClear() {
+  clearTimeout(state.pushTimer);
+  await pushNow();
+  state.unsub?.();
+  await state.auth.signOutFn();
+  lab.clearLocal();
+  location.reload();
+}
+
+/* ---------- sign-in dialog: Google or email + password ---------- */
+
+const dialog = $("#authDialog");
+let mode = "in"; // "in" | "up"
+
+const AUTH_ERRORS = {
+  "auth/invalid-credential": "Wrong email or password.",
+  "auth/invalid-login-credentials": "Wrong email or password.",
+  "auth/wrong-password": "Wrong email or password.",
+  "auth/user-not-found": "No account with that email — create one below.",
+  "auth/email-already-in-use": "That email already has an account — sign in instead.",
+  "auth/weak-password": "Use at least 6 characters.",
+  "auth/invalid-email": "That doesn't look like an email address.",
+  "auth/missing-password": "Enter your password.",
+  "auth/too-many-requests": "Too many attempts — wait a minute and try again.",
+  "auth/network-request-failed": "No connection — check your internet.",
+  "auth/popup-blocked": "The browser blocked the Google pop-up — allow pop-ups for this site.",
+};
+const authMsg = (text, kind = "err") => { const el = $("#authMsg"); el.textContent = text; el.className = `auth-msg is-${kind}`; };
+const explain = (err) => AUTH_ERRORS[err?.code] || `Something went wrong (${err?.code || err}).`;
+
+function setMode(m) {
+  mode = m;
+  $("#authTitle").textContent = m === "up" ? "CREATE ACCOUNT" : "SIGN IN";
+  $("#authSubmit").textContent = m === "up" ? "Create account" : "Sign in";
+  $("#authToggle").textContent = m === "up" ? "Have an account? Sign in" : "New here? Create an account";
+  $("#authNameRow").hidden = m !== "up";
+  $("#authPassword").autocomplete = m === "up" ? "new-password" : "current-password";
+  $("#authForgot").hidden = m === "up";
+  authMsg("", "ok");
+}
+function openDialog() {
+  setMode("in");
+  if (dialog?.showModal) dialog.showModal(); else dialog?.setAttribute("open", "");
+  $("#authEmail").focus();
+}
+function closeDialog() { if (dialog?.open) dialog.close(); }
+
+function bindDialog() {
+  if (!dialog) return;
+  $("#authToggle").addEventListener("click", () => setMode(mode === "up" ? "in" : "up"));
+  $("#authGoogle").addEventListener("click", async () => {
+    try { await state.auth.signInFn(); }
+    catch (err) { if (err?.code !== "auth/popup-closed-by-user" && err?.code !== "auth/cancelled-popup-request") authMsg(explain(err)); }
+  });
+  $("#authForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = $("#authEmail").value.trim();
+    const pw = $("#authPassword").value;
+    if (!email || !pw) return authMsg("Enter your email and password.");
+    $("#authSubmit").disabled = true;
+    try {
+      if (mode === "up") await state.auth.emailUp(email, pw, $("#authName").value.trim());
+      else await state.auth.emailIn(email, pw);
+      $("#authPassword").value = "";
+    } catch (err) {
+      authMsg(explain(err));
+    } finally {
+      $("#authSubmit").disabled = false;
+    }
+  });
+  $("#authForgot").addEventListener("click", async () => {
+    const email = $("#authEmail").value.trim();
+    if (!email) return authMsg("Type your email above, then click “Forgot password?” again.");
+    try {
+      await state.auth.reset(email);
+      authMsg("If that email has an account, a reset link is on its way.", "ok");
+    } catch (err) {
+      authMsg(explain(err));
+    }
+  });
 }
 
 /* ---------- id mapping: local "me" ↔ squads/me_<uid> ---------- */
@@ -147,6 +233,10 @@ async function connect() {
 function firstMerge(snap) {
   const root = lab.root();
   const remoteIds = new Set();
+  // Someone other than the owner signing in on a browser that showed the demo: the demo
+  // squad isn't theirs, so their "My squad" starts from the cloud (or empty).
+  const demoLocal = !!OWNER_UID && state.user.uid !== OWNER_UID;
+  if (demoLocal && !snap.docs.some((d) => d.id === docIdFor("me"))) lab.putProfile("me", { kind: "me", name: "My squad" });
   snap.forEach((docSnap) => {
     const id = docSnap.id;
     const d = docSnap.data();
@@ -154,7 +244,7 @@ function firstMerge(snap) {
     state.docs[id] = d;
     const lid = localIdFor(id);
     const remote = JSON.parse(d.json);
-    const local = root.profiles[lid];
+    const local = lid === "me" && demoLocal ? null : root.profiles[lid];
     const merged = local ? mergeProfiles(local, remote) : remote;
     state.lastPushed[id] = profileJson(merged) === d.json ? d.json : null; // null → push merged result
     lab.putProfile(lid, merged);
