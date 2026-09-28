@@ -1208,3 +1208,17 @@ textarea:focus{ outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px 
   margin: 0.1rem 0 0; font-size: 0.72rem; line-height: 1.35; color: var(--paper-dim); cursor: help;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
+
+/* ---------- squads (profiles) ---------- */
+
+.profile-bar{
+  max-width: 82rem; margin: 0 auto 0.6rem; padding: 0 clamp(1rem, 5vw, 4rem);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.6rem;
+}
+.profile-bar__pick{ display: flex; align-items: center; gap: 0.5rem; }
+.profile-bar__pick select{ min-width: 13rem; padding-top: 0.45rem; padding-bottom: 0.45rem; }
+.profile-bar__note{ margin: 0; flex-basis: 100%; font-size: 0.8rem; color: var(--amber); }
+.profile-bar__note b{ color: var(--paper); }
+body.is-friend .tabs__link.is-active{ background: var(--amber); }
+body.is-friend .hero__title span{ background: var(--amber); }
+.train-body{ display: grid; gap: 1.25rem; }

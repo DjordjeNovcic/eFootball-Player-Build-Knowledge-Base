@@ -9,9 +9,10 @@ window.Recommender = (deps) => {
   "use strict";
   const { players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor,
     skillMultiplier, managerProficiency, profAt, MAX_LEVEL } = deps;
+  const notesFor = deps.notesFor || ((id) => KB.SQUAD_NOTES[id]);
 
-  const MANAGER = KB.CURRENT_MANAGER;
-  const TACTIC = "Long Ball Counter";
+  const MANAGER = deps.context?.manager ?? KB.CURRENT_MANAGER;
+  const TACTIC = deps.context?.tactic ?? "Long Ball Counter";
 
   /* ---------- role templates: [stat, weight, target, cap?] ---------- */
   // Weights follow the order of §7's priority lists; targets are §3 thresholds or
@@ -134,7 +135,7 @@ window.Recommender = (deps) => {
 
   /* ---------- stat pipeline (mirrors lab.js compute) ---------- */
   const mult = skillMultiplier(managerProficiency(MANAGER, TACTIC));
-  const mgr = KB.MANAGERS.find((m) => m.name === MANAGER);
+  const mgr = deps.managerObj ? deps.managerObj(MANAGER) : KB.MANAGERS.find((m) => m.name === MANAGER);
 
   function finalStats(p, levels, booster2) {
     const t = { ...p.stats };
@@ -282,7 +283,7 @@ window.Recommender = (deps) => {
       out.push(name); why[name] = reason;
     };
     // Skill choices the user already made in Build Lab come first (USER-SQUAD §4).
-    const note = KB.SQUAD_NOTES[p.id];
+    const note = notesFor(p.id);
     [...(note?.prefSkills || []), ...(note?.snapshot?.skills || [])].forEach((n) => {
       if (out.length >= 5 || out.includes(n) || has(n)) return;
       out.push(n);

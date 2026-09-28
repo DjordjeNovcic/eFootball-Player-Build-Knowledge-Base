@@ -37,6 +37,13 @@ Two parts:
     views, cross-linked to which of my cards have each skill/style/Link-up role.
   - **Sandbox** — the original free-form stat-slider card builder (`app.js`).
 
+**Friend squads:** the *Squad* picker above the tabs switches between my squad and any
+number of friends' squads. Each has its own cards, builds, lineups, position edits,
+managers (picked from all eFHUB manager cards) and playstyle; my USER-SQUAD notes only
+apply to my squad. Add a friend's cards with the bookmarklet (several pasted at once is
+fine), or generate them into the repo with
+`python3 tools/fetch_players.py --friend "Name" <eFHUB IDs…>` (`data/friends.js`).
+
 No backend, no build step — plain HTML/CSS/JS, everything persists to the browser's
 `localStorage`. Not affiliated with KONAMI; this is just a fan-made companion tool.
 

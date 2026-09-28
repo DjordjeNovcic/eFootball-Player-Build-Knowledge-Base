@@ -92,20 +92,41 @@
      Persistence (per-viewer, this browser only)
   --------------------------------------------------------- */
 
-  function loadStore() {
-    try {
-      const s = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-      return { builds: s.builds || {}, manager: s.manager ?? KB.CURRENT_MANAGER, lineups: s.lineups || [], activeLineup: s.activeLineup, positions: s.positions || {}, tactic: s.tactic || "Long Ball Counter",
-        customPlayers: s.customPlayers || {}, removed: s.removed || [] };
-    } catch {
-      return { builds: {}, manager: KB.CURRENT_MANAGER, lineups: [], positions: {}, tactic: "Long Ball Counter", customPlayers: {}, removed: [] };
-    }
+  // Profiles: "me" (the squad in data/players.js + USER-SQUAD.md notes) and any number of
+  // friend squads. Each profile keeps its own players, builds, lineups, positions,
+  // managers and playstyle. `store` always points at the active profile.
+  const FRIEND_FILES = window.FRIEND_SQUADS || {};
+  function blankProfile(kind, name, extra = {}) {
+    return { kind, name, builds: {}, manager: kind === "me" ? KB.CURRENT_MANAGER : "", tactic: "Long Ball Counter",
+      lineups: [], activeLineup: null, positions: {}, customPlayers: {}, removed: [], ownedManagers: [], ...extra };
   }
-  const store = loadStore();
+  function normaliseProfile(p, kind, name) {
+    return { ...blankProfile(kind, name), ...p, kind, name: p.name || name };
+  }
+  function loadRoot() {
+    let s = {};
+    try { s = JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); } catch { /* private mode */ }
+    // Older saves kept one flat squad — that becomes the "me" profile.
+    const root = s.profiles ? s : { active: "me", profiles: { me: s } };
+    root.profiles.me = normaliseProfile(root.profiles.me || {}, "me", "My squad");
+    Object.entries(root.profiles).forEach(([id, p]) => { if (id !== "me") root.profiles[id] = normaliseProfile(p, "friend", p.name || "Friend"); });
+    // Squads generated into data/friends.js appear automatically.
+    Object.entries(FRIEND_FILES).forEach(([slug, f]) => {
+      const id = `file:${slug}`;
+      if (!root.profiles[id]) root.profiles[id] = blankProfile("friend", f.name, { fileKey: slug });
+    });
+    if (!root.profiles[root.active]) root.active = "me";
+    return root;
+  }
+  const root = loadRoot();
+  let store = root.profiles[root.active];
+  const isMe = () => root.active === "me";
+  const notesFor = (id) => (isMe() ? KB.SQUAD_NOTES[id] : null);
 
   function rebuildPlayers() {
     const removed = new Set(store.removed);
-    const all = [...DATA.players, ...Object.values(store.customPlayers).filter((c) => !DATA.players.some((p) => p.id === c.id))];
+    const base = isMe() ? DATA.players : FRIEND_FILES[store.fileKey]?.players || [];
+    const all = [...base, ...Object.values(store.customPlayers).filter((c) => !base.some((p) => p.id === c.id))];
     all.forEach((p) => { if (p.labels) Object.assign(DATA.labels, p.labels); });
     players.length = 0;
     Object.keys(byId).forEach((k) => delete byId[k]);
@@ -113,7 +134,7 @@
   }
   rebuildPlayers();
   function saveStore() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { /* private mode */ }
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(root)); } catch { /* private mode */ }
   }
 
   /* ---------------------------------------------------------
@@ -156,9 +177,27 @@
     return DATA.boosterPool.find((b) => b.id === build.booster2) || null;
   }
 
-  function managerObj(name = store.manager) {
-    return KB.MANAGERS.find((m) => m.name === name) || null;
+  // Managers: the user's seven (with Link-up data, §22) plus every eFHUB manager card.
+  // Keys: "kb:<name>" / "ef:<id>"; older saves stored the bare name.
+  const ALL_MANAGERS = [
+    ...KB.MANAGERS.map((m) => ({ ...m, key: `kb:${m.name}` })),
+    ...(window.EF_MANAGERS || []).map((m) => ({ ...m, key: `ef:${m.id}`, linkUp: null, centerPiece: null, keyMan: null, affinity: null })),
+  ];
+  function managerObj(v = store.manager) {
+    if (!v) return null;
+    return ALL_MANAGERS.find((m) => m.key === v) || ALL_MANAGERS.find((m) => m.name === v) || null;
   }
+  const managerKey = (v) => managerObj(v)?.key || "";
+  const bestTactic = (m) => {
+    const i = m.prof.reduce((b, v, j) => ((v ?? 0) > (m.prof[b] ?? 0) ? j : b), 0);
+    return `${KB.TACTICS[i]} ${m.prof[i]}`;
+  };
+  function profileManagers() {
+    if (isMe()) return ALL_MANAGERS.filter((m) => m.key.startsWith("kb:"));
+    const owned = ALL_MANAGERS.filter((m) => m.key.startsWith("ef:") && store.ownedManagers.includes(m.key));
+    return owned.length ? owned : ALL_MANAGERS.filter((m) => m.key.startsWith("ef:"));
+  }
+  const managerOption = (m) => `<option value="${esc(m.key)}">${esc(m.name)} — ${m.boost.map(statLabel).join(" +1, ")} +1 · ${esc(bestTactic(m))}</option>`;
 
   // Team-playstyle proficiency → stat multiplier on trained stats (eFHUB's model; the
   // table covers proficiency 50–100, eFHUB's UI limits it to 70–90, so we clamp the same).
@@ -234,7 +273,11 @@
       el.classList.toggle("is-active", on);
       el.setAttribute("aria-selected", String(on));
     });
-    if (active === "train") openTrainer(arg && byId[arg] ? arg : view.playerId || defaultPlayerId());
+    if (active === "train") {
+      $("#trainEmpty").hidden = players.length > 0;
+      $("#trainBody").hidden = players.length === 0;
+      if (players.length) openTrainer(arg && byId[arg] ? arg : byId[view.playerId] ? view.playerId : defaultPlayerId());
+    }
     if (active === "lineup") renderLineup();
     if (active === "recommended") renderRecommended();
     if (active === "mybuilds") renderMyBuilds();
@@ -271,10 +314,10 @@
 
     const counts = players.reduce((c, p) => ((c[POSITION_GROUP[p.position]] = (c[POSITION_GROUP[p.position]] || 0) + 1), c), {});
     $("#squadMeta").textContent =
-      `${players.length} cards · GK ${counts.GK || 0} · DEF ${counts.DEF || 0} · MID ${counts.MID || 0} · FWD ${counts.FWD || 0} · stats from eFHUB, ${DATA.fetched}`;
+      `${players.length} card${players.length === 1 ? "" : "s"} · GK ${counts.GK || 0} · DEF ${counts.DEF || 0} · MID ${counts.MID || 0} · FWD ${counts.FWD || 0} · stats from eFHUB, ${DATA.fetched}`;
 
     root.innerHTML = list.map((p) => {
-      const note = KB.SQUAD_NOTES[p.id];
+      const note = notesFor(p.id);
       const saved = store.builds[p.id];
       let savedBadge = "";
       if (saved) {
@@ -308,7 +351,8 @@
             </div>
           </div>
         </article>`;
-    }).join("") || `<p class="empty-state">No cards match.</p>`;
+    }).join("") || (players.length ? `<p class="empty-state">No cards match.</p>`
+      : `<p class="empty-state">No cards in ${esc(store.name)}'s squad yet — click <b>+ Add player</b> above.</p>`);
   }
 
   $("#squadSearch").addEventListener("input", (e) => { squadState.q = e.target.value; renderSquad(); });
@@ -334,7 +378,7 @@
       </optgroup>`).join("");
     $("#trainTactic").innerHTML = KB.TACTICS.map((t) => `<option>${t}</option>`).join("");
     $("#trainManager").innerHTML = `<option value="">No manager</option>` +
-      KB.MANAGERS.map((m) => `<option value="${esc(m.name)}">${esc(m.name)} — ${m.boost.map(statLabel).join(" +1, ")} +1</option>`).join("");
+      profileManagers().map(managerOption).join("");
   }
 
   function openTrainer(id) {
@@ -348,7 +392,7 @@
       view.position = p.position;
     }
     $("#trainPlayer").value = id;
-    $("#trainManager").value = store.manager || "";
+    $("#trainManager").value = managerKey(store.manager);
     $("#trainTactic").value = store.tactic;
     renderTrainer();
   }
@@ -361,7 +405,7 @@
     const used = pointsUsed(b);
     const left = budget - used;
     const res = compute(p, b);
-    const note = KB.SQUAD_NOTES[p.id];
+    const note = notesFor(p.id);
 
     // Header card
     $("#trainHead").innerHTML = `
@@ -577,7 +621,7 @@
   });
   $("#trainSnapshot").addEventListener("click", () => {
     const p = byId[view.playerId];
-    const snap = KB.SQUAD_NOTES[p.id]?.snapshot;
+    const snap = notesFor(p.id)?.snapshot;
     if (!snap) return;
     categoriesFor(p).forEach((c, i) => { view.draft.levels[c.key] = snap.levels[i] ?? 0; });
     if (snap.skills) view.draft.skills = snap.skills.filter((n) => !playerNativeNames(p).has(norm(n))).slice(0, SKILL_CAP);
@@ -588,7 +632,7 @@
     saveStore();
     renderPlayerSelect();
     $("#trainPlayer").value = view.playerId;
-    $("#trainManager").value = store.manager || "";
+    $("#trainManager").value = managerKey(store.manager);
     renderTrainer();
     renderSquad();
     renderLineup();
@@ -600,7 +644,7 @@
     saveStore();
     renderPlayerSelect();
     $("#trainPlayer").value = view.playerId;
-    $("#trainManager").value = store.manager || "";
+    $("#trainManager").value = managerKey(store.manager);
     renderTrainer();
     renderSquad();
     renderLineup();
@@ -625,7 +669,7 @@
     }
   });
   $("#trainExport").addEventListener("click", () => {
-    const blob = new Blob([JSON.stringify({ exported: new Date().toISOString(), ...store }, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ exported: new Date().toISOString(), ...root }, null, 2)], { type: "application/json" });
     const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: "build-lab-backup.json" });
     document.body.appendChild(a); a.click(); a.remove();
   });
@@ -635,14 +679,26 @@
     if (!file) return;
     try {
       const parsed = JSON.parse(await file.text());
-      Object.assign(store.builds, parsed.builds || {});
-      Object.assign(store.positions, parsed.positions || {});
-      Object.assign(store.customPlayers, parsed.customPlayers || {});
-      (parsed.removed || []).forEach((id) => { if (!store.removed.includes(id)) store.removed.push(id); });
-      refreshAll();
-      const known = new Set(store.lineups.map((l) => l.id));
-      (parsed.lineups || []).forEach((l) => { if (!known.has(l.id)) store.lineups.push(l); });
+      const merge = (into, from) => {
+        Object.assign(into.builds, from.builds || {});
+        Object.assign(into.positions, from.positions || {});
+        Object.assign(into.customPlayers, from.customPlayers || {});
+        (from.removed || []).forEach((id) => { if (!into.removed.includes(id)) into.removed.push(id); });
+        (from.ownedManagers || []).forEach((k) => { if (!into.ownedManagers.includes(k)) into.ownedManagers.push(k); });
+        const known = new Set(into.lineups.map((l) => l.id));
+        (from.lineups || []).forEach((l) => { if (!known.has(l.id)) into.lineups.push(l); });
+      };
+      if (parsed.profiles) {
+        // Full backup: every profile (mine and friends').
+        Object.entries(parsed.profiles).forEach(([id, prof]) => {
+          if (!root.profiles[id]) root.profiles[id] = normaliseProfile(prof, id === "me" ? "me" : "friend", prof.name || "Friend");
+          else merge(root.profiles[id], prof);
+        });
+      } else {
+        merge(store, parsed); // older single-squad backup → current profile
+      }
       saveStore();
+      refreshAll();
       renderLineup();
       renderPlayerSelect();
       view.playerId = null;
@@ -729,15 +785,34 @@
       (posSet.includes(p.position) || p.additionalPositions.some((a) => posSet.includes(a.position))));
   }
 
+  const mgrState = { q: "" };
   function renderManagers() {
-    const head = `<tr><th>Manager</th><th>Team booster</th>${KB.TACTICS.map((t) => `<th class="num">${t}</th>`).join("")}</tr>`;
-    const rows = KB.MANAGERS.map((m) => `
-      <tr class="${m.name === KB.CURRENT_MANAGER ? "is-current" : ""}">
-        <td><b>${esc(m.name)}</b>${m.name === KB.CURRENT_MANAGER ? ` <span class="badge badge--lime">current</span>` : ""}</td>
-        <td>${m.boost.map((k) => `${statLabel(k)} +1`).join("<br>")}</td>
+    const me = isMe();
+    const list = me ? profileManagers() : ALL_MANAGERS.filter((m) => m.key.startsWith("ef:") && store.ownedManagers.includes(m.key));
+    const current = managerKey(me ? KB.CURRENT_MANAGER : store.manager);
+    $("#mgrMeta").textContent = me
+      ? "Seven owned cards · team booster is a flat +1/+1 on the whole squad (§17)"
+      : `${list.length} owned by ${store.name} · pick them from eFHUB's ${ALL_MANAGERS.filter((m) => m.key.startsWith("ef:")).length} manager cards below`;
+    const head = `<tr><th>Manager</th><th>Team booster</th>${KB.TACTICS.map((t) => `<th class="num">${t}</th>`).join("")}${me ? "" : "<th></th>"}</tr>`;
+    const row = (m, owned) => `
+      <tr class="${m.key === current ? "is-current" : ""}">
+        <td><b>${esc(m.name)}</b>${m.key === current ? ` <span class="badge badge--lime">current</span>` : ""}</td>
+        <td>${m.boost.map((k) => `${statLabel(k)} +1`).join("<br>") || "—"}</td>
         ${m.prof.map((v) => `<td class="num ${v >= 89 ? "hot" : v >= 70 ? "warm" : ""}">${v ?? "N/A"}</td>`).join("")}
-      </tr>`).join("");
-    $("#mgrTable").innerHTML = `<thead>${head}</thead><tbody>${rows}</tbody>`;
+        ${me ? "" : `<td class="actions">${owned
+          ? `<button type="button" class="btn btn--icon" data-mgr-current="${esc(m.key)}">Set current</button> <button type="button" class="btn btn--icon btn--danger" data-mgr-toggle="${esc(m.key)}">Remove</button>`
+          : `<button type="button" class="btn btn--icon btn--solid" data-mgr-toggle="${esc(m.key)}">+ Owned</button>`}</td>`}
+      </tr>`;
+    $("#mgrTable").innerHTML = `<thead>${head}</thead><tbody>${list.map((m) => row(m, true)).join("") || `<tr><td colspan="9"><em>No managers yet — add ${esc(store.name)}'s cards from the list below.</em></td></tr>`}</tbody>`;
+    $("#mgrPickerBox").hidden = me;
+    $("#mgrLinkBox").hidden = !me;
+    if (!me) {
+      const q = mgrState.q.trim().toLowerCase();
+      const pool = ALL_MANAGERS.filter((m) => m.key.startsWith("ef:") && !store.ownedManagers.includes(m.key))
+        .filter((m) => !q || `${m.name} ${m.boost.map(statLabel).join(" ")}`.toLowerCase().includes(q));
+      $("#mgrPool").innerHTML = `<thead>${head}</thead><tbody>${pool.map((m) => row(m, false)).join("")}</tbody>`;
+      return;
+    }
 
     $("#mgrLinks").innerHTML = KB.MANAGERS.map((m) => {
       const cp = playersFitting(m.centerPiece);
@@ -764,6 +839,22 @@
         </article>`;
     }).join("");
   }
+
+  $("#mgrSearch").addEventListener("input", (e) => { mgrState.q = e.target.value; renderManagers(); });
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-mgr-toggle]");
+    if (t) {
+      const k = t.dataset.mgrToggle;
+      store.ownedManagers = store.ownedManagers.includes(k) ? store.ownedManagers.filter((x) => x !== k) : [...store.ownedManagers, k];
+      if (!store.manager && store.ownedManagers.length) {
+        store.manager = store.ownedManagers[0];
+        store.lineups.forEach((l) => { if (!l.manager) l.manager = store.manager; });
+      }
+      saveStore(); refreshAll();
+    }
+    const c = e.target.closest("[data-mgr-current]");
+    if (c) { store.manager = c.dataset.mgrCurrent; saveStore(); refreshAll(); }
+  });
 
   /* ---------------------------------------------------------
      Styles tab
@@ -861,7 +952,7 @@
 
   const uid = () => `l_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   function newLineup(name = "My XI") {
-    return { id: uid(), name, formation: "4-2-2-2", manager: KB.CURRENT_MANAGER, tactic: "Long Ball Counter",
+    return { id: uid(), name, formation: "4-2-2-2", manager: isMe() ? KB.CURRENT_MANAGER : store.manager, tactic: store.tactic || "Long Ball Counter",
       xi: Array(11).fill(null), bench: [], subs: [], notes: "" };
   }
   function activeLineup() {
@@ -916,7 +1007,7 @@
 
   function linkUpStatus(l) {
     const m = managerObj(l.manager);
-    if (!m) return null;
+    if (!m || !m.centerPiece) return null; // eFHUB-only managers carry no Link-up data
     const slots = layoutOf(l);
     const find = ([style, positions]) => {
       const set = positions.split("/");
@@ -947,8 +1038,10 @@
     $("#luModeHint").textContent = lu.mode === "positions"
       ? "Drag a marker to move it — its role follows the pitch zone. Tap a marker to set the role by hand."
       : "Drag a player onto another slot or the bench to swap. Tap a slot to pick from the squad.";
-    $("#luManager").innerHTML = `<option value="">No manager</option>` + KB.MANAGERS.map((m) => `<option value="${esc(m.name)}">${esc(m.name)}</option>`).join("");
-    $("#luManager").value = l.manager || "";
+    const mgrs = profileManagers();
+    const cur = managerObj(l.manager);
+    $("#luManager").innerHTML = `<option value="">No manager</option>` + (cur && !mgrs.includes(cur) ? managerOption(cur) : "") + mgrs.map(managerOption).join("");
+    $("#luManager").value = managerKey(l.manager);
     $("#luTactic").innerHTML = TEAM_TACTICS.map((t) => `<option>${t}</option>`).join("");
     $("#luTactic").value = l.tactic;
 
@@ -1308,11 +1401,14 @@
      Recommended builds (Claude, from KNOWLEDGE-BASE) & My Builds
   --------------------------------------------------------- */
 
-  const REC_CONTEXT = { manager: KB.CURRENT_MANAGER, tactic: "Long Ball Counter" };
+  // Recommendations are rated in the profile's own context: USER-SQUAD §3 for me,
+  // the chosen manager/playstyle for a friend.
+  const recContext = () => (isMe() ? { manager: KB.CURRENT_MANAGER, tactic: "Long Ball Counter" } : { manager: store.manager, tactic: store.tactic });
+  const recContextLabel = () => { const c = recContext(); return `${managerObj(c.manager)?.name || "no manager"} at ${c.tactic}`; };
   let REC = null; // filled at init (needs the multiplier table above)
   const makeRecommender = () => window.Recommender({
     players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
-    skillMultiplier, managerProficiency, MAX_LEVEL, boosterPool: DATA.boosterPool,
+    skillMultiplier, managerProficiency, managerObj, notesFor, context: recContext(), MAX_LEVEL, boosterPool: DATA.boosterPool,
   });
   const recState = { q: "", group: "ALL" };
   const mineState = { q: "", group: "ALL", onlyMine: false };
@@ -1342,7 +1438,7 @@
     view.position = p.position;
     go("train", id);
   }
-  const ctxRating = (p, build, pos = p.position) => compute(p, build, REC_CONTEXT.manager, REC_CONTEXT.tactic).ratings[pos];
+  const ctxRating = (p, build, pos = p.position) => compute(p, build, recContext().manager, recContext().tactic).ratings[pos];
   const sameBuild = (a, b) => JSON.stringify(Object.entries(a.levels).filter(([, v]) => v).sort())
     === JSON.stringify(Object.entries(b.levels).filter(([, v]) => v).sort());
 
@@ -1369,7 +1465,7 @@
     out.push(alt && alt.r > here
       ? `Preferred position: <b>${p.position}</b> for the style (${esc(p.playingStyle || p.playingStyleDefensive || "")}); ${alt.pos} rates higher (${alt.r}) but check style compatibility before moving him.`
       : `Preferred position: <b>${p.position}</b>${alt ? ` (best alternative ${alt.pos} ${alt.r})` : ""}.`);
-    const snap = KB.SQUAD_NOTES[p.id]?.snapshot;
+    const snap = notesFor(p.id)?.snapshot;
     if (snap) {
       const line = categoriesFor(p).map((c) => r.levels[c.key] || 0).join("-");
       const mine = snap.levels.join("-");
@@ -1385,7 +1481,7 @@
       .filter((p) => recState.group === "ALL" || POSITION_GROUP[p.position] === recState.group)
       .filter((p) => !q || `${p.name} ${p.team} ${p.position} ${styleText(p)}`.toLowerCase().includes(q))
       .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || REC.recs[b.id].rating - REC.recs[a.id].rating);
-    $("#recMeta").textContent = `${list.length} builds · rated with ${REC_CONTEXT.manager} at ${REC_CONTEXT.tactic}`;
+    $("#recMeta").textContent = `${list.length} builds · rated with ${recContextLabel()}`;
     $("#recGrid").innerHTML = list.map((p) => {
       const r = REC.recs[p.id];
       const cats = categoriesFor(p);
@@ -1473,7 +1569,7 @@
       .filter((p) => !q || `${p.name} ${p.team} ${p.position}`.toLowerCase().includes(q))
       .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.overall - a.overall);
     const total = Object.keys(store.builds).filter((id) => byId[id]).length;
-    $("#mineMeta").textContent = `${total} of ${players.length} players have your build · ratings use ${REC_CONTEXT.manager} at ${REC_CONTEXT.tactic} for both columns`;
+    $("#mineMeta").textContent = `${total} of ${players.length} players have your build · ratings use ${recContextLabel()} for both columns`;
     $("#mineRows").innerHTML = list.map((p) => {
       const r = REC.recs[p.id];
       const rb = recBuild(p.id);
@@ -1585,7 +1681,31 @@
     };
   }
 
+  function switchProfile(id) {
+    if (!root.profiles[id]) return;
+    root.active = id;
+    store = root.profiles[id];
+    view.playerId = null;
+    lu.sel = null;
+    saveStore();
+    refreshAll();
+    route();
+  }
+
+  function renderProfileBar() {
+    $("#profileSelect").innerHTML = Object.entries(root.profiles).map(([id, p]) =>
+      `<option value="${esc(id)}">${esc(id === "me" ? "My squad" : `${p.name}'s squad`)}${id.startsWith("file:") ? " (repo)" : ""}</option>`).join("");
+    $("#profileSelect").value = root.active;
+    $("#profileRename").hidden = isMe();
+    $("#profileDelete").hidden = isMe();
+    document.body.classList.toggle("is-friend", !isMe());
+    $("#squad-heading").textContent = isMe() ? "MY SQUAD" : `${store.name.toUpperCase()}'S SQUAD`;
+    $("#friendBanner").hidden = isMe();
+    $("#friendBannerName").textContent = store.name;
+  }
+
   function refreshAll() {
+    renderProfileBar();
     rebuildPlayers();
     rebuildNativeIndex();
     REC = makeRecommender();
@@ -1596,7 +1716,7 @@
   }
 
   function renderRemoved() {
-    const all = [...DATA.players, ...Object.values(store.customPlayers)];
+    const all = [...(isMe() ? DATA.players : FRIEND_FILES[store.fileKey]?.players || []), ...Object.values(store.customPlayers)];
     const gone = store.removed.map((id) => all.find((p) => p.id === id)).filter(Boolean);
     $("#removedBox").hidden = !gone.length;
     $("#removedCount").textContent = gone.length;
@@ -1620,16 +1740,29 @@
     const status = $("#addStatus");
     status.className = "add-status";
     try {
-      const p = await playerFromPaste($("#addPaste").value);
-      const wasRemoved = store.removed.includes(p.id);
-      if (byId[p.id]) throw new Error(`${p.name} is already in your squad.`);
-      store.removed = store.removed.filter((id) => id !== p.id);
-      if (!DATA.players.some((x) => x.id === p.id)) store.customPlayers[p.id] = p;
+      // One or more cards: every "EFBLAB:" chunk is a card.
+      const chunks = $("#addPaste").value.split(/(?=EFBLAB:)/).map((x) => x.trim()).filter(Boolean);
+      if (!chunks.length) throw new Error("Paste what the bookmarklet copied.");
+      const added = [];
+      const skipped = [];
+      const base = isMe() ? DATA.players : FRIEND_FILES[store.fileKey]?.players || [];
+      for (const chunk of chunks) {
+        const p = await playerFromPaste(chunk);
+        if (byId[p.id]) { skipped.push(p.name); continue; }
+        store.removed = store.removed.filter((id) => id !== p.id);
+        if (!base.some((x) => x.id === p.id)) store.customPlayers[p.id] = p;
+        added.push(p);
+        byId[p.id] = p; // so a duplicate later in the same paste is caught
+      }
       saveStore();
       refreshAll();
       $("#addPaste").value = "";
-      status.classList.add("is-ok");
-      status.innerHTML = `${wasRemoved ? "Restored" : "Added"} <b>${esc(p.name)}</b> (${p.position} ${p.overall}). Saved in this browser — to make it permanent run <code>python3 tools/fetch_players.py --add ${p.id}</code> or send me the ID.`;
+      status.classList.add(added.length ? "is-ok" : "is-err");
+      const perm = isMe()
+        ? `run <code>python3 tools/fetch_players.py --add ${added.map((p) => p.id).join(" ")}</code> or send me the IDs`
+        : `run <code>python3 tools/fetch_players.py --friend "${esc(store.name)}" &lt;all IDs&gt;</code> or send me the IDs`;
+      status.innerHTML = (added.length ? `Added ${added.map((p) => `<b>${esc(p.name)}</b> (${p.position} ${p.overall})`).join(", ")}. Saved in this browser — to make it permanent ${perm}.` : "")
+        + (skipped.length ? ` Already in the squad: ${skipped.map(esc).join(", ")}.` : "");
     } catch (err) {
       status.classList.add("is-err");
       status.textContent = err instanceof SyntaxError ? "Couldn't read that — paste exactly what the bookmarklet copied." : err.message;
@@ -1652,11 +1785,37 @@
     }
   });
 
+  $("#profileSelect").addEventListener("change", (e) => switchProfile(e.target.value));
+  $("#profileNew").addEventListener("click", () => {
+    const name = (window.prompt("Friend's name:") || "").trim();
+    if (!name) return;
+    const id = `f_${Date.now().toString(36)}`;
+    root.profiles[id] = blankProfile("friend", name);
+    switchProfile(id);
+    go("squad");
+    $("#addPanel").hidden = false;
+  });
+  $("#profileRename").addEventListener("click", () => {
+    const name = (window.prompt("Rename squad:", store.name) || "").trim();
+    if (!name) return;
+    store.name = name;
+    saveStore();
+    renderProfileBar();
+  });
+  $("#profileDelete").addEventListener("click", () => {
+    if (isMe()) return;
+    const fromFile = root.active.startsWith("file:");
+    if (!confirm(`Delete ${store.name}'s squad and all its builds and lineups from this browser?${fromFile ? " (The squad itself comes from data/friends.js and will come back empty.)" : ""}`)) return;
+    delete root.profiles[root.active];
+    switchProfile("me");
+  });
+
   /* ---------------------------------------------------------
      Init
   --------------------------------------------------------- */
 
   REC = makeRecommender();
+  renderProfileBar();
   renderRemoved();
   renderPlayerSelect();
   renderSquad();

@@ -24,6 +24,14 @@
   </div>
 </header>
 
+<div class="profile-bar">
+  <label class="profile-bar__pick"><span class="field__label">Squad</span><select id="profileSelect" aria-label="Active squad"></select></label>
+  <button type="button" class="btn btn--icon" id="profileNew">+ Friend squad</button>
+  <button type="button" class="btn btn--icon" id="profileRename" hidden>Rename</button>
+  <button type="button" class="btn btn--icon btn--danger" id="profileDelete" hidden>Delete squad</button>
+  <p class="profile-bar__note" id="friendBanner" hidden>Working on <b id="friendBannerName"></b>'s squad — builds, lineups, positions and managers are separate from yours.</p>
+</div>
+
 <nav class="tabs" role="tablist" aria-label="Sections">
   <a href="#squad" class="tabs__link" role="tab" data-tab-link="squad">My Squad</a>
   <a href="#recommended" class="tabs__link" role="tab" data-tab-link="recommended">Recommended</a>
@@ -141,6 +149,8 @@
 <!-- ============ TRAINER ============ -->
 <section class="tab-panel" data-tab="train" aria-label="Trainer">
   <div class="wrap">
+    <p class="empty-state" id="trainEmpty" hidden>No players in this squad yet — add some in <a href="#squad">My Squad</a>.</p>
+    <div class="train-body" id="trainBody">
     <div class="toolbar toolbar--train">
       <label class="field">
         <span class="field__label">Player</span>
@@ -233,6 +243,7 @@
         </div>
         <div id="trainStats"></div>
       </div>
+    </div>
     </div>
   </div>
 </section>
@@ -352,12 +363,20 @@
     <div class="panel">
       <div class="panel__head">
         <h2 id="managers-heading">MANAGERS</h2>
-        <p class="panel__meta">Seven owned cards · team booster is a flat +1/+1 on the whole squad (§17)</p>
+        <p class="panel__meta" id="mgrMeta"></p>
       </div>
       <div class="table-wrap"><table class="kb-table" id="mgrTable"></table></div>
-      <h3 class="group__title group__title--spaced">Link-up — who in my squad fills each role</h3>
-      <p class="source-note">A Link-up only works when both the Center Piece and the Key Man play with the named style and position. Playing styles come from eFHUB and may differ from a newer card screenshot.</p>
-      <div class="kb-grid" id="mgrLinks"></div>
+      <div id="mgrLinkBox">
+        <h3 class="group__title group__title--spaced">Link-up — who in my squad fills each role</h3>
+        <p class="source-note">A Link-up only works when both the Center Piece and the Key Man play with the named style and position. Playing styles come from eFHUB and may differ from a newer card screenshot.</p>
+        <div class="kb-grid" id="mgrLinks"></div>
+      </div>
+      <div id="mgrPickerBox" hidden>
+        <h3 class="group__title group__title--spaced">All eFHUB manager cards</h3>
+        <p class="source-note">Mark the ones your friend owns. Link-up requirements aren't in eFHUB's data, so they aren't shown for these.</p>
+        <div class="toolbar"><input type="text" id="mgrSearch" placeholder="Search manager or boosted stat…" aria-label="Search managers"></div>
+        <div class="table-wrap"><table class="kb-table" id="mgrPool"></table></div>
+      </div>
     </div>
   </div>
 </section>
@@ -467,6 +486,8 @@
 </footer>
 
 <script src="data/players.js"></script>
+<script src="data/managers.js"></script>
+<script src="data/friends.js" onerror="window.FRIEND_SQUADS = {}"></script>
 <script src="data/knowledge.js"></script>
 <script src="data/ovr.js"></script>
 <script src="recommend.js"></script>
