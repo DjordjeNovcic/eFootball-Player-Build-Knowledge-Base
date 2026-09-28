@@ -1000,3 +1000,5 @@ textarea:focus{ outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px 
 .picker__group{ margin: 0.4rem 0 0.1rem; font-family: var(--font-cond); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--paper-dim); display: flex; gap: 0.5rem; align-items: center; }
 .picker__more{ margin-top: 0.4rem; justify-self: start; }
 .linkish{ background: none; border: 0; padding: 0; color: var(--lime-dim); font: inherit; text-decoration: underline; cursor: pointer; }
+.field__info{ text-transform: none; letter-spacing: 0; color: var(--lime-dim); font-family: var(--font-body); }
+.toolbar--train .field--tight{ flex: 1 1 14rem; }

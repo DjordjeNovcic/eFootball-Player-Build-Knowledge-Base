@@ -13,7 +13,9 @@ Two parts:
     boosters, level cap and role notes.
   - **Trainer** — spend progression points per category (level 0–20, tiered cost from
     KNOWLEDGE-BASE §12), pick the slot-2 booster, manager and up to 5 additional skills,
-    and see final stats, KB thresholds and the per-position OVR (same formula as eFHUB).
+    and see final stats, KB thresholds and the per-position OVR. The stat pipeline matches
+    eFHUB: training (99 cap) → manager team-playstyle proficiency multiplier → manager
+    +1/+1 → boosters.
     Saved dated snapshots from `USER-SQUAD.md` load with one click. Position proficiency
     (None / Intermediate / High) starts from the card and can be edited for positions
     trained in-game; the Lineup picker offers players by it.

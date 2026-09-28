@@ -50,9 +50,9 @@
   function loadStore() {
     try {
       const s = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-      return { builds: s.builds || {}, manager: s.manager ?? KB.CURRENT_MANAGER, lineups: s.lineups || [], activeLineup: s.activeLineup, positions: s.positions || {} };
+      return { builds: s.builds || {}, manager: s.manager ?? KB.CURRENT_MANAGER, lineups: s.lineups || [], activeLineup: s.activeLineup, positions: s.positions || {}, tactic: s.tactic || "Long Ball Counter" };
     } catch {
-      return { builds: {}, manager: KB.CURRENT_MANAGER, lineups: [], positions: {} };
+      return { builds: {}, manager: KB.CURRENT_MANAGER, lineups: [], positions: {}, tactic: "Long Ball Counter" };
     }
   }
   const store = loadStore();
@@ -104,7 +104,25 @@
     return KB.MANAGERS.find((m) => m.name === name) || null;
   }
 
-  function compute(p, build, managerName = store.manager) {
+  // Team-playstyle proficiency → stat multiplier on trained stats (eFHUB's model; the
+  // table covers proficiency 50–100, eFHUB's UI limits it to 70–90, so we clamp the same).
+  const MANAGER_SKILL = [.65, .6675, .685, .7025, .72, .7375, .755, .7725, .79, .8075, .825, .8425, .86, .8775, .895, .9125, .93, .9475, .965, .9825,
+    1, 1, 1.01163, 1.01389, 1.015625, 1.01755, 1.01925, 1.02125, 1.02275, 1.0244, 1.026, 1.02725, 1.029, 1.03, 1.03196, 1.03275, 1.03375, 1.034091,
+    1.0355, 1.036, 1.0365, 1.036];
+  const PROF_MIN = 70;
+  const PROF_MAX = 90;
+  function managerProficiency(managerName, tactic) {
+    const m = managerObj(managerName);
+    const i = KB.TACTICS.indexOf(tactic);
+    return m && i >= 0 ? m.prof[i] : null;
+  }
+  function skillMultiplier(prof) {
+    if (prof == null) return 1;
+    const v = Math.min(PROF_MAX, Math.max(PROF_MIN, prof));
+    return MANAGER_SKILL[Math.min(v - 50, MANAGER_SKILL.length - 1)];
+  }
+
+  function compute(p, build, managerName = store.manager, tactic = store.tactic) {
     const trained = { ...p.stats };
     const wasted = {};
     categoriesFor(p).forEach((c) => {
@@ -116,12 +134,19 @@
         trained[s] = Math.min(99, next);
       });
     });
+    const mult = skillMultiplier(managerProficiency(managerName, tactic));
     const final = { ...trained };
     const boostOf = {};
     const add = (stats) => Object.entries(stats || {}).forEach(([k, v]) => {
       final[k] += v;
       boostOf[k] = (boostOf[k] || 0) + v;
     });
+    if (mult !== 1) {
+      Object.keys(final).forEach((k) => {
+        const gain = Math.min(99, trained[k] + Math.floor(trained[k] * (mult - 1))) - trained[k];
+        if (gain) add({ [k]: gain });
+      });
+    }
     if (p.booster1) add(p.booster1.stats);
     const b2 = booster2Of(p, build);
     if (b2) add(b2.stats);
@@ -246,6 +271,7 @@
         ${sorted.filter((p) => POSITION_GROUP[p.position] === g).map((p) =>
           `<option value="${p.id}">${esc(p.name)} — ${p.position} ${p.overall} · ${esc(p.team || "")}${store.builds[p.id] ? " ★" : ""}</option>`).join("")}
       </optgroup>`).join("");
+    $("#trainTactic").innerHTML = KB.TACTICS.map((t) => `<option>${t}</option>`).join("");
     $("#trainManager").innerHTML = `<option value="">No manager</option>` +
       KB.MANAGERS.map((m) => `<option value="${esc(m.name)}">${esc(m.name)} — ${m.boost.map(statLabel).join(" +1, ")} +1</option>`).join("");
   }
@@ -262,6 +288,7 @@
     }
     $("#trainPlayer").value = id;
     $("#trainManager").value = store.manager || "";
+    $("#trainTactic").value = store.tactic;
     renderTrainer();
   }
 
@@ -289,6 +316,12 @@
         <span class="train-head__ovr-num">${res.ratings[view.position]}</span>
         <span class="train-head__ovr-lbl">${view.position} · card ${p.overall}</span>
       </div>`;
+
+    // Manager proficiency multiplier
+    const prof = managerProficiency(store.manager, store.tactic);
+    const mult = skillMultiplier(prof);
+    $("#trainProfInfo").textContent = !store.manager ? "" : prof == null ? "· N/A for this manager"
+      : `· proficiency ${prof} → ${mult >= 1 ? "+" : ""}${((mult - 1) * 100).toFixed(1)}% stats${prof < PROF_MIN ? " (below 70 not modelled)" : ""}`;
 
     // Points
     $("#trainCap").value = cap;
@@ -410,7 +443,8 @@
   }
 
   $("#trainPlayer").addEventListener("change", (e) => go("train", e.target.value));
-  $("#trainManager").addEventListener("change", (e) => { store.manager = e.target.value; saveStore(); renderTrainer(); });
+  $("#trainManager").addEventListener("change", (e) => { store.manager = e.target.value; saveStore(); renderTrainer(); renderSquad(); });
+  $("#trainTactic").addEventListener("change", (e) => { store.tactic = e.target.value; saveStore(); renderTrainer(); renderSquad(); });
   $("#trainBoost2").addEventListener("change", (e) => { view.draft.booster2 = e.target.value ? Number(e.target.value) : null; renderTrainer(); });
   $("#trainCap").addEventListener("change", (e) => {
     const v = Math.max(1, Math.min(99, Number(e.target.value) || byId[view.playerId].levelCap));
@@ -751,7 +785,7 @@
 
   function slotRating(p, pos, l) {
     const build = store.builds[p.id] || emptyBuild(p);
-    return compute(p, build, l.manager).ratings[pos];
+    return compute(p, build, l.manager, l.tactic).ratings[pos];
   }
 
   function placePlayer(l, id) {
@@ -875,9 +909,9 @@
       <div class="lu-kpis">
         <div><b>${avg}</b><span>avg XI rating</span></div>
         <div><b>${ratings.length}/11</b><span>starters</span></div>
-        <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${esc(l.tactic)} proficiency</span></div>
+        <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${esc(l.tactic)} proficiency${prof != null ? ` · +${((skillMultiplier(prof) - 1) * 100).toFixed(1)}%` : ""}</span></div>
       </div>
-      ${m ? `<p class="lu-line">Team booster: ${m.boost.map((k) => `${statLabel(k)} +1`).join(", ")} — included in the ratings.</p>` : ""}
+      ${m ? `<p class="lu-line">Team booster: ${m.boost.map((k) => `${statLabel(k)} +1`).join(", ")}, plus the proficiency multiplier — both included in the ratings.</p>` : ""}
       ${link ? `<div class="lu-link ${link.cp.length && link.km.length ? "is-on" : ""}">
           <span class="field__label">Link-up · ${esc(link.m.linkUp)}</span>
           <p>Center Piece (${esc(link.m.centerPiece.join(" "))}): ${link.cp.length ? link.cp.map((p) => esc(p.name)).join(", ") : "<em>not in XI</em>"}</p>
@@ -885,6 +919,8 @@
           <p class="lu-link__state">${link.cp.length && link.km.length ? "Active" : "Inactive — both roles must be fielded"}</p>
         </div>` : ""}`;
     const warns = lineupWarnings(l);
+    if (m && prof == null) warns.unshift(`<b>${esc(m.name)}</b> has no ${esc(l.tactic)} proficiency (N/A) — pick another team playstyle.`);
+    else if (m && prof < PROF_MIN) warns.unshift(`${esc(l.tactic)} proficiency ${prof} is below 70 — the in-game penalty isn't modelled, ratings assume 70.`);
     $("#luWarnings").innerHTML = warns.map((x) => `<li>${x}</li>`).join("");
     $("#luWarnings").hidden = !warns.length;
 
