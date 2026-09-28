@@ -193,6 +193,71 @@ window.KB = (() => {
     ["Long Ranger", "Shoots from distance more often"],
   ].map(([name, behavior]) => ({ name, behavior }));
 
+  /* ---- Section 18 + §7: what to expect from each style and how to use it ---- */
+  // expect = in-match behaviour (§18); use = pairing / tactical use and what the build needs (§7, §18).
+  const G = (expect, use) => ({ expect, use });
+  const STYLE_GUIDE = {
+    att: {
+      "Goal Poacher": G("Lives on the last defender's shoulder and keeps running in behind. Rarely drops for the ball.",
+        "Feed him early through balls and balls over the top. Pairs well with a Deep-Lying Forward who comes short while he attacks the line (Messi DLF + Eto'o, §18). Build: OA, Acceleration, Finishing, Speed."),
+      "Fox in the Box": G("Stays central in and around the box — rebounds, cutbacks, low crosses. Little deep running.",
+        "Get the ball into the box: cutbacks, low crosses, knock-downs. Don't expect him to stretch the line. Build: OA, Finishing, Physical Contact; Heading/Jump if tall; don't chase extreme Speed."),
+      "Target Man": G("Comes to the ball with his back to goal and holds it up for support. Not interested in the space behind.",
+        "Aim long balls at him and play off his lay-offs; put runners around him."),
+      "Dummy Runner": G("Makes unconventional runs to drag markers and open space for others; changes direction and zone often.",
+        "Much of his value is the space he creates — judge him by the team's chances, not only his goals. Build: OA, Acceleration, Speed."),
+      "Deep-Lying Forward": G("Drops between the lines, receives, turns and combines with the AMF/CMF, then attacks space again.",
+        "A CF who joins the build-up — pair him with a Goal Poacher who runs the line (§18). Build: Ball Control, Tight Possession, Dribbling, Passing, Finishing."),
+      "Creative Playmaker": G("Seeks the ball in pockets, moves laterally, offers passing options and orchestrates. Fewer aggressive runs than a Hole Player.",
+        "“Give me the ball to make something happen.” Build: Ball Control, Dribbling, Tight Possession, Low Pass, Balance — don't overspend on OA."),
+      "Prolific Winger": G("Stays wide, receives on the flank, attacks the full-back 1v1, then shoots or crosses.",
+        "Isolate him 1v1 on his wing and keep the flank clear for him."),
+      "Roaming Flank": G("Starts wide but often drifts inside — effectively an inverted winger.",
+        "Leave the wide lane to an overlapping full-back behind him."),
+      "Cross Specialist": G("Holds width and actively looks for crossing positions. Rarely comes inside.",
+        "Needs a target in the box. Lofted Pass around 90 matters most (§3)."),
+      "Classic No. 10": G("Official: takes a high position to initiate attacks and also goes for goal.",
+        "Use him as a high creator who also shoots — the old “static creator” label isn't supported by the official text (§18)."),
+      "Hole Player": G("Attacks the hole and runs from deep; often gets ahead of the ball and finishes in the box. Moves off the ball far more than a Creative Playmaker.",
+        "“Give me space to run into” — play him through balls into the channel behind the DMF/CB line. Typical profile: OA 90+, Acceleration 92+, Balance 90+, Finishing 88–93 (§7)."),
+      "Box-to-Box": G("Shuttles up and down the whole match — joins the attack, tracks back, covers a huge area.",
+        "Stamina is part of the job. Don't force every Box-to-Box into a scorer — some are better as carrier, passer and defender (§7)."),
+      "Anchor Man": G("Stays in front of the CBs and very rarely leaves the central zone to attack.",
+        "Your midfield cover. Pair him with an Orchestrator: he wins the ball, the Orchestrator distributes (Vieira + Pirlo, §7)."),
+      "Orchestrator": G("Drops deep for the ball and organises the build-up; wants it to feet more than making runs.",
+        "Pair with a true Anchor Man and he doesn't need elite defensive stats (§7). Build: Low Pass, Tight Possession, Ball Control, Balance."),
+      "Build Up": G("Offers a safe outlet from the back line and helps play out. Less chaotic than an aggressive CB.",
+        "“I hold position and play the ball out.” Best next to a Destroyer (§18)."),
+      "Extra Frontman": G("A much more adventurous CB — joins attacks high up when he sees the chance and can end up deep in the opponent's half.",
+        "Needs cover behind him; risky next to another CB who steps out."),
+      "Offensive Full-back": G("Overlaps down the line, goes high, provides width and looks for crossing positions.",
+        "Pair with an inside-drifting winger ahead of him. Build: Speed 90+, Acceleration 92+, Lofted Pass ~90, still decent defending (§7)."),
+      "Defensive Full-back": G("Stays back, rarely overlaps, prioritises defensive shape.",
+        "Width has to come from the winger in front of him."),
+      "Full-back Finisher": G("Unlike a classic offensive full-back, often comes inside, underlaps and appears centrally or around the box.",
+        "Behaves almost like an extra CMF/AMF in some sequences — keep the wide lane for the winger."),
+      "High Line GK": G("Takes a high position while the team attacks to cover the space behind the defenders and stop counters.",
+        "Official text doesn't say he acts as an extra passing option (§18)."),
+    },
+    def: {
+      "Front Line Pressure": G("Presses the opposing GK/CBs aggressively to force a mistake.", "Good for a high press; costs stamina."),
+      "Front Line Poacher": G("Watches the opponent's passing lanes and takes up smart positions.", "Reads lanes rather than chasing the carrier."),
+      "Attack Outlet": G("Barely tracks back — stays high and saves stamina for the counter.", "Fits counter-attacking plans; you defend with one player fewer."),
+      "Pass Disruptor": G("Closes passing lanes and intercepts rather than going at the ball carrier.", "Interesting for midfielders who read the game."),
+      "Box-to-Box": G("Actively presses and tracks back across a large area.", "Needs stamina to keep doing it for 90 minutes."),
+      "All-Action Defender": G("Runs back aggressively when defending and responds to opposing attacks.", "A relentless worker in midfield."),
+      "Anchor Man": G("Holds the central defensive zone in front of the defence and doesn't step out unnecessarily.", "Keeps the screen in front of the CBs."),
+      "The Destroyer": G("Steps out of the line, presses aggressively and goes for the duel or tackle.",
+        "“I step out and win the ball.” Acceleration is vital — 96 DA + 90 Acc beats 100 DA + 82 Acc (§7). Pair with a Build Up or Covering Role CB, never another Destroyer (§18)."),
+      "Covering Role": G("Actively covers for teammates doing Match-up duties — prioritises the run in behind and the space a teammate left.",
+        "“You step out, I'll cover behind you.” Ideal next to a Destroyer (§18)."),
+      "High Line Master": G("Maintains the defensive line and shape; doesn't step out much, manages depth and open space.", "“We hold the line and shape.”"),
+      "Sweeper GK": G("Takes a high position and rushes out to cover a wide area behind the defence.", "Suits a high defensive line."),
+      "Attacking GK": G("More proactive — more willing to come off his line to close down the attacker or space.", ""),
+      "Defensive GK": G("Stays closer to goal, takes fewer risks coming out, relies on positioning and shot-stopping.", ""),
+    },
+  };
+
   /* ---- Sections 17 & 22 + USER-SQUAD §3/§6: the user's seven managers ---- */
   const TACTICS = ["Possession", "Quick Counter", "Long Ball Counter", "Out Wide", "Long Ball", "Overload"];
   const M = (name, boost, prof, linkUp, centerPiece, keyMan, affinity = null) => ({ name, boost, prof, linkUp, centerPiece, keyMan, affinity });
@@ -233,5 +298,5 @@ window.KB = (() => {
     "88040387118039": { role: "GK — current squad keeper; trained build needs a current screenshot." },
   };
 
-  return { CATEGORIES, STAT_LABELS, STAT_GROUPS, THRESHOLDS, SKILLS, ATT_STYLES, DEF_STYLES, AI_STYLES, TACTICS, MANAGERS, CURRENT_MANAGER, SQUAD_NOTES };
+  return { CATEGORIES, STAT_LABELS, STAT_GROUPS, THRESHOLDS, SKILLS, ATT_STYLES, DEF_STYLES, AI_STYLES, STYLE_GUIDE, TACTICS, MANAGERS, CURRENT_MANAGER, SQUAD_NOTES };
 })();

@@ -33,6 +33,49 @@
   const isGK = (p) => p.position === "GK";
   const categoriesFor = (p) => KB.CATEGORIES.filter((c) => !c.gk || isGK(p));
   const styleText = (p) => [p.playingStyle, p.playingStyleDefensive].filter(Boolean).join(" · ") || "—";
+  // Playing-style guide (§18): resolve both style slots to the KB entry, its compatible
+  // positions and what to expect. eFHUB files some defensive styles in the attacking slot.
+  const STYLE_INDEX = (() => {
+    const idx = {};
+    KB.ATT_STYLES.forEach((x) => { idx["att:" + norm(x.name)] = { ...x, kind: "Attacking", guide: KB.STYLE_GUIDE.att[x.name] }; });
+    KB.DEF_STYLES.forEach((x) => { idx["def:" + norm(x.name)] = { ...x, kind: "Defensive", guide: KB.STYLE_GUIDE.def[x.name] }; });
+    return idx;
+  })();
+  function stylesOf(p) {
+    const out = [];
+    if (p.playingStyle) out.push(STYLE_INDEX["att:" + norm(p.playingStyle)] || STYLE_INDEX["def:" + norm(p.playingStyle)] || { name: p.playingStyle, kind: "Attacking" });
+    if (p.playingStyleDefensive) out.push(STYLE_INDEX["def:" + norm(p.playingStyleDefensive)] || { name: p.playingStyleDefensive, kind: "Defensive" });
+    return out;
+  }
+  const styleActiveAt = (st, pos) => (st.positions ? st.positions.split(/,\s*/).includes(pos) : null);
+  function styleGuideHtml(p, pos, focus) {
+    const list = stylesOf(p);
+    const ai = KB.AI_STYLES.filter((a) => p.comSkills.some((k) => norm(skillLabel(k)) === norm(a.name)));
+    if (!list.length && !ai.length) return `<p class="sg-empty">No playing style on this card — he plays as Basic.</p>`;
+    return list.map((st) => {
+      const active = styleActiveAt(st, pos);
+      return `
+        <div class="sg">
+          <div class="sg__head">
+            <span class="sg__kind">${st.kind}</span>
+            <b class="sg__name">${esc(st.name)}</b>
+            ${active == null ? "" : active
+              ? `<span class="badge badge--green">active at ${pos}</span>`
+              : `<span class="badge badge--ember" title="Compatible: ${esc(st.positions)}">${st.kind === "Attacking" ? `plays as Basic at ${pos}` : `inactive at ${pos}`}</span>`}
+            ${st.positions ? `<span class="sg__pos">${esc(st.positions)}</span>` : ""}
+          </div>
+          ${st.guide ? `<p class="sg__expect"><span>What he does</span>${esc(st.guide.expect)}</p>` : st.behavior ? `<p class="sg__expect"><span>What he does</span>${esc(st.behavior)}</p>` : ""}
+          ${st.guide?.use ? `<p class="sg__use"><span>How to use him</span>${esc(st.guide.use)}</p>` : ""}
+        </div>`;
+    }).join("") + (ai.length ? `<div class="sg sg--ai"><div class="sg__head"><span class="sg__kind">AI styles</span></div>
+        <p class="sg__expect">${ai.map((a) => `<b>${esc(a.name)}</b> — ${esc(a.behavior.toLowerCase())}`).join("; ")}. Only when the AI controls him on the ball (§18).</p></div>` : "")
+      + (focus?.length ? `<p class="sg__focus"><span>Build focus</span>${focus.map((k) => esc(statLabel(k))).join(" · ")}</p>` : "");
+  }
+  function styleExpectShort(p) {
+    const st = stylesOf(p).find((x) => x.guide);
+    return st ? st.guide.expect : "";
+  }
+
   const statTier = (v) => (v >= 90 ? "elite" : v >= 80 ? "good" : v >= 70 ? "ok" : v >= 60 ? "low" : "poor");
 
   // The working squad: generated cards + cards added in this browser − removed ones.
@@ -249,6 +292,7 @@
             <h3 class="squad-card__name">${esc(p.name)}</h3>
             <p class="squad-card__team">${esc(p.team || "")} · ${p.height} cm · ${esc(p.foot || "")}</p>
             <p class="squad-card__style">${esc(styleText(p))}</p>
+            ${styleExpectShort(p) ? `<p class="squad-card__expect" title="${esc(stylesOf(p).filter((x) => x.guide).map((x) => `${x.name}: ${x.guide.expect} ${x.guide.use}`).join("\n\n"))}">${esc(styleExpectShort(p))}</p>` : ""}
             <p class="squad-card__pos">${positionList(p).map(({ pos, prof }) => `<span class="pp pp--${prof}">${pos}</span>`).join("")}${positionsEdited(p) ? `<span class="pp-edited" title="Edited in Trainer">✎</span>` : ""}</p>
             <p class="squad-card__boost">${esc(p.booster1?.name || "No booster")}${p.booster2Fixed ? " + " + esc(p.booster2Fixed.name) : ""}</p>
             ${note ? `<p class="squad-card__note">${esc(note.role)}</p>` : ""}
@@ -333,6 +377,10 @@
         <span class="train-head__ovr-num">${res.ratings[view.position]}</span>
         <span class="train-head__ovr-lbl">${view.position} · card ${p.overall}</span>
       </div>`;
+
+    // Playing-style guide for the position being rated
+    const focus = REC?.recs[p.id]?.targets.slice(0, 5).map((t) => t.stat);
+    $("#trainStyle").innerHTML = `<h3 class="group__title">Playing style — what to expect <span class="group__hint">at ${view.position}</span></h3>${styleGuideHtml(p, view.position, focus)}`;
 
     // Manager proficiency multiplier
     const prof = managerProficiency(store.manager, store.tactic);
@@ -1367,7 +1415,8 @@
           <section class="rec-sec">
             <h4>Role</h4>
             <p><b>${p.position} — Attacking: ${esc(att?.name || p.playingStyle || "Basic")} · Defensive: ${esc(p.playingStyleDefensive ? (def?.name || p.playingStyleDefensive) : "—")}</b></p>
-            <p class="rec-muted">${esc(r.roleLabel)} priorities (§7).${att ? " " + esc(att.behavior) : ""}</p>
+            <p class="rec-muted">${esc(r.roleLabel)} priorities (§7).</p>
+            <div class="rec-style">${styleGuideHtml(p, p.position)}</div>
             ${r.notes.map((n) => `<p class="rec-note">${esc(n)}</p>`).join("")}
           </section>
 
