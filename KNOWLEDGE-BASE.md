@@ -14,6 +14,8 @@ This project is used to create optimized eFootball player builds based on:
 - actual in-game role
 - synergy between stats, skills and physical model
 
+The user-specific roster/card registry, owned-manager state, saved build snapshots and tactical context live in **[`USER-SQUAD.md`](./USER-SQUAD.md)**. Read that file alongside this knowledge base whenever ownership, exact card identity, current build, manager choice or squad fit matters.
+
 The goal is NOT to maximize overall rating.
 
 The goal is to create the strongest possible player for the exact role in which he will be used.
@@ -887,7 +889,7 @@ Useful:
 - Heel Trick
 - Blocker
 - Interception
-- Track Back
+- Track Back (primarily when the role involves pressing from the front line; not an automatic Box-to-Box DMF pick)
 
 ---
 
@@ -899,17 +901,19 @@ Once defensive skill coverage is already complete, consider distribution skills:
 - Weighted Pass
 - Low Lofted Pass
 - Outside Curler
-- Sole Control
+- Sole Control (only for a demonstrated on-ball turning role)
 
-Do not force unnecessary attacking skills.
+Do not force unnecessary attacking skills. In particular, Sole Control needs a role-specific turning/feint use case; it is not a default CB addition.
 
 ---
 
 ## Additional Skill slot limit
 
 A player can have a maximum of **5 Additional Skills** added via the Skill Training
-Program, on top of whatever skills the card already has natively. Confirmed directly
-in-game — the Additional Skills picker itself shows a "0/5" counter.
+Program, on top of native skills. Random Skill Tokens select from their available
+pool; Advanced Skill Tokens select from their category pool. Duplicates have no
+effect; added skills can be overwritten/deleted; Trending players cannot receive
+Skill Training. The in-game help confirms these rules (IMG_1260).
 
 Do not plan a build around more than 5 additional skills — it is a hard cap.
 
@@ -922,44 +926,50 @@ Do NOT assume every skill that exists in the game can be added manually.
 eFootball splits skills into two pools:
 
 1. **Regular skills** — addable via Skill Training, subject to GP cost and Player
-   Type eligibility. The 44-skill list below was directly confirmed by scrolling
+   Type eligibility. The list below was directly confirmed by scrolling
    through the live in-game Additional Skills picker.
 2. **Show Time skills** — exclusive to specific Epic / Show Time / Big Time player
    cards. These CANNOT be added through Skill Training, no matter the GP spent.
 
-A card's natural (pre-installed) skills are NOT necessarily all Show Time skills —
+A card's natural (pre-installed) skills are NOT necessarily all exclusive skills —
 a player typically has around 10 natural skills, and that native set is usually a mix
 of ordinary skills (e.g. Heading, which is also in the addable pool below) and, on
-special cards, one or more Show Time skills. Only the Show Time ones are irreplaceable
-identity of that specific card; the ordinary ones a card lacks can be added to it (or
-to any other eligible player) via Skill Training.
+special cards, one or more Show Time skills. Only the exclusive ones are irreplaceable
+identity of that specific card; the ordinary ones a card lacks can be added through Skill Training when eligible.
+The newly photographed Tap Trick, Power Tackle, Shadow Hunt, Attacking Surge and Snap Strike
+are documented in section 20 but their availability in the training picker is **not
+established by the supplied images**. Verify the picker before treating any as addable.
 
-### Show Time skills (NOT addable — card-exclusive only)
+### Card-exclusive skills (previously observed as not addable)
 
 - **Phenomenal Finishing** — massively boosts a player's ability to finish with all shot types
-- **Phenomenal Pass** — boosts the accuracy/speed of all passes
+- **Phenomenal Pass** — boosts power/accuracy of passes from unorthodox body positions
 - **Blitz Curler** — adds more accuracy and an ever-sharper curve to Controlled Shots (50%+ power)
 - **Visionary Pass** — temporarily boosts the receiver's first-time ball control and one-touch shots/passes after a pass
 - **Bullet Header** — boosts the accuracy and power of headers
 - **Momentum Dribbling** — keeps tight control of the ball when dribbling, translating into faster ball speed and quicker transitions between moves
 - **Edged Crossing** — boosts the accuracy of crosses
-- **Fortress** — increases defensive and physical performance if leading at the start of the second half
+- **Fortress** — improves defensive abilities after halftime whenever the team leads
 - **Game-changing Pass** — boosts the accuracy of passes if losing at halftime
 - **Aerial Fort** — further boosts aerial prowess
-- **Acceleration Burst** — allows a higher acceleration boost off the dribble
+- **Acceleration Burst** — enables quick Sharp Touch from stationary/slow movement and special motions
 - **Long-reach Tackle** — massively improves range and success rate on standing tackles
-- **GK Directing Defense** — increases the defensive abilities of your defenders
-- **Low Screamer** — enables powerful low screamers (Stunning Shot under 50% power)
+- **GK Directing Defence** — improves defensive abilities of defenders deep in your own territory
+- **Low Screamer** — speeds up a Stunning Shot under 50% power and suppresses Dipping Shot
 - **GK Spirit Roar** — boosts the physicality of your defenders
 - **Willpower** — continuously boosts shooting ability the more shots taken
-- **Magnetic Feet** — keeps control of the ball while heavily marked
-- **Attack Trigger** *(new)* — increases the Attacking Awareness of all teammates while the player is on the ball
+- **Magnetic Feet** — boosts ball retention as nearby opponents within 5 m increase (up to four)
+- **Attack Trigger** — increases other teammates’ Attacking Awareness while the holder controls the ball
+- **Shadow Hunt** — recovery speed-related abilities when a pass goes behind a DMF/LB/RB/CB
+- **Attacking Surge** — speed-related abilities in the attacking half while a teammate has the ball
+- **Power Tackle** — standing tackle using body contact, with increased chance of disrupting balance
+- **Snap Strike** — reduces Stunning Shot wind-up; magnitude untested
 
 If a player already has one of these natively, treat it as a fixed asset of that
 specific card — it is never something you can add to a different player, and it is
 never something you should plan to add later.
 
-### Addable skills (regular pool — can be trained onto eligible players)
+### Addable skills (regular pool — previously verified in Additional Skills picker)
 
 Dribbling:
 
@@ -1789,12 +1799,11 @@ two stats is relevant.
 
 # 18. Playing Styles (eFootball 2027 / v6.0.0)
 
-As of eFootball 2027 / v6.0.0, Konami split Playing Style into two independent
-components: an **Attacking Playing Style** and a **Defensive Playing Style**. A card
-can carry one of each at the same time — reading both is now part of reading what a
-card actually does. This section is sourced from external v6.0.0 guides, not from
-Amadeusz in-game testing like most of this document — treat specifics as good
-working knowledge rather than test-verified fact.
+As of eFootball 2027 / v6.0.0, the in-game help describes **Attacking Playing Style**
+and **Defensive Playing Style** separately. A player can have both. An attacking style
+activates only in its compatible position; an incompatible position acts as **Basic**.
+The tables below distinguish the in-game description from our tactical interpretation.
+Source: user screenshots IMG_1229–IMG_1236 (24 Sep 2026).
 
 Section 7's role priorities describe the attacking-side profile. Defensive Playing
 Style is an additional, independent layer on top of that — read both before building.
@@ -1808,11 +1817,11 @@ Style is an additional, independent layer on top of that — read both before bu
 | Target Man | CF | Comes to the ball, plays with his back to goal, holds it up for support. Less interested in attacking space in behind. |
 | Dummy Runner | CF / SS / AMF | Makes unconventional movements to drag markers and open space for others. Frequently changes direction and zone. |
 | Deep-Lying Forward | CF / SS | Drops between the lines for the ball, combines with AMF/CMF, then attacks forward again. A CF that participates in build-up. |
-| Creative Playmaker | SS / WF / AMF / LMF / RMF | Seeks the ball. Finds pockets of space, moves laterally, offers passing options, and orchestrates play. Fewer aggressive runs than Hole Player. |
+| Creative Playmaker | SS / RWF / LWF / AMF / LMF / RMF | Seeks the ball. Finds pockets of space, moves laterally, offers passing options, and orchestrates play. Fewer aggressive runs than Hole Player. |
 | Prolific Winger | LWF / RWF | Stays wide, receives on the flank, attacks the full-back 1v1, then goes to goal or crosses. |
-| Roaming Flank | WF / LMF / RMF | Starts wide but often drifts inside — effectively an inverted winger. |
-| Cross Specialist | WF / LMF / RMF | Holds width and actively seeks crossing position. Rarely comes inside. |
-| Classic No. 10 | SS / AMF | A more static creator. Doesn't make many aggressive runs, looks for the ball between the lines, dictates the attack. |
+| Roaming Flank | LWF / RWF / LMF / RMF | Starts wide but often drifts inside — effectively an inverted winger. |
+| Cross Specialist | LWF / RWF / LMF / RMF | Holds width and actively seeks crossing position. Rarely comes inside. |
+| Classic No. 10 | SS / AMF | Official: takes a high position to initiate attacks and also goes for goal. “Static creator” is not established by this description. |
 | Hole Player | SS / AMF / LMF / RMF / CMF | Actively seeks the "hole" in the defense and runs from deep. Often gets ahead of the ball and finishes in the box. |
 | Box-to-Box | LMF / RMF / CMF / DMF | Shuttles up and down the whole match. Joins the attack, tracks back, covers a huge area. |
 | Anchor Man | DMF | Stays in front of the CBs. Very rarely leaves the central zone to attack — cover for the rest of midfield. |
@@ -1822,7 +1831,7 @@ Style is an additional, independent layer on top of that — read both before bu
 | Offensive Full-back / Wingback | LB / RB | Overlaps down the line, goes high, provides width, looks for crossing position. |
 | Defensive Full-back | LB / RB | Stays back. Rarely overlaps, prioritizes defensive shape. |
 | Full-back Finisher | LB / RB | Unlike a classic offensive full-back, often comes inside, underlaps, appears centrally or around the box. |
-| High Line GK | GK | New attacking GK style. When your team has possession, the keeper stands higher and moves closer to the back line as an extra passing option. Not the same as Sweeper GK. |
+| High Line GK | GK | Takes a high position while the team attacks to cover the space behind its defenders and stop counters. The official text does not claim that he functions as an extra passing option. |
 
 ### Hole Player vs Creative Playmaker
 
@@ -1879,18 +1888,34 @@ opponent has the ball, independent of the Attacking Playing Style.
 | Style | Behavior |
 |---|---|
 | Front Line Pressure | Forwards aggressively press the GK/CB to force a mistake. |
-| Front Line Poacher | Hunts passing lanes high up the pitch rather than blindly chasing the ball carrier — looks for interceptions. |
+| Front Line Poacher | Watches opposing passing lanes and takes up smart positions. |
 | Attack Outlet | Barely tracks back. Stays high, saves stamina, ready for the counter. |
 | Pass Disruptor | Focuses on closing passing lanes and interceptions rather than the ball carrier. Interesting for midfielders. |
 | Box-to-Box | Actively presses and tracks back across a large area. |
-| All-Action Defender | Extremely aggressive track-back. Chases back and covers huge distance — more "relentless worker" than a presser. |
+| All-Action Defender | Runs back aggressively when defending and responds to opposing attacks. |
 | Anchor Man | Holds the central defensive zone in front of the defense. Doesn't step out unnecessarily. |
-| Covering Role | Prioritizes covering the space a teammate leaves. Tracks runs in behind and closes gaps. |
+| Covering Role | Actively covers for teammates carrying out Match-up duties. The specific tracking pattern needs separate testing. |
 | High Line Master | Maintains the defensive line and shape. Doesn't step out much, manages depth and open space. |
 | The Destroyer | Opposite of Covering Role. Steps out of the line, presses aggressively, and goes for the duel/tackle. |
-| Sweeper GK | Comes out very aggressively when the ball is played behind a high line — Neuer-style. |
+| Sweeper GK | Takes a high position and rushes out to cover a wide area behind the defence. |
 | Offensive GK | More proactive, more willing to come off his line to close down the attacker/space. |
 | Defensive GK | Stays closer to goal, takes fewer risks coming out, relies more on positioning/shot-stopping. |
+
+### Official compatible positions (defensive styles)
+
+| Style | Compatible positions |
+|---|---|
+| Front Line Pressure; Front Line Poacher | CF, SS, RWF, LWF |
+| Attack Outlet | CF, SS, RWF, LWF, AMF |
+| All-action Defender; Pass Disruptor | AMF, RMF, LMF, CMF, DMF |
+| Box-to-Box | RMF, LMF, CMF, DMF |
+| Anchor Man | DMF |
+| The Destroyer; Covering Role | CMF, DMF, RB, LB, CB |
+| High Line Master | RB, LB, CB |
+| Attacking GK; Defensive GK; Sweeper GK | GK |
+
+Source: in-game help screenshots IMG_1234–IMG_1236. A listed compatible position
+activates the style; do not assume that position proficiency alone activates it.
 
 ### Destroyer vs Covering Role
 
@@ -1912,8 +1937,9 @@ two Destroyers can both step out of the line at the same time, leaving nobody co
 
 ## AI Playing Styles — a separate concept
 
-Not the same as Attacking/Defensive Playing Style. These affect tendencies when the
-AI is controlling the player's actions, especially on the ball:
+Not the same as Attacking/Defensive Playing Style. The in-game help says these apply
+**only when AI controls the player in possession**. Do not assume they drive the
+user-controlled player or off-ball runs:
 
 | AI Style | Tendency |
 |---|---|
@@ -1970,8 +1996,8 @@ during testing" as **unconfirmed**, not as **disproven**.
 | Scotch Move | (untested) |
 | Sole Control | Dribbling, first-touch, and tight-control improvements were **not observed** in testing focused on those specific stats/behaviors. Confirmed value is unlocking ball roll together with Double Touch + Flip Flap. The game's own description ("control the ball more using the soles of his feet when executing feints and turns") describes a different, narrower claim about feint/turn execution specifically — that was not the thing tested, so it is unconfirmed, not disproven. Reasonable to keep for a player who regularly receives with their back to goal and has to turn away from a marker, even without the other two combo pieces. |
 | Momentum Dribbling *(Show Time)* | Increases Touch Frequency beyond the normal stat limit, compared to a player with identical stats but no skill; heavily nerfed after initial release |
-| Acceleration Burst *(Show Time)* | Adds new sharp-touch animations. Sharp touch is a feint, so it's governed by dribbling stats, not Acceleration |
-| Magnetic Feet *(Show Time)* | Activates when possessing the ball with an opponent within 5 metres |
+| Acceleration Burst *(Show Time)* | Official: permits a quick Sharp Touch while stationary/moving slowly and may trigger special Sharp Touch motions. Prior empirical observation: new animations. The screenshot alone does not establish that Acceleration is irrelevant. |
+| Magnetic Feet *(Show Time)* | Official: improves ball retention in possession based on the number of opponents within 5 m, up to four. Magnitude and scaling untested. |
 
 ## Shooting
 
@@ -1986,7 +2012,7 @@ during testing" as **unconfirmed**, not as **disproven**.
 | Dipping Shot | Ball travels straight with vertical dip; the largest scoring-chance increase of the 3 stunning-shot skills because the straight trajectory targets bottom corners more easily. Activate: Stunning Shot at 20-50% power, ideally 40-50% |
 | Rising Shot | Ball rises sharply — satisfying but actually *decreases* overall scoring chance because it often clears the crossbar. Activate: Stunning Shot at 65%+ power |
 | Long-range Shooting | +10% Finishing on shots from outside the box; does not add Kicking Power |
-| Low Screamer *(Show Time)* | Low driven shot, most effective at 40-50% power. +5.5% ball speed (≈ +25 Kicking Power equivalent). Does not change the shot or animation speed |
+| Low Screamer *(Show Time)* | Official: a Stunning Shot under 50% gauge gains shot speed and will **not** trigger Dipping Shot. Prior empirical estimate: +5.5% ball speed; animation timing not measured here. |
 | Acrobatic Finishing | Adds acrobatic shot animations (bicycle kick, scorpion kick, etc.) |
 | Heel Trick | Not found to affect the likelihood of heel shots or passes — more testing required |
 | First-time Shot | "One-touch Pass" for shooting — reduces error on a shot taken first-time |
@@ -1999,10 +2025,10 @@ during testing" as **unconfirmed**, not as **disproven**.
 |---|---|
 | One-touch Pass | "First-time Shot" for passing — reduces error on a pass played without controlling the ball first |
 | Through Passing | +20% to both passing stats on a low or lofted through ball. Does not affect Curl or Kicking Power |
-| Weighted Pass | Ball drops steeply and lands closer to the receiver, more accurate. Only activates on a lofted pass/through pass from your own defensive half |
+| Weighted Pass | Official: accurate lofted pass or chipped through ball with heavy backspin to a forward area. Prior testing observed a narrower activation from the defensive half; do not equate that test boundary with a proven universal rule. |
 | Pinpoint Crossing | +10% to both passing stats depending on which cross button is used. Does not affect Curl or Kicking Power |
 | Edged Crossing *(Show Time)* | Changes ball rotation from horizontal to vertical; activates on the weak foot when WF Accuracy is "Very High"; greatly increases ball speed on a normal cross |
-| Outside Curler | Enables trivela kicks, with the animation starting 3 frames earlier than normal. Slower but significantly more accurate — applies to shots and passes |
+| Outside Curler | Official: precise outside-of-foot shot/pass, even from distance, using the stronger foot. Prior empirical result: earlier animation and improved accuracy for tested trivela situations; do not treat three frames as universal. |
 | Rabona | Rabona animation for shots and passes only |
 | No Look Pass | Purely a "looking away" animation with no gameplay benefit |
 | Game-changing Pass *(Show Time)* | +10% to both passing stats while drawing or losing in the 2nd half |
@@ -2028,22 +2054,203 @@ during testing" as **unconfirmed**, not as **disproven**.
 
 | Skill | Actual effect |
 |---|---|
-| Man Marking | (untested) |
-| Track Back | (untested) |
-| Interception | (untested) |
-| Blocker | (untested) |
+| Man Marking | Official: reacts quickly to an opponent’s movement and applies close marking. Magnitude untested. |
+| Track Back | Official: pressures the opponent carrying the ball aggressively from the front line. Empirical effect/magnitude untested. Do not infer a large DMF tracking bonus from the skill name. |
+| Interception | Official: reacts to passes quickly and intercepts more often. Magnitude untested. |
+| Blocker | Official: reacts to kicks, blocks passes/shots more often and reduces rebounds. Magnitude untested. |
 | Aerial Superiority | Increases the chance of winning an aerial duel when both players have similar Jump Height. Duels won via this skill in shooting scenarios have low accuracy and do NOT help with scoring |
 | Sliding Tackle | Predicted increase to the Tackling stat specifically when performing a sliding tackle |
-| Long-reach Tackle *(Show Time)* | Adds new tackling animations and increases standing-tackle range |
-| Fortress *(Show Time)* | +5% Defensive Awareness and Tackling while leading, active from any point in the 2nd half (possibly also Defensive Engagement/Aggression, needs more testing) |
+| Long-reach Tackle *(Show Time)* | Official: increases frequency of standing tackles against distant opponents while stationary or moving slowly. Empirical observation: extra animations/reach. Do not assume unconditional reach at full sprint. |
+| Fortress *(Show Time)* | Official: improves defensive abilities after the second-half mark while the team has a goal advantage. Prior empirical estimate: +5% DA/Tackling; other stats need testing. A lead at halftime is not required. |
 | Acrobatic Clearance | Adds acrobatic clearance animations (e.g. bicycle-kick clearance) |
-| Aerial Fort *(Show Time)* | Lets a defender reach their maximum Jump Height on every clearance. Useless if the attacker's Jump Height is considerably higher |
+| Aerial Fort *(Show Time)* | Official: improves aerial duels **inside the player’s own penalty box**. Prior jump-height interpretation must be applied within this positional restriction. |
 
 ## Miscellaneous
 
 | Skill | Actual effect |
 |---|---|
-| Captaincy | Supposed stamina increase — no effect was actually observed in testing |
-| Attack Trigger *(Show Time)* | Unknown-magnitude increase to teammates' Attacking Awareness (see section 18 for the confirmed newer description: raises it for all teammates while the player is on the ball) |
+| Captaincy | Official: reduces fatigue effects for the entire team. Prior narrow testing found no observable stamina increase; distinguish fatigue effect from an increase in the visible stamina stat. |
+| Attack Trigger *(Show Time)* | Official: raises **other teammates’** Attacking Awareness while the holder controls the ball. Magnitude untested; does not claim a boost for the holder. |
 | Super-sub | +5% Finishing and +1% Speed/Acceleration. Does NOT raise the Condition arrow by a step, despite common belief |
-| Fighting Spirit | Reduces shot/pass error when opponents are nearby. Stamina-related effects were not observed in testing |
+| Fighting Spirit | Official: preserves kicking/heading accuracy under pressure and reduces fatigue effects. Prior narrow testing observed reduced shot/pass error but no stamina effect; the fatigue claim remains unverified, not disproven. |
+
+---
+
+# 20. Official In-game Help Cross-check (screenshots, 24 Sep 2026)
+
+These are **paraphrases of the in-game help**, not measured stat formulas. Screenshots
+IMG_1229–IMG_1262 overlap; repeated images with `(1)` have identical content. Keep
+section 19’s empirical claims separately and flag any disagreement for testing.
+
+## Attribute definitions that change build interpretation
+
+| Attribute | Official meaning (paraphrased) | Build implication / limit |
+|---|---|---|
+| Attacking Awareness | Attack reaction, including running past defenders | The tooltip does not quantify run frequency or the value of 90+. |
+| Ball Control | Accuracy on trapping/feints that prepare the next action | Do not label it a pure dribble speed stat. |
+| Dribbling | Ball-carrying accuracy, quickness, top speed and acceleration | Section 2’s off-ball speed model must **not** be carried over uncritically to on-ball movement. |
+| Tight Possession | Turning skill during slow dribbling | Most relevant to tight turns; not a universal speed boost. |
+| Low Pass; Lofted Pass | Accuracy and speed of corresponding passes | Includes low/chipped through balls respectively. |
+| Finishing | Shot accuracy, including first-time and off-balance shots | Skill effects may still alter specific situations. |
+| Heading | Accuracy and speed of headers for shooting, passing, clearing | Distinct from Jumping’s aerial reach. |
+| Set Piece Taking; Curl | Set-piece accuracy; bend on shots, passes, set pieces | Avoid substituting either stat for Kicking Power. |
+| Speed; Acceleration | Movement and dribbling speed; acceleration in movement and dribbling | Official text does not give distance, curve or thresholds. |
+| Kicking Power | Power on shots, passes and set pieces | Applies beyond shooting. |
+| Jumping | Height of jump and success in aerial duels | Interpret alongside player model and Heading. |
+| Physical Contact | Holding off opponents and keeping balance under physical pressure | Distinct from Balance’s tackle resistance. |
+| Balance | Resisting tackles and staying upright after physical contact | Not an alias for Physical Contact. |
+| Stamina | Fitness and endurance | Separate from condition/form. |
+| Defensive Awareness | Defending reaction, including pressing the ball carrier | Not simply “positioning” in the official wording. |
+| Tackling | Range of standing/sliding tackles for winning the ball | A range description, not a measured tackle probability. |
+| Aggression | How forcefully player presses/tackles | Does not itself confirm successful ball wins. |
+| Defensive Engagement | Willingness to defend and speed of returning to position | Distinct from Aggression. |
+| GK Awareness | Keeper reaction, positioning and recovery | Separate from GK Reflexes. |
+| GK Catching | Catching stronger shots | Separate from parrying. |
+| GK Parrying | Clearing shots away from second chances | Not the same as catch reliability. |
+| GK Reflexes | Response to close shots and 1v1s | Separate from long-range reach. |
+| GK Reach | Shot-blocking coverage against fast or well-placed shots | Check alongside height and model. |
+
+Source: IMG_1237–IMG_1242. The more exact 16–18 m acceleration statement in
+section 2 remains **empirical**, not an official definition, and is about the
+reported off-ball test scenario.
+
+## Characteristics and training
+
+- Weak Foot Usage: frequency of weaker-foot use; “Regularly” means frequent use.
+- Weak Foot Accuracy: accuracy of passes/shots with the weaker foot.
+- Form: variability of match condition; “Unwavering” varies less.
+- Injury Resistance: susceptibility to injury; “High” means less frequent injury.
+- Position proficiency has low (uncoloured), intermediate (faded green), high
+  (bright green) levels. Position Training uses special tokens only for available
+  Additional Position Proficiency Slots; high is the cap. **A position’s proficiency
+  is separate from a playing style’s compatible-position rule.**
+- At most five additional skills; duplicate training has no effect; additions can
+  be overwritten/deleted; Trending players cannot undertake Skill Training.
+
+Source: IMG_1243–IMG_1244 and IMG_1260.
+
+## Skill descriptions to retain beside empirical tests
+
+| Skill | Officially described situation / effect | Evidence caution |
+|---|---|---|
+| Tap Trick | Executes a specific feint with its command | Screenshot IMG_1247 shows a controller icon; do not infer an unverified button sequence from OCR. |
+| Sombrero | More accurate Sombrero/Rainbow Flick, plus Sombrero when receiving a low pass | Feint-specific. |
+| Sole Control | Uses soles more in feints and turns | Broad raw-stat gains are unproven. |
+| Momentum Dribbling | Improved dribbling in the attacking third | Do not generalize to all zones. |
+| Acceleration Burst | Quick Sharp Touch when still/slow; special motions possible | Not a flat Acceleration stat bonus. |
+| Magnetic Feet | Retains ball better with nearby opponents, up to four within 5 m | Scaling and magnitude unmeasured. |
+| Snap Strike | Reduces time to take a Stunning Shot | No proven frame count. |
+| Low Screamer | Speeds up Stunning Shot below 50% gauge; prevents Dipping Shot | This interaction matters when both skills are present. |
+| Through Passing | Changes through-ball trajectory and improves accuracy | Empirical +20% estimate is separate. |
+| Weighted Pass | Backspinning accurate lofted/chipped forward ball | Official wording does not restrict it to defensive half. |
+| Outside Curler | Strong-foot outside-of-foot shot/pass, even from range | Useful for trivela passing when body angle permits. |
+| Visionary Pass | Improves receiver’s one-touch pass, first-time shot and trap | Applies to the receiver, not to the holder’s own passing stat. |
+| Phenomenal Pass | Improves power/accuracy from unusual passing body positions | Not a blanket increase to every pass. |
+| Track Back | Presses the opposing ball carrier from the front line | Box-to-Box defensive movement does not prove the skill redundant, but central DMF value is unclear. |
+| Man Marking; Interception; Blocker | Tight marking; more frequent interceptions; more blocks with fewer rebounds | Descriptions do not quantify magnitude. |
+| Power Tackle | Body-contact standing tackle; more opponent imbalance | New skill; do not infer flat Tackling/Physical Contact bonus. |
+| Shadow Hunt | Speed-related recovery when a pass goes behind a DMF, LB, RB or CB | No confirmed stat, duration or magnitude. |
+| Attacking Surge | Speed-related abilities in attacking half when teammate has ball | Distinct trigger from Shadow Hunt. |
+| Attack Trigger | Teammates’ Attacking Awareness while holder has the ball | Excludes holder; magnitude unmeasured. |
+| Fortress | Defensive improvement after halftime while leading | Halftime score need not have been a lead. |
+| Aerial Fort | Improved aerial duels in own penalty box | Not a field-wide aerial boost. |
+| Fighting Spirit; Captaincy | Under-pressure kick/header accuracy and fatigue resistance; team fatigue reduction | Narrow tests did not observe a visible Stamina increase; do not present that as disproof. |
+
+Source: IMG_1245–IMG_1259. The other listed skills remain in section 19; exact
+activation thresholds for Knuckle (50–65%), Dipping (20–50%), Rising (65–95%)
+and Blitz Curler (at least 50%) are given by the in-game descriptions, but
+shot outcomes and numerical boosts remain empirical and patch-sensitive.
+
+## Style-position corrections and evidence conflicts
+
+- Attacking compatibility is recorded in section 18. In particular **Classic No. 10**
+  is officially described as high-positioned, initiating attacks and also going
+  for goal. Earlier “static” wording was an inference and should not be treated
+  as an official mechanic.
+- **High Line GK** is described as covering space behind defenders when the team
+  attacks. Our older “extra passing option” claim lacked support in these screenshots.
+- **Covering Role** refers to covering teammates performing Match-up; “always
+  tracks runs in behind” was too specific.
+- **AI Playing Styles** apply when AI controls the **ball holder**; they are not
+  evidence of off-ball movement for a user-controlled card.
+- Empirical numerical bonuses, animation timings and stat thresholds throughout
+  this document were **not revalidated** by the in-game screenshots. Treat the
+  official paraphrases and measurements as separate kinds of evidence.
+
+---
+
+# 21. User's Confirmed Squad Cards
+
+The canonical user-specific card registry is **[`USER-SQUAD.md`](./USER-SQUAD.md)**.
+Keep this knowledge-base section intentionally compact so build doctrine and user data do
+not drift apart. When exact ownership/card identity matters, read `USER-SQUAD.md` first.
+
+Hard rules:
+
+- Never substitute another release of the same player when calculating progression,
+  native skills, boosters or final stats.
+- A screenshot or explicit eFHUB ID from the user overrides an older mapping.
+- If an ID-to-player mapping is not confirmed, keep the ID as **unmapped** rather than guessing.
+- Old build snapshots are historical evidence, not permission to overwrite a newer screenshot.
+
+High-confidence exact cards carried into the registry include:
+
+| Player | Exact card ID | Notes |
+|---|---:|---|
+| Gianluigi Buffon | `88040387118039` | Explicitly confirmed; current trained GK build still requires a current screenshot. |
+| Ruud Gullit | `88039045074410` | User-confirmed mapping. |
+| Samuel Eto'o | `88040387118554` | User-confirmed mapping. |
+| Zlatan Ibrahimović | `88040387119642` | User-confirmed mapping. |
+| Eden Hazard | `89137214427270` | User-confirmed mapping. |
+| Wesley Sneijder | `88040387121974` | User-confirmed mapping. |
+| Marcel Desailly | `89138288270047` | User-confirmed mapping. |
+| Neymar | `89133993205152` | User-confirmed mapping. |
+| Jaap Stam | `88045755964131` | Explicitly confirmed in the owned-card pool. |
+
+The full owned-card snapshot, working name mappings, additional confirmed cards outside
+that snapshot, current role notes and dated build snapshots are maintained in
+`USER-SQUAD.md`.
+
+---
+
+# 22. User's Owned Managers (screenshots, 24 Sep 2026)
+
+These seven **specific manager cards are confirmed owned by the user**. Keep
+their Link-up requirements separate from their team playstyle proficiency;
+the manager's listed effect cannot be assumed active until both player roles
+and positions match the card.
+
+| Manager | Team booster | Possession | QC | LBC | Out Wide | Long Ball | Overload | Link-up Play | Center Piece | Key Man |
+|---|---|---:|---:|---:|---:|---:|---:|---|---|---|
+| D. Deschamps | Speed +1; Ball Control +1 | 89 | 68 | 89 | 59 | 63 | N/A | Breakthrough Pass A | Creative Playmaker, AMF | Goal Poacher, CF |
+| R. Martínez | Finishing +1; Attacking Awareness +1 | 58 | 90 | 70 | 64 | 89 | N/A | Diagonal Long Pass B | Creative Playmaker, LWF/RWF | Attacking Full-back, LB/RB |
+| F. Beckenbauer | Dribbling +1; Defensive Awareness +1 | 65 | 57 | 89 | 60 | 89 | N/A | Breakthrough Pass B | Box-to-Box, CMF | Goal Poacher, CF |
+| Jürgen Klopp | Speed +1; Aggression +1 | 89 | 89 | 59 | 70 | 57 | N/A | Over-the-Top Pass C | Build Up, CB | Prolific Winger, LWF/RWF |
+| Xabi Alonso | Ball Control +1; Finishing +1 | 71 | 89 | 54 | 89 | 56 | N/A | Breakthrough Pass A | Creative Playmaker, AMF | Goal Poacher, CF |
+| Fabio Capello | Defensive Awareness +1; Finishing +1 | 46 | 57 | 89 | 64 | 89 | N/A | Over-the-Top Pass A | Orchestrator, DMF | Goal Poacher, CF |
+| Frank Lampard | Low Pass +1; Defensive Engagement +1 | 75 | 60 | 58 | 69 | 89 | 89 | 1-2 Cut-in A | Creative Playmaker, LWF/RWF | Fox in the Box, CF |
+
+The first screenshot contains two cards. Screenshots in displayed order: `14.07.50` (Deschamps/Martínez),
+`14.07.55` (Beckenbauer), `14.08.00` (Klopp), `14.08.06` (Alonso),
+`14.08.23` (Capello), `14.08.36` (Lampard). `N/A` is as shown on the
+manager card; do not record it as 0 proficiency.
+
+## Application to the current 4-2-2-2 Quick Counter XI
+
+- Prefer **Xabi Alonso (QC 89)** for the currently proposed XI, contingent
+  on verifying that the user's exact Sneijder card is Creative Playmaker at
+  AMF and the exact Eto'o card is Goal Poacher at CF. This satisfies the
+  displayed Breakthrough Pass A role/position pair without moving Hazard,
+  Vieira or Seedorf out of their intended jobs. The screenshots give the
+  prerequisites, not a measured estimate of the Link-up effect.
+- **R. Martínez (QC 90)** gives Finishing +1/OA +1 but his Link-up requires
+  a Creative Playmaker winger and Attacking Full-back. Those roles are absent
+  from the proposed narrow 4-2-2-2. Do not change formation solely to turn
+  on his Link-up.
+- **Klopp (QC 89)** requires a Build Up CB and a Prolific Winger LWF/RWF;
+  similarly, its link-up does not fit this narrow formation.
+- For a future LBC shape, **Beckenbauer (LBC 89)** can link a Box-to-Box CMF
+  (Seedorf if this is confirmed on his exact card) with Goal Poacher CF
+  (Eto'o). **Deschamps (LBC 89)** has the same role/position Link-up pair as
+  Alonso. Capello's LBC 89 Link-up specifically calls for an **Orchestrator
+  DMF**; Vieira's Anchor Man at DMF would not satisfy it.

@@ -5,13 +5,19 @@ This repo has two parts:
 - `index.html` / `style.css` / `app.js` — a static player-build creator (stat sliders,
   playing style, skills, live card preview), deployed via GitHub Pages.
 - `KNOWLEDGE-BASE.md` — the actual build doctrine: stat thresholds, diminishing returns,
-  player-model physics, role priorities, skill/booster synergy, and anti-patterns.
+  player-model physics, role priorities, skill/booster synergy, official screenshot cross-checks,
+  new-skill mechanics, and anti-patterns.
+- `USER-SQUAD.md` — the user's exact owned-card registry, known ID→player mappings, owned
+  managers, tactical context and dated build snapshots.
 
 ## When the user asks for a player build analysis
 
 If the user pastes a player screenshot, describes a player's stats/skills, or asks
 "what build should this player have" / "analyze this player" in this project, read
 `KNOWLEDGE-BASE.md` and follow it — do not eyeball stats or optimize for overall rating.
+Also read `USER-SQUAD.md` whenever ownership, exact card identity, an existing build, manager
+choice, squad role or tactical fit matters. A new screenshot overrides an older saved build.
+Never guess an unmapped eFHUB ID and never substitute another release of the same player.
 
 Follow section 14's workflow in order: position → Attacking Playing Style →
 Defensive Playing Style (section 18) → inspect player model → inspect natural

@@ -6,6 +6,8 @@ Two parts:
   thresholds and diminishing returns, player-model physics, role-based priorities,
   skill/booster synergy, and anti-patterns to avoid. The goal is never the highest
   overall rating — it's the strongest player for the exact role he'll be used in.
+- **[`USER-SQUAD.md`](./USER-SQUAD.md)** — the user-specific registry: owned eFHUB IDs,
+  known player mappings, manager inventory, tactical context and dated build snapshots.
 - **The build creator** (`index.html` / `style.css` / `app.js`) — a small,
   dependency-free tool: pick a position, tune every stat slider, choose a playing
   style and up to 6 skills, and watch a live player card (with radar chart and
@@ -27,3 +29,11 @@ Then open http://localhost:8080.
 
 Serve `index.html` from any static host. For GitHub Pages: Settings → Pages →
 Deploy from a branch → `main` / `/ (root)`.
+
+
+## Knowledge layout
+
+- Put **general eFootball mechanics** in `KNOWLEDGE-BASE.md`.
+- Put **Djolo-Djolo's cards, builds, managers and squad context** in `USER-SQUAD.md`.
+- `CLAUDE.md` instructs an AI assistant to read both and to prefer current screenshots over
+  stale snapshots or same-name card substitutions.
