@@ -129,26 +129,52 @@ window.Recommender = (deps) => {
 
   function finalStats(p, levels, booster2) {
     const t = { ...p.stats };
+    const gain = {};
+    const lost = {};
     categoriesFor(p).forEach((c) => {
       const lvl = levels[c.key] || 0;
-      if (lvl) c.stats.forEach((s) => { t[s] = Math.min(99, t[s] + lvl); });
+      if (lvl) c.stats.forEach((s) => {
+        const next = t[s] + lvl;
+        if (next > 99) lost[s] = (lost[s] || 0) + next - 99;
+        gain[s] = (gain[s] || 0) + Math.min(99, next) - t[s];
+        t[s] = Math.min(99, next);
+      });
     });
     const f = {};
     Object.keys(t).forEach((k) => { f[k] = mult === 1 ? t[k] : Math.min(99, t[k] + Math.floor(t[k] * (mult - 1))); });
     if (mgr) mgr.boost.forEach((k) => { f[k] += 1; });
     [p.booster1, p.booster2Fixed || booster2].forEach((b) => b && Object.entries(b.stats).forEach(([k, v]) => { f[k] += v; }));
+    Object.defineProperty(f, "$gain", { value: gain });
+    Object.defineProperty(f, "$lost", { value: lost });
     return f;
+  }
+
+  // §14 step 4 / §3 / §13: past these values extra training is waste (the examples in
+  // §14 are Acceleration 102, Speed 98, DA 102, Finishing 99, Passing 97; OA 96+ only
+  // "when progression cost is low"). Only points that came from training count.
+  const WASTE = { offensiveAwareness: 95, acceleration: 97, speed: 96, defensiveAwareness: 98, finishing: 95,
+    lowPass: 95, loftedPass: 94, ballWinning: 98, defensiveEngagement: 98, aggression: 96,
+    ballControl: 97, dribbling: 97, tightPossession: 97, balance: 97 };
+  function wasteOf(f) {
+    const out = {};
+    Object.entries(WASTE).forEach(([k, lim]) => {
+      const over = Math.min(f.$gain?.[k] || 0, f[k] - lim);
+      if (over > 0) out[k] = over;
+    });
+    Object.entries(f.$lost || {}).forEach(([k, v]) => { out[k] = (out[k] || 0) + v; });
+    return out;
   }
 
   function value(profile, f) {
     let v = 0;
     for (const s of profile.stats) {
       const x = f[s.k];
-      v += s.w * (Math.min(x, s.t) + 0.25 * Math.max(0, Math.min(x, s.cap) - s.t) + 0.04 * Math.max(0, x - s.cap) + (x >= s.t ? 4 : 0));
+      v += s.w * (Math.min(x, s.t) + 0.25 * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0));
     }
     // Secondary stats: once the role's priorities are met, every extra point in a stat the
     // role still uses beats parking it somewhere useless (§4: KP/Jump/Stamina stay linear).
-    for (const k of profile.secondary) v += 0.25 * Math.min(f[k], 99);
+    for (const k of profile.secondary) v += 0.25 * Math.min(f[k], WASTE[k] ?? 99);
+    for (const over of Object.values(wasteOf(f))) v -= 3 * over;
     return v;
   }
 
@@ -269,10 +295,10 @@ window.Recommender = (deps) => {
       if (tall) push("Aerial Superiority", `${p.height} cm — wins more aerial duels at similar jump height.`);
       push("Man Marking", "Tight marking on the striker.");
       push("Sliding Tackle", "Better sliding tackles as a last resort.");
+      push("Low Lofted Pass", "Faster, more accurate lofted distribution (§9 CB).");
       if (key === "buildUp") { push("One-touch Pass", "Build Up CB — safer first-time distribution (§9 CB)."); push("Low Lofted Pass", "Faster, more accurate lofted distribution (§9 CB)."); }
       push("One-touch Pass", "Distribution once defensive coverage is complete (§9 CB).");
       push("Weighted Pass", "Long Ball Counter distribution (§9 CB).");
-      push("Acrobatic Clearance", "Extra clearance animations.");
     } else if (["LB", "RB"].includes(pos)) {
       push("Interception", "Reads passes into the channel.");
       if (key === "offensiveFullBack") { push("Pinpoint Crossing", "+10% passing stats on crosses — Offensive Wingback identity (§19)."); push("One-touch Pass", "Quick combinations on the overlap."); }
@@ -320,17 +346,16 @@ window.Recommender = (deps) => {
       push("Fighting Spirit", "Shooting accuracy under pressure (§9 attacking).");
       if (f.physicalContact < 72 && p.height <= 176) push("Gamesmanship", "Low Physical Contact, agile — draws fouls when out-muscled (§19).");
       if (p.height <= 182) push("Double Touch", "Extra close-control move for a mobile attacker.");
-      push("Acrobatic Finishing", "More finishing animations for a scorer (only as a late pick — USER-SQUAD §5).");
-      push("Chip Shot Control", "One more finishing option 1v1 with the keeper.");
-      push("Weighted Pass", "Lofted through balls (§9 attacking).");
-      push("Super-sub", "+5% Finishing, +1% Speed/Acceleration — only matters if used off the bench.");
-      push("Heel Trick", "Listed in §9, but no measured effect yet (§19) — last-choice filler.");
+      if (["goalPoacher", "foxInTheBox"].includes(key) && f.finishing >= 90) push("Acrobatic Finishing", "Pure finisher with 90+ Finishing — the extra shot animations get used (USER-SQUAD §5).");
+      if (["creativePlaymaker", "classicNo10", "deepLyingForward", "crossSpecialist", "prolificWinger", "roamingFlank", "holePlayer"].includes(key)) push("Weighted Pass", "Lofted through balls for runners (§9 attacking).");
+      push("Super-sub", "Weak filler: +5% Finishing, +1% Speed/Acceleration, only when he comes off the bench.");
+      push("Heel Trick", "Weak filler: listed in §9 but no measured effect yet (§19).");
     }
     // Fallbacks so every card gets exactly five (§15), most useful first.
     const FALLBACK = pos === "GK" ? ["Low Lofted Pass", "Weighted Pass", "Fighting Spirit"]
       : ["CB", "LB", "RB", "DMF", "CMF"].includes(pos)
-        ? ["Interception", "Blocker", "Man Marking", "One-touch Pass", "Weighted Pass", "Fighting Spirit", "Sliding Tackle", "Low Lofted Pass", ...(p.height >= 185 ? ["Aerial Superiority"] : []), "Outside Curler", "Acrobatic Clearance"]
-        : ["One-touch Pass", "Outside Curler", "Fighting Spirit", "Long-range Shooting", "Double Touch", "Weighted Pass", "Chip Shot Control", "Super-sub", "Heel Trick"];
+        ? ["Interception", "Blocker", "Man Marking", "One-touch Pass", "Weighted Pass", "Fighting Spirit", "Sliding Tackle", "Low Lofted Pass", ...(p.height >= 185 ? ["Aerial Superiority"] : []), "Outside Curler"]
+        : ["One-touch Pass", "Outside Curler", "Fighting Spirit", "Long-range Shooting", ...(p.height <= 182 ? ["Double Touch"] : []), "Weighted Pass", "Super-sub", "Heel Trick"];
     FALLBACK.forEach((n) => push(n, "Fills the fifth slot — best remaining option for the role."));
     return { skills: out, why };
   }
@@ -373,7 +398,8 @@ window.Recommender = (deps) => {
     const alt = OVR.POSITIONS.filter((pos) => pos !== p.position && profAt(p, pos) !== "none")
       .map((pos) => ({ pos, r: OVR.rating(pos, p.height, p.weakFootAccuracy, r.final) }))
       .sort((a, b) => b.r - a.r)[0];
-    r.lock = missed.length === 0;
+    r.waste = wasteOf(r.final);
+    r.lock = missed.length === 0 && Object.keys(r.waste).length === 0;
     r.missed = missed;
     r.altPosition = alt || null;
   });

@@ -1279,7 +1279,12 @@
     } else if (r.lock) {
       out.push("<b>Lock it.</b> Every high-priority target for the role is met.");
     } else {
-      out.push(`<b>Test a variant.</b> Still short on ${r.missed.map((t) => `${statLabel(t.stat)} (${t.value}/${t.target})`).join(", ")} — worth trying if the role leans on ${r.missed.length > 1 ? "them" : "it"}.`);
+      const bits = [];
+      if (r.missed.length) bits.push(`still short on ${r.missed.map((t) => `${statLabel(t.stat)} (${t.value}/${t.target})`).join(", ")}`);
+      const waste = Object.entries(r.waste || {});
+      if (waste.length) bits.push(`${waste.map(([k, n]) => `${n} pt${n > 1 ? "s" : ""} of ${statLabel(k)}`).join(", ")} past the useful range (§14 step 4) — the category also feeds stats the role needs, so it's a trade-off`);
+      const text = bits.join("; ");
+      out.push(`<b>Test a variant.</b> ${text.charAt(0).toUpperCase()}${text.slice(1)}.`);
     }
     const role = lineupRole(p.id);
     out.push(role
