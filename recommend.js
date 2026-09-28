@@ -244,6 +244,12 @@ window.Recommender = (deps) => {
       if (out.length >= 5 || out.includes(name) || has(name) || !addable.has(name)) return;
       out.push(name); why[name] = reason;
     };
+    // Skill choices the user already made in Build Lab come first (USER-SQUAD §4).
+    const note = KB.SQUAD_NOTES[p.id];
+    [...(note?.prefSkills || []), ...(note?.snapshot?.skills || [])].forEach((n) => {
+      if (out.length >= 5 || out.includes(n) || has(n)) return;
+      out.push(n); why[n] = "Your saved choice for this card (USER-SQUAD §4).";
+    });
     const dtPackage = () => {
       // Double Touch + Flip Flap + Sole Control ball roll (§8) — only for smaller technical players.
       if (p.height > 182) return;
@@ -305,7 +311,8 @@ window.Recommender = (deps) => {
         push("Aerial Superiority", `${p.height} cm with ${f.heading} Heading — model supports it (§8).`);
       }
       push("One-touch Pass", "Quick combinations (§9 attacking).");
-      if (["creativePlaymaker", "classicNo10", "deepLyingForward"].includes(key) && !has("Through Passing")) push("Through Passing", "Creator — +20% passing stats on through balls.");
+      if (["creativePlaymaker", "classicNo10", "deepLyingForward"].includes(key)) push("Through Passing", "Creator — +20% passing stats on through balls (§19).");
+      if (striker) push("Through Passing", "Long Ball Counter: lay-offs and through balls to the runner — +20% passing stats on through balls (§19).");
       if (["prolificWinger", "roamingFlank", "holePlayer", "creativePlaymaker", "dummyRunner"].includes(key)) push("Cut Behind & Turn", "Beats a tight marker 1v1 (§8).");
       if (key === "crossSpecialist") push("Pinpoint Crossing", "+10% passing stats on crosses.");
       push("Outside Curler", "Strong-foot trivela shots and passes (§9 attacking).");
