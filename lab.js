@@ -166,7 +166,7 @@
      Tabs / routing
   --------------------------------------------------------- */
 
-  const TABS = ["squad", "train", "lineup", "skills", "managers", "styles", "sandbox"];
+  const TABS = ["squad", "recommended", "mybuilds", "train", "lineup", "skills", "managers", "styles", "sandbox"];
   const view = { playerId: null, draft: null, position: null };
 
   function route() {
@@ -180,6 +180,8 @@
     });
     if (active === "train") openTrainer(arg && byId[arg] ? arg : view.playerId || defaultPlayerId());
     if (active === "lineup") renderLineup();
+    if (active === "recommended") renderRecommended();
+    if (active === "mybuilds") renderMyBuilds();
   }
   function go(tab, arg) {
     const hash = `#${tab}${arg ? "/" + arg : ""}`;
@@ -527,6 +529,7 @@
     renderTrainer();
     renderSquad();
     renderLineup();
+    renderMyBuilds();
   });
   $("#trainDelete").addEventListener("click", () => {
     if (!store.builds[view.playerId]) return;
@@ -538,6 +541,7 @@
     renderTrainer();
     renderSquad();
     renderLineup();
+    renderMyBuilds();
   });
   $("#trainCopy").addEventListener("click", async () => {
     const p = byId[view.playerId];
@@ -1231,9 +1235,243 @@
   document.addEventListener("pointercancel", onDragEnd);
 
   /* ---------------------------------------------------------
+     Recommended builds (Claude, from KNOWLEDGE-BASE) & My Builds
+  --------------------------------------------------------- */
+
+  const REC_CONTEXT = { manager: KB.CURRENT_MANAGER, tactic: "Long Ball Counter" };
+  let REC = null; // filled at init (needs the multiplier table above)
+  const recState = { q: "", group: "ALL" };
+  const mineState = { q: "", group: "ALL", onlyMine: false };
+
+  function lineupRole(id) {
+    const l = store.lineups.find((x) => x.id === store.activeLineup) || store.lineups[0];
+    if (!l) return null;
+    const i = l.xi.indexOf(id);
+    if (i >= 0) return { label: "Starter", lineup: l.name, pos: layoutOf(l)[i][0] };
+    if (l.bench.includes(id)) return { label: "Bench", lineup: l.name };
+    return null;
+  }
+  function recBuild(id) {
+    const p = byId[id];
+    const r = REC.recs[id];
+    const b = emptyBuild(p);
+    Object.assign(b.levels, r.levels);
+    b.booster2 = r.booster2;
+    b.skills = [...r.skills];
+    return b;
+  }
+  function openInTrainer(id, build) {
+    const p = byId[id];
+    view.playerId = id;
+    view.draft = structuredClone(build);
+    categoriesFor(p).forEach((c) => { view.draft.levels[c.key] ??= 0; });
+    view.position = p.position;
+    go("train", id);
+  }
+  const ctxRating = (p, build, pos = p.position) => compute(p, build, REC_CONTEXT.manager, REC_CONTEXT.tactic).ratings[pos];
+  const sameBuild = (a, b) => JSON.stringify(Object.entries(a.levels).filter(([, v]) => v).sort())
+    === JSON.stringify(Object.entries(b.levels).filter(([, v]) => v).sort());
+
+  function verdictText(p, r) {
+    const out = [];
+    if (budgetFor(p.levelCap) === 0) {
+      out.push("Fixed card — eFHUB lists no progression points, so only the booster and skills can change.");
+    } else if (r.lock) {
+      out.push("<b>Lock it.</b> Every high-priority target for the role is met.");
+    } else {
+      out.push(`<b>Test a variant.</b> Still short on ${r.missed.map((t) => `${statLabel(t.stat)} (${t.value}/${t.target})`).join(", ")} — worth trying if the role leans on ${r.missed.length > 1 ? "them" : "it"}.`);
+    }
+    const role = lineupRole(p.id);
+    out.push(role
+      ? `<b>${role.label}</b> in your lineup “${esc(role.lineup)}”${role.pos ? ` at ${role.pos}` : ""}. By this build he is #${r.depth.rank} of ${r.depth.of} ${p.position} cards.`
+      : `Not in your active lineup — #${r.depth.rank} of ${r.depth.of} ${p.position} cards by this build, so ${r.depth.starter ? "a <b>starter candidate</b>" : "<b>rotation / situational</b>"} unless the plan needs his profile.`);
+    const here = r.rating;
+    const alt = r.altPosition;
+    out.push(alt && alt.r > here
+      ? `Preferred position: <b>${p.position}</b> for the style (${esc(p.playingStyle || p.playingStyleDefensive || "")}); ${alt.pos} rates higher (${alt.r}) but check style compatibility before moving him.`
+      : `Preferred position: <b>${p.position}</b>${alt ? ` (best alternative ${alt.pos} ${alt.r})` : ""}.`);
+    const snap = KB.SQUAD_NOTES[p.id]?.snapshot;
+    if (snap) {
+      const line = categoriesFor(p).map((c) => r.levels[c.key] || 0).join("-");
+      const mine = snap.levels.join("-");
+      out.push(line === mine ? `Matches your ${esc(snap.date)} snapshot.` : `Your ${esc(snap.date)} snapshot was <code>${mine}</code> — compare both in the Trainer.`);
+    }
+    return out.map((x) => `<p>${x}</p>`).join("");
+  }
+
+  function renderRecommended() {
+    if (!REC) return;
+    const q = recState.q.trim().toLowerCase();
+    const list = players
+      .filter((p) => recState.group === "ALL" || POSITION_GROUP[p.position] === recState.group)
+      .filter((p) => !q || `${p.name} ${p.team} ${p.position} ${styleText(p)}`.toLowerCase().includes(q))
+      .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || REC.recs[b.id].rating - REC.recs[a.id].rating);
+    $("#recMeta").textContent = `${list.length} builds · rated with ${REC_CONTEXT.manager} at ${REC_CONTEXT.tactic}`;
+    $("#recGrid").innerHTML = list.map((p) => {
+      const r = REC.recs[p.id];
+      const cats = categoriesFor(p);
+      const pts = cats.reduce((t, c) => t + cumCost(r.levels[c.key] || 0), 0);
+      const att = KB.ATT_STYLES.find((s) => norm(s.name) === norm(p.playingStyle));
+      const def = KB.DEF_STYLES.find((s) => norm(s.name) === norm(p.playingStyleDefensive || p.playingStyle));
+      const b = r.booster;
+      const slot1 = Object.keys(p.booster1?.stats || {});
+      const mine = store.builds[p.id];
+      return `
+        <article class="rec-card" data-group="${POSITION_GROUP[p.position]}">
+          <header class="rec-card__head">
+            ${cardImg(p, "rec-card__img")}
+            <div class="rec-card__who">
+              <h3>${esc(p.name)}</h3>
+              <p>${esc(p.team || "")} · ${p.height} cm · Lv cap ${p.levelCap}</p>
+              <div class="kb-card__badges">
+                ${lineupRole(p.id) ? `<span class="badge badge--lime">${lineupRole(p.id).label} in lineup</span>` : ""}
+                <span class="badge">#${r.depth.rank}/${r.depth.of} ${p.position}</span>
+                ${r.lock ? `<span class="badge badge--green">Lock</span>` : `<span class="badge badge--amber">Test variant</span>`}
+                ${mine ? `<span class="badge">★ you have a build</span>` : ""}
+              </div>
+            </div>
+            <div class="rec-card__ovr"><b>${r.rating}</b><span>${p.position} · card ${p.overall}</span></div>
+          </header>
+
+          <section class="rec-sec">
+            <h4>Role</h4>
+            <p><b>${p.position} — Attacking: ${esc(att?.name || p.playingStyle || "Basic")} · Defensive: ${esc(p.playingStyleDefensive ? (def?.name || p.playingStyleDefensive) : "—")}</b></p>
+            <p class="rec-muted">${esc(r.roleLabel)} priorities (§7).${att ? " " + esc(att.behavior) : ""}</p>
+            ${r.notes.map((n) => `<p class="rec-note">${esc(n)}</p>`).join("")}
+          </section>
+
+          <section class="rec-sec">
+            <h4>Build <span class="rec-muted">${pts}/${budgetFor(p.levelCap)} pts</span></h4>
+            <div class="rec-levels">${cats.map((c) => `<span class="${r.levels[c.key] ? "" : "is-zero"}"><b>${r.levels[c.key] || 0}</b><i>${c.label.replace("Lower Body Strength", "Lower Body").replace("Aerial Strength", "Aerial")}</i></span>`).join("")}</div>
+          </section>
+
+          <section class="rec-sec">
+            <h4>Booster</h4>
+            <p><b>${esc(b.name)}</b> — ${Object.keys(b.stats).map(statLabel).join(", ")}${r.boosterFixed ? " <span class=\"rec-muted\">(fixed on this card)</span>" : ""}</p>
+            <p class="rec-muted">${r.boosterFixed ? "Slot 2 is pre-assigned on this card." : `Picked last, on the finished build (§11)${slot1.length ? ` — slot 1 (${esc(p.booster1.name)}) already covers ${slot1.map(statLabel).join(", ")}` : ""}${r.boosterOverlap ? `; overlaps ${r.boosterOverlap} of them` : ""}.`}</p>
+          </section>
+
+          <section class="rec-sec">
+            <h4>Target stats</h4>
+            <div class="rec-targets">${r.targets.map((t) => `<span class="rec-t ${t.hit ? "is-hit" : "is-miss"}" title="Target ${t.target}"><i>${statLabel(t.stat)}</i><b class="tier-bg-${statTier(t.value)}">${t.value}</b>${t.hit ? "" : `<em>→${t.target}</em>`}</span>`).join("")}</div>
+          </section>
+
+          <section class="rec-sec">
+            <h4>Additional skills <span class="rec-muted">${r.skills.length}/5</span></h4>
+            <ul class="rec-skills">${r.skills.map((n) => `<li><b>${esc(n)}</b> <span>${esc(r.skillWhy[n] || "")}</span></li>`).join("")}
+            ${r.skills.length < 5 ? `<li class="rec-muted">Only ${r.skills.length} worthwhile additions — the card already has the rest natively.</li>` : ""}</ul>
+          </section>
+
+          <section class="rec-sec rec-verdict">
+            <h4>Final verdict</h4>
+            ${verdictText(p, r)}
+          </section>
+
+          <div class="rec-card__actions">
+            <button type="button" class="btn btn--icon" data-rec-open="${p.id}">Open in Trainer</button>
+            <button type="button" class="btn btn--icon btn--solid" data-rec-use="${p.id}">${mine ? "Replace my build" : "Use as my build"}</button>
+          </div>
+        </article>`;
+    }).join("") || `<p class="empty-state">No players match.</p>`;
+  }
+
+  function useRecommendation(id) {
+    const p = byId[id];
+    if (store.builds[id] && !confirm(`Replace your saved build for ${p.name} with the recommended one?`)) return;
+    store.builds[id] = { ...recBuild(id), savedAt: Date.now() };
+    saveStore();
+    renderPlayerSelect();
+    renderRecommended(); renderMyBuilds(); renderSquad(); renderLineup();
+  }
+
+  function renderMyBuilds() {
+    if (!REC) return;
+    const q = mineState.q.trim().toLowerCase();
+    const list = players
+      .filter((p) => mineState.group === "ALL" || POSITION_GROUP[p.position] === mineState.group)
+      .filter((p) => !mineState.onlyMine || store.builds[p.id])
+      .filter((p) => !q || `${p.name} ${p.team} ${p.position}`.toLowerCase().includes(q))
+      .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.overall - a.overall);
+    const total = Object.keys(store.builds).filter((id) => byId[id]).length;
+    $("#mineMeta").textContent = `${total} of ${players.length} players have your build · ratings use ${REC_CONTEXT.manager} at ${REC_CONTEXT.tactic} for both columns`;
+    $("#mineRows").innerHTML = list.map((p) => {
+      const r = REC.recs[p.id];
+      const rb = recBuild(p.id);
+      const mine = store.builds[p.id];
+      const line = (b) => categoriesFor(p).map((c) => b.levels[c.key] || 0).join("-");
+      const rOvr = ctxRating(p, rb);
+      let status = `<span class="badge">Not started</span>`;
+      let mOvr = "—";
+      let delta = "";
+      let diffs = "";
+      if (mine) {
+        mOvr = ctxRating(p, mine);
+        const d = mOvr - rOvr;
+        delta = `<span class="delta ${d > 0 ? "is-up" : d < 0 ? "is-down" : ""}">${d > 0 ? "+" : ""}${d}</span>`;
+        const changes = [];
+        if (!sameBuild(mine, rb)) changes.push("levels");
+        const b2 = booster2Of(p, mine);
+        if (!p.booster2Fixed && (b2?.id ?? null) !== (r.booster2 ?? null)) changes.push("booster");
+        if ([...mine.skills].sort().join() !== [...rb.skills].sort().join()) changes.push("skills");
+        status = changes.length ? `<span class="badge badge--amber">Tweaked: ${changes.join(", ")}</span>` : `<span class="badge badge--green">Same as recommended</span>`;
+        const b2name = b2?.name || "—";
+        diffs = `<small>${esc(b2name)} · ${mine.skills.length} skills</small>`;
+      }
+      return `
+        <tr>
+          <td><button type="button" class="linkish linkish--strong" data-open-player="${p.id}">${esc(p.name)}</button><small>${p.position} · ${esc(p.team || "")}</small></td>
+          <td><code>${line(rb)}</code><small>${esc(r.booster.name)}</small></td>
+          <td class="num">${rOvr}</td>
+          <td>${mine ? `<code>${line(mine)}</code>${diffs}` : "<em>—</em>"}</td>
+          <td class="num">${mOvr} ${delta}</td>
+          <td>${status}</td>
+          <td class="actions">
+            <button type="button" class="btn btn--icon btn--solid" data-mine-edit="${p.id}">${mine ? "Tweak" : "Start from recommended"}</button>
+            ${mine ? `<button type="button" class="btn btn--icon" data-rec-use="${p.id}">Reset to recommended</button>` : ""}
+          </td>
+        </tr>`;
+    }).join("") || `<tr><td colspan="7"><p class="empty-state">No players match.</p></td></tr>`;
+  }
+
+  function bindFilter(prefix, state, render) {
+    $(`#${prefix}Search`).addEventListener("input", (e) => { state.q = e.target.value; render(); });
+    $(`#${prefix}Groups`).addEventListener("click", (e) => {
+      const b = e.target.closest("[data-group]");
+      if (!b) return;
+      state.group = b.dataset.group;
+      $(`#${prefix}Groups`).querySelectorAll(".chip").forEach((c) => c.classList.toggle("is-selected", c === b));
+      render();
+    });
+  }
+  bindFilter("rec", recState, renderRecommended);
+  bindFilter("mine", mineState, renderMyBuilds);
+  $("#mineOnly").addEventListener("change", (e) => { mineState.onlyMine = e.target.checked; renderMyBuilds(); });
+
+  document.addEventListener("click", (e) => {
+    const open = e.target.closest("[data-rec-open]");
+    if (open) openInTrainer(open.dataset.recOpen, recBuild(open.dataset.recOpen));
+    const use = e.target.closest("[data-rec-use]");
+    if (use) useRecommendation(use.dataset.recUse);
+    const edit = e.target.closest("[data-mine-edit]");
+    if (edit) {
+      const id = edit.dataset.mineEdit;
+      openInTrainer(id, store.builds[id] || recBuild(id));
+    }
+  });
+  $("#trainLoadRec").addEventListener("click", () => {
+    const p = byId[view.playerId];
+    view.draft = recBuild(p.id);
+    renderTrainer();
+  });
+
+  /* ---------------------------------------------------------
      Init
   --------------------------------------------------------- */
 
+  REC = window.Recommender({
+    players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
+    skillMultiplier, managerProficiency, MAX_LEVEL, boosterPool: DATA.boosterPool,
+  });
   renderPlayerSelect();
   renderSquad();
   renderSkills();

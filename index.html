@@ -26,6 +26,8 @@
 
 <nav class="tabs" role="tablist" aria-label="Sections">
   <a href="#squad" class="tabs__link" role="tab" data-tab-link="squad">My Squad</a>
+  <a href="#recommended" class="tabs__link" role="tab" data-tab-link="recommended">Recommended</a>
+  <a href="#mybuilds" class="tabs__link" role="tab" data-tab-link="mybuilds">My Builds</a>
   <a href="#train" class="tabs__link" role="tab" data-tab-link="train">Trainer</a>
   <a href="#lineup" class="tabs__link" role="tab" data-tab-link="lineup">Lineup</a>
   <a href="#skills" class="tabs__link" role="tab" data-tab-link="skills">Skills</a>
@@ -53,6 +55,60 @@
         </div>
       </div>
       <div class="squad-grid" id="squadGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RECOMMENDED ============ -->
+<section class="tab-panel" data-tab="recommended" aria-labelledby="rec-heading">
+  <div class="wrap">
+    <div class="panel">
+      <div class="panel__head">
+        <h2 id="rec-heading">RECOMMENDED BUILDS</h2>
+        <p class="panel__meta" id="recMeta"></p>
+      </div>
+      <p class="source-note">My build for every card, following KNOWLEDGE-BASE §14: role → priorities &amp; thresholds → player model &amp; native skills → every point spent → slot-2 booster last → 5 additional skills. Never optimised for overall rating (§16). Take one as your starting point in <b>My Builds</b>.</p>
+      <div class="toolbar">
+        <input type="text" id="recSearch" placeholder="Search name, team, style…" aria-label="Search recommended builds">
+        <div class="chips" id="recGroups">
+          <button type="button" class="chip is-selected" data-group="ALL">All</button>
+          <button type="button" class="chip" data-group="GK">GK</button>
+          <button type="button" class="chip" data-group="DEF">DEF</button>
+          <button type="button" class="chip" data-group="MID">MID</button>
+          <button type="button" class="chip" data-group="FWD">FWD</button>
+        </div>
+      </div>
+      <div class="rec-grid" id="recGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MY BUILDS ============ -->
+<section class="tab-panel" data-tab="mybuilds" aria-labelledby="mine-heading">
+  <div class="wrap">
+    <div class="panel">
+      <div class="panel__head">
+        <h2 id="mine-heading">MY BUILDS</h2>
+        <p class="panel__meta" id="mineMeta"></p>
+      </div>
+      <p class="source-note">Your builds next to mine. "Start from recommended" opens the Trainer pre-filled with my build — tweak it there and hit Save build.</p>
+      <div class="toolbar">
+        <input type="text" id="mineSearch" placeholder="Search…" aria-label="Search my builds">
+        <div class="chips" id="mineGroups">
+          <button type="button" class="chip is-selected" data-group="ALL">All</button>
+          <button type="button" class="chip" data-group="GK">GK</button>
+          <button type="button" class="chip" data-group="DEF">DEF</button>
+          <button type="button" class="chip" data-group="MID">MID</button>
+          <button type="button" class="chip" data-group="FWD">FWD</button>
+        </div>
+        <label class="check"><input type="checkbox" id="mineOnly"> Only players with my build</label>
+      </div>
+      <div class="table-wrap">
+        <table class="kb-table mine-table">
+          <thead><tr><th>Player</th><th>Recommended</th><th class="num">OVR</th><th>Mine</th><th class="num">OVR</th><th>Status</th><th></th></tr></thead>
+          <tbody id="mineRows"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </section>
@@ -115,6 +171,7 @@
         <div class="submit-row">
           <span class="save-state" id="trainSaveState"></span>
           <div class="panel__actions">
+            <button type="button" class="btn btn--ghost" id="trainLoadRec">Load recommended</button>
             <button type="button" class="btn btn--ghost" id="trainSnapshot" hidden>Load snapshot</button>
             <button type="button" class="btn btn--ghost" id="trainReset">Reset</button>
             <button type="button" class="btn btn--ghost" id="trainCopy">Copy</button>
@@ -386,6 +443,7 @@
 <script src="data/players.js"></script>
 <script src="data/knowledge.js"></script>
 <script src="data/ovr.js"></script>
+<script src="recommend.js"></script>
 <script src="lab.js"></script>
 <script src="app.js"></script>
 </body>

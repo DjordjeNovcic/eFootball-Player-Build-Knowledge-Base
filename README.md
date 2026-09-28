@@ -11,6 +11,12 @@ Two parts:
 - **The Build Lab** (`index.html`) — a dependency-free web UI with tabs:
   - **My Squad** — every owned card from `USER-SQUAD.md`, with eFHUB stats, styles,
     boosters, level cap and role notes.
+  - **Recommended** — a build for every card, generated from the knowledge base
+    (`recommend.js`): role from position + styles → §7 priorities and §3 thresholds →
+    player-model and native-skill adjustments → every point spent → slot-2 booster last →
+    5 additional skills → verdict, in the §15 format. Never optimised for OVR.
+  - **My Builds** — your builds next to the recommended ones (status, OVR delta); start
+    from a recommendation and tweak it in the Trainer.
   - **Trainer** — spend progression points per category (level 0–20, tiered cost from
     KNOWLEDGE-BASE §12), pick the slot-2 booster, manager and up to 5 additional skills,
     and see final stats, KB thresholds and the per-position OVR. The stat pipeline matches
