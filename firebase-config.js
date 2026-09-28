@@ -2,7 +2,7 @@
 // This is not a secret — Firebase web apps ship it in the page; access is enforced by
 // firestore.rules. Leave apiKey empty to run the site without cloud sync.
 export const FIREBASE_CONFIG = {
-  apiKey: "",
+  apiKey: "AIzaSyB9CYU72RqKDNEnS6agqQE9kfAI2jAr2SQ",
   authDomain: "efootballbuild-4a791.firebaseapp.com",
   projectId: "efootballbuild-4a791",
   storageBucket: "efootballbuild-4a791.firebasestorage.app",
