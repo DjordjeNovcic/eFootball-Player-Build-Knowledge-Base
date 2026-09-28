@@ -19,18 +19,18 @@ window.Recommender = (deps) => {
   // to the cap, then nothing (diminishing returns, §3/§13).
   const T = {
     goalPoacher: { label: "Goal Poacher", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 91, 97], ["finishing", 8, 90, 94], ["speed", 7, 90, 94], ["ballControl", 6, 88], ["balance", 5, 88], ["kickingPower", 4, 90], ["dribbling", 2, 85], ["tightPossession", 2, 85], ["lowPass", 1, 75]] },
-    foxInTheBox: { label: "Fox in the Box", stats: [["offensiveAwareness", 10, 90, 95], ["finishing", 9, 90, 94], ["physicalContact", 7, 85], ["ballControl", 6, 88], ["acceleration", 6, 88, 92], ["heading", 4, 89], ["jump", 3, 85], ["kickingPower", 4, 90], ["balance", 3, 85], ["speed", 2, 85]] },
-    targetMan: { label: "Target Man", stats: [["physicalContact", 9, 88], ["heading", 8, 89], ["jump", 7, 88], ["ballControl", 7, 88], ["offensiveAwareness", 6, 88], ["finishing", 6, 88], ["lowPass", 4, 80], ["kickingPower", 4, 88], ["acceleration", 3, 85]] },
-    holePlayer: { label: "Hole Player", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 92, 97], ["balance", 8, 90], ["finishing", 7, 90, 94], ["ballControl", 6, 90], ["tightPossession", 5, 88], ["lowPass", 4, 82], ["speed", 4, 88], ["kickingPower", 3, 88], ["dribbling", 3, 88]] },
-    creativePlaymaker: { label: "Creative Playmaker", stats: [["ballControl", 9, 90], ["dribbling", 8, 90], ["tightPossession", 8, 88], ["lowPass", 8, 87], ["balance", 7, 88], ["acceleration", 6, 88, 94], ["kickingPower", 5, 85], ["finishing", 4, 85], ["offensiveAwareness", 3, 85, 88], ["loftedPass", 3, 80], ["speed", 2, 85]] },
-    deepLyingForward: { label: "Deep-Lying Forward", stats: [["ballControl", 9, 90], ["tightPossession", 8, 88], ["dribbling", 7, 88], ["lowPass", 7, 85], ["finishing", 7, 90], ["offensiveAwareness", 6, 88], ["acceleration", 6, 90], ["balance", 6, 88], ["kickingPower", 3, 88]] },
+    foxInTheBox: { label: "Fox in the Box", stats: [["offensiveAwareness", 10, 90, 95], ["finishing", 9, 90, 94], ["physicalContact", 7, 85], ["ballControl", 6, 88], ["acceleration", 6, 88, 92], ["heading", 4, 89], ["jump", 3, 85], ["kickingPower", 4, 90], ["balance", 4, 85], ["speed", 4, 90, 93]] },
+    targetMan: { label: "Target Man", stats: [["physicalContact", 9, 88], ["heading", 8, 89], ["jump", 7, 88], ["ballControl", 7, 88], ["offensiveAwareness", 6, 88], ["finishing", 6, 88], ["lowPass", 4, 80], ["kickingPower", 4, 88], ["acceleration", 3, 85], ["speed", 2, 86]] },
+    holePlayer: { label: "Hole Player", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 92, 97], ["balance", 8, 90], ["finishing", 7, 90, 94], ["ballControl", 6, 90], ["tightPossession", 5, 88], ["lowPass", 4, 82], ["speed", 4, 89, 94], ["kickingPower", 3, 88], ["dribbling", 3, 88]] },
+    creativePlaymaker: { label: "Creative Playmaker", stats: [["ballControl", 9, 90], ["dribbling", 8, 90], ["tightPossession", 8, 88], ["lowPass", 8, 87], ["balance", 7, 88], ["acceleration", 6, 88, 94], ["kickingPower", 5, 85], ["finishing", 4, 85], ["offensiveAwareness", 3, 85, 88], ["loftedPass", 3, 80], ["speed", 3, 89, 94]] },
+    deepLyingForward: { label: "Deep-Lying Forward", stats: [["ballControl", 9, 90], ["tightPossession", 8, 88], ["dribbling", 7, 88], ["lowPass", 7, 85], ["finishing", 7, 90], ["offensiveAwareness", 6, 88], ["acceleration", 6, 90], ["balance", 6, 88], ["kickingPower", 3, 88], ["speed", 3, 90, 94]] },
     dummyRunner: { label: "Dummy Runner", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 92, 97], ["speed", 8, 90, 94], ["finishing", 7, 90], ["balance", 6, 88], ["ballControl", 5, 88]] },
-    classicNo10: { label: "Classic No. 10", stats: [["ballControl", 8, 90], ["lowPass", 8, 87], ["tightPossession", 7, 88], ["dribbling", 7, 88], ["finishing", 6, 88], ["offensiveAwareness", 6, 88], ["kickingPower", 5, 88], ["balance", 5, 88], ["acceleration", 5, 88]] },
+    classicNo10: { label: "Classic No. 10", stats: [["ballControl", 8, 90], ["lowPass", 8, 87], ["tightPossession", 7, 88], ["dribbling", 7, 88], ["finishing", 6, 88], ["offensiveAwareness", 6, 88], ["kickingPower", 5, 88], ["balance", 5, 88], ["acceleration", 5, 88], ["speed", 2, 89]] },
     prolificWinger: { label: "Prolific Winger", stats: [["acceleration", 9, 92, 97], ["speed", 8, 90, 94], ["dribbling", 8, 90], ["ballControl", 7, 88], ["balance", 7, 88], ["finishing", 6, 88], ["offensiveAwareness", 6, 88], ["kickingPower", 4, 88], ["tightPossession", 4, 85], ["loftedPass", 3, 80]] },
     crossSpecialist: { label: "Cross Specialist", stats: [["loftedPass", 9, 90, 92], ["speed", 8, 90], ["acceleration", 8, 90], ["dribbling", 6, 88], ["ballControl", 6, 88], ["curl", 5, 85], ["balance", 5, 85], ["stamina", 4, 88], ["offensiveAwareness", 3, 85], ["finishing", 3, 80]] },
     roamingFlank: { label: "Roaming Flank", stats: [["acceleration", 9, 92, 97], ["offensiveAwareness", 8, 90], ["dribbling", 8, 90], ["finishing", 7, 88], ["speed", 7, 90], ["ballControl", 7, 88], ["balance", 7, 88], ["kickingPower", 4, 88]] },
     boxToBox: { label: "Box-to-Box", stats: [["stamina", 8, 90], ["speed", 7, 88], ["acceleration", 7, 90], ["lowPass", 7, 85], ["ballControl", 6, 88], ["defensiveAwareness", 6, 85], ["ballWinning", 6, 85], ["balance", 6, 88], ["defensiveEngagement", 4, 85], ["physicalContact", 4, 82], ["kickingPower", 3, 85], ["finishing", 2, 80]] },
-    orchestrator: { label: "Orchestrator", stats: [["lowPass", 10, 87, 92], ["tightPossession", 8, 88], ["ballControl", 8, 88], ["balance", 7, 88], ["acceleration", 6, 88], ["stamina", 6, 88], ["loftedPass", 5, 85], ["defensiveAwareness", 4, 80], ["kickingPower", 4, 85], ["ballWinning", 3, 78], ["dribbling", 3, 85]] },
+    orchestrator: { label: "Orchestrator", stats: [["lowPass", 10, 87, 92], ["tightPossession", 8, 88], ["ballControl", 8, 88], ["balance", 7, 88], ["acceleration", 6, 88], ["stamina", 6, 88], ["loftedPass", 5, 85], ["defensiveAwareness", 4, 80], ["kickingPower", 2, 85], ["ballWinning", 3, 78], ["dribbling", 3, 85]] },
     anchorMan: { label: "Anchor Man", stats: [["defensiveAwareness", 10, 90, 96], ["defensiveEngagement", 9, 88], ["ballWinning", 9, 88], ["speed", 7, 88], ["acceleration", 7, 88], ["physicalContact", 6, 85], ["stamina", 6, 88], ["lowPass", 3, 78], ["aggression", 3, 85], ["jump", 2, 80]] },
     allActionDefender: { label: "All-Action Defender", stats: [["defensiveAwareness", 9, 90, 96], ["defensiveEngagement", 9, 88], ["ballWinning", 8, 88], ["stamina", 8, 90], ["speed", 7, 88], ["acceleration", 7, 90], ["physicalContact", 5, 85], ["lowPass", 4, 80], ["ballControl", 3, 82]] },
     buildUp: { label: "Build Up CB", stats: [["defensiveAwareness", 10, 90, 96], ["speed", 8, 88], ["acceleration", 8, 88], ["ballWinning", 7, 88], ["physicalContact", 7, 85], ["defensiveEngagement", 6, 88], ["jump", 4, 85], ["heading", 3, 82], ["lowPass", 3, 78], ["aggression", 3, 85]] },
@@ -70,10 +70,13 @@ window.Recommender = (deps) => {
     const native = new Set(p.skills.map((k) => norm(skillLabel(k))));
     const has = (n) => native.has(norm(n));
     const notes = [];
-    const stats = tpl.stats.map(([k, w, t, cap]) => ({ k, w, t, cap: cap ?? t + 6 }));
+    // §4: Kicking Power, Jump and Stamina have no useful hard threshold — they keep
+    // paying (at a reduced rate) all the way to 99.
+    const LINEAR = new Set(["kickingPower", "jump", "stamina"]);
+    const stats = tpl.stats.map(([k, w, t, cap]) => ({ k, w, t, cap: LINEAR.has(k) ? 99 : cap ?? t + 6, slope: LINEAR.has(k) ? 0.35 : 0.25 }));
     const get = (k) => stats.find((s) => s.k === k);
     const scale = (k, f) => { const s = get(k); if (s) s.w *= f; };
-    const ensure = (k, w, t) => get(k) || stats.push({ k, w, t, cap: t + 6 });
+    const ensure = (k, w, t) => get(k) || stats.push({ k, w, t, cap: LINEAR.has(k) ? 99 : t + 6, slope: LINEAR.has(k) ? 0.35 : 0.25 });
 
     if (ATTACKERS.has(p.position) && p.height >= 188) {
       scale("dribbling", 0.4); scale("tightPossession", 0.5);
@@ -88,6 +91,7 @@ window.Recommender = (deps) => {
       const s = get("finishing"); if (s) { s.t = Math.min(s.t, 90); s.cap = s.t + 2; }
       notes.push(`${has("Phenomenal Finishing") ? "Phenomenal Finishing" : "Willpower"} — no need to chase 97–99 Finishing (§8, §13).`);
     }
+    if (["foxInTheBox", "targetMan"].includes(tpl.key)) { const pc = get("physicalContact"); if (pc) pc.cap = 97; }
     if (has("Bullet Header")) {
       ensure("heading", 5, 89); ensure("jump", 4, 85); ensure("physicalContact", 4, 85);
       scale("heading", 1.6); scale("jump", 1.5); scale("physicalContact", 1.3);
@@ -98,8 +102,13 @@ window.Recommender = (deps) => {
       scale("kickingPower", 1.5); scale("finishing", 0.8);
       notes.push("Blitz Curler — Kicking Power > Curl > Finishing (§8).");
     }
-    if (has("Through Passing") && !["orchestrator", "creativePlaymaker", "classicNo10"].includes(tpl.key)) {
-      const s = get("lowPass"); if (s) { s.t = Math.min(s.t, 82); s.cap = s.t + 3; }
+    // §3: Low Pass 82 is the functional minimum for a passer with native Through Passing.
+    // Only applied where passing is part of the role — a striker's lay-off pass doesn't
+    // justify pulling points out of his core stats (the skill reason flags a low LP instead).
+    const lp = get("lowPass");
+    if (has("Through Passing") && lp && lp.w >= 4) {
+      if (!["orchestrator", "creativePlaymaker", "classicNo10"].includes(tpl.key)) { lp.t = Math.min(lp.t, 82); lp.cap = lp.t + 3; }
+      notes.push("Through Passing — Low Pass 82 is its functional minimum (§3).");
     }
     if (has("Phenomenal Pass") || has("Visionary Pass")) {
       scale("lowPass", 0.7); scale("loftedPass", 0.7);
@@ -169,7 +178,7 @@ window.Recommender = (deps) => {
     let v = 0;
     for (const s of profile.stats) {
       const x = f[s.k];
-      v += s.w * (Math.min(x, s.t) + 0.25 * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0));
+      v += s.w * (Math.min(x, s.t) + (s.slope ?? 0.25) * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0));
     }
     // Secondary stats: once the role's priorities are met, every extra point in a stat the
     // role still uses beats parking it somewhere useless (§4: KP/Jump/Stamina stay linear).
@@ -251,7 +260,9 @@ window.Recommender = (deps) => {
       const overlap = Object.keys(b.stats).filter((k) => slot1.has(k)).length;
       // §11: don't boost stats that are already ~97+ — those points are mostly wasted.
       const saturated = Object.keys(b.stats).filter((k) => before[k] >= 97).length;
-      const v = value(profile, finalStats(p, levels, b)) - overlap * 0.5 - saturated * 3;
+      // §11: pick by the exact stats — only role stats still below target count.
+      const weak = Object.keys(b.stats).filter((k) => profile.stats.some((st) => st.k === k && before[k] < st.t)).length;
+      const v = value(profile, finalStats(p, levels, b)) - overlap * 0.5 - saturated * 3 + weak * 1.5;
       if (!best || v > best.v) best = { booster: b, v, overlap };
     }
     return { booster: best.booster, fixed: false, overlap: best.overlap };
@@ -274,7 +285,11 @@ window.Recommender = (deps) => {
     const note = KB.SQUAD_NOTES[p.id];
     [...(note?.prefSkills || []), ...(note?.snapshot?.skills || [])].forEach((n) => {
       if (out.length >= 5 || out.includes(n) || has(n)) return;
-      out.push(n); why[n] = "Your saved choice for this card (USER-SQUAD §4).";
+      out.push(n);
+      why[n] = "Your saved choice for this card (USER-SQUAD §4)."
+        + (n === "Through Passing" && f.lowPass < 82 ? ` Low Pass is ${f.lowPass}, below the 82 it needs (§3).` : "")
+        + (n === "Double Touch" && p.height >= 188 ? " Less valuable on a tall target man (§8)." : "")
+        + (n === "Heel Trick" ? " No measured effect yet (§19)." : "");
     });
     const dtPackage = () => {
       // Double Touch + Flip Flap + Sole Control ball roll (§8) — only for smaller technical players.
@@ -338,7 +353,7 @@ window.Recommender = (deps) => {
       }
       push("One-touch Pass", "Quick combinations (§9 attacking).");
       if (["creativePlaymaker", "classicNo10", "deepLyingForward"].includes(key)) push("Through Passing", "Creator — +20% passing stats on through balls (§19).");
-      if (striker) push("Through Passing", "Long Ball Counter: lay-offs and through balls to the runner — +20% passing stats on through balls (§19).");
+      if (striker && f.lowPass >= 78) push("Through Passing", `Long Ball Counter lay-offs and through balls — +20% passing stats (§19); Low Pass ${f.lowPass}${f.lowPass < 82 ? ", a bit under the 82 it wants (§3)" : ""}.`);
       if (["prolificWinger", "roamingFlank", "holePlayer", "creativePlaymaker", "dummyRunner"].includes(key)) push("Cut Behind & Turn", "Beats a tight marker 1v1 (§8).");
       if (key === "crossSpecialist") push("Pinpoint Crossing", "+10% passing stats on crosses.");
       push("Outside Curler", "Strong-foot trivela shots and passes (§9 attacking).");
