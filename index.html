@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Player Build Base — eFootball Build Lab</title>
-<meta name="description" content="Design, rate and save custom eFootball player builds — stats, playing style and skills, all in your browser.">
+<title>eFootball Build Lab</title>
+<meta name="description" content="My eFootball squad, progression trainer, skills, managers and playing styles — built on the Player Build Knowledge Base.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,15 +16,193 @@
 <div class="turf" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 
-<header class="hero">
+<header class="hero hero--compact">
   <div class="hero__stripe" aria-hidden="true"></div>
   <div class="hero__inner">
     <p class="hero__eyebrow">// EFOOTBALL BUILD LAB</p>
-    <h1 class="hero__title">PLAYER<span>BUILD</span>BASE</h1>
-    <p class="hero__sub">Tune the stats. Pick the style. Ship the perfect card — saved right in your browser, no account needed.</p>
+    <h1 class="hero__title">BUILD<span>LAB</span></h1>
   </div>
 </header>
 
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <a href="#squad" class="tabs__link" role="tab" data-tab-link="squad">My Squad</a>
+  <a href="#train" class="tabs__link" role="tab" data-tab-link="train">Trainer</a>
+  <a href="#skills" class="tabs__link" role="tab" data-tab-link="skills">Skills</a>
+  <a href="#managers" class="tabs__link" role="tab" data-tab-link="managers">Managers</a>
+  <a href="#styles" class="tabs__link" role="tab" data-tab-link="styles">Playing Styles</a>
+  <a href="#sandbox" class="tabs__link" role="tab" data-tab-link="sandbox">Sandbox</a>
+</nav>
+
+<!-- ============ MY SQUAD ============ -->
+<section class="tab-panel" data-tab="squad" aria-labelledby="squad-heading">
+  <div class="wrap">
+    <div class="panel">
+      <div class="panel__head">
+        <h2 id="squad-heading">MY SQUAD</h2>
+        <p class="panel__meta" id="squadMeta"></p>
+      </div>
+      <div class="toolbar">
+        <input type="text" id="squadSearch" placeholder="Search name, team, style, ID…" aria-label="Search squad">
+        <div class="chips" id="squadGroups">
+          <button type="button" class="chip is-selected" data-group="ALL">All</button>
+          <button type="button" class="chip" data-group="GK">GK</button>
+          <button type="button" class="chip" data-group="DEF">DEF</button>
+          <button type="button" class="chip" data-group="MID">MID</button>
+          <button type="button" class="chip" data-group="FWD">FWD</button>
+        </div>
+      </div>
+      <div class="squad-grid" id="squadGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRAINER ============ -->
+<section class="tab-panel" data-tab="train" aria-label="Trainer">
+  <div class="wrap">
+    <div class="toolbar toolbar--train">
+      <label class="field">
+        <span class="field__label">Player</span>
+        <select id="trainPlayer"></select>
+      </label>
+      <label class="field field--tight">
+        <span class="field__label">Manager</span>
+        <select id="trainManager"></select>
+      </label>
+    </div>
+
+    <div class="panel train-head" id="trainHead"></div>
+
+    <div class="train-layout">
+      <div class="panel">
+        <div class="panel__head">
+          <h2>PROGRESSION</h2>
+          <div class="points">
+            <label class="points__cap">Lv cap <input type="number" id="trainCap" min="1" max="99"></label>
+            <span id="trainPoints"></span>
+          </div>
+        </div>
+
+        <div id="trainCats"></div>
+
+        <div class="build-line">
+          <span class="field__label">Build line</span>
+          <code id="trainBuildLine"></code>
+        </div>
+
+        <ul class="warnings" id="trainWarnings" hidden></ul>
+
+        <div class="group">
+          <h3 class="group__title">Boosters</h3>
+          <div class="boost-row"><span class="boost-row__slot">Slot 1 · fixed</span><span id="trainBoost1"></span></div>
+          <label class="boost-row"><span class="boost-row__slot">Slot 2</span><select id="trainBoost2"></select></label>
+        </div>
+
+        <div class="group">
+          <h3 class="group__title">Additional skills <span class="group__hint">— <span id="trainSkillCount"></span>, native skills are greyed out</span></h3>
+          <div class="chips" id="trainSkills"></div>
+        </div>
+
+        <div class="group">
+          <h3 class="group__title">Native skills</h3>
+          <div class="tags" id="trainNative"></div>
+        </div>
+
+        <div class="submit-row">
+          <span class="save-state" id="trainSaveState"></span>
+          <div class="panel__actions">
+            <button type="button" class="btn btn--ghost" id="trainSnapshot" hidden>Load snapshot</button>
+            <button type="button" class="btn btn--ghost" id="trainReset">Reset</button>
+            <button type="button" class="btn btn--ghost" id="trainCopy">Copy</button>
+            <button type="button" class="btn btn--primary" id="trainSave">Save build</button>
+          </div>
+        </div>
+        <div class="submit-row submit-row--minor">
+          <span class="save-state">Builds are stored in this browser.</span>
+          <div class="panel__actions">
+            <button type="button" class="btn btn--icon" id="trainExport">Export all</button>
+            <button type="button" class="btn btn--icon" id="trainImport">Import</button>
+            <input type="file" id="trainImportFile" accept="application/json" hidden>
+            <button type="button" class="btn btn--icon btn--danger" id="trainDelete">Delete saved</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head"><h2>RATINGS</h2><p class="panel__meta">Tap a position to rate the build there</p></div>
+        <div class="pos-grid" id="trainPositions"></div>
+        <div class="stats-legend">
+          <span><i class="lg lg--base"></i>card base</span>
+          <span><i class="lg lg--gain"></i>training + boosters</span>
+          <span><em>+n</em> boosters &amp; manager</span>
+          <span><span class="th th--hit">90 ✓</span> KB threshold</span>
+        </div>
+        <div id="trainStats"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SKILLS ============ -->
+<section class="tab-panel" data-tab="skills" aria-labelledby="skills-heading">
+  <div class="wrap">
+    <div class="panel">
+      <div class="panel__head">
+        <h2 id="skills-heading">SKILLS</h2>
+        <p class="panel__meta" id="skillMeta"></p>
+      </div>
+      <div class="toolbar">
+        <input type="text" id="skillSearch" placeholder="Search skills and effects…" aria-label="Search skills">
+        <select id="skillCat" aria-label="Category"></select>
+        <select id="skillPool" aria-label="Availability">
+          <option value="">All availability</option>
+          <option value="add">Addable</option>
+          <option value="excl">Card-exclusive</option>
+          <option value="unk">Picker unverified</option>
+        </select>
+        <label class="check"><input type="checkbox" id="skillMine"> Only skills in my squad</label>
+      </div>
+      <p class="source-note">Official = in-game help paraphrase (§20). Tested = empirical results (§19). A blank or "untested" effect is unconfirmed, not disproven.</p>
+      <div class="kb-grid" id="skillGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MANAGERS ============ -->
+<section class="tab-panel" data-tab="managers" aria-labelledby="managers-heading">
+  <div class="wrap">
+    <div class="panel">
+      <div class="panel__head">
+        <h2 id="managers-heading">MANAGERS</h2>
+        <p class="panel__meta">Seven owned cards · team booster is a flat +1/+1 on the whole squad (§17)</p>
+      </div>
+      <div class="table-wrap"><table class="kb-table" id="mgrTable"></table></div>
+      <h3 class="group__title group__title--spaced">Link-up — who in my squad fills each role</h3>
+      <p class="source-note">A Link-up only works when both the Center Piece and the Key Man play with the named style and position. Playing styles come from eFHUB and may differ from a newer card screenshot.</p>
+      <div class="kb-grid" id="mgrLinks"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STYLES ============ -->
+<section class="tab-panel" data-tab="styles" aria-labelledby="styles-heading">
+  <div class="wrap">
+    <div class="panel">
+      <div class="panel__head">
+        <h2 id="styles-heading">PLAYING STYLES</h2>
+        <p class="panel__meta">v6.0.0 · a style only activates in a compatible position (§18)</p>
+      </div>
+      <h3 class="group__title">Attacking</h3>
+      <div class="table-wrap"><table class="kb-table" id="styleAtt"></table></div>
+      <h3 class="group__title group__title--spaced">Defensive</h3>
+      <div class="table-wrap"><table class="kb-table" id="styleDef"></table></div>
+      <h3 class="group__title group__title--spaced">AI playing styles</h3>
+      <div class="table-wrap"><table class="kb-table" id="styleAI"></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SANDBOX (original free-form builder) ============ -->
+<section class="tab-panel" data-tab="sandbox" aria-label="Sandbox">
 <main class="layout">
 
   <section class="panel" aria-labelledby="builder-heading">
@@ -103,11 +281,16 @@
   </section>
 
 </main>
+</section>
 
 <footer class="site-footer">
-  <p>Player Build Base — a fan-made eFootball companion tool. Not affiliated with KONAMI. Builds are stored locally in your browser only.</p>
+  <p>eFootball Build Lab — a fan-made companion tool. Not affiliated with KONAMI. Card data from eFHUB; builds are stored locally in your browser only.</p>
 </footer>
 
+<script src="data/players.js"></script>
+<script src="data/knowledge.js"></script>
+<script src="data/ovr.js"></script>
+<script src="lab.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

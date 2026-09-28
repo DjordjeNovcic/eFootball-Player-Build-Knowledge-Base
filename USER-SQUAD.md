@@ -22,61 +22,61 @@ build snapshots. General game mechanics and skill definitions stay in `KNOWLEDGE
 # 1. Owned Card Pool Snapshot
 
 The user explicitly saved the following **49 eFHUB IDs** as the owned-player pool on
-7 Sep 2026. The ID list itself is authoritative for that snapshot. Some name mappings
-were explicitly confirmed; others came from the prior roster review and are labelled
-accordingly.
+7 Sep 2026. The ID list itself is authoritative for that snapshot. On 28 Sep 2026 every
+ID was resolved against its public eFHUB card page (`tools/fetch_players.py`), which named
+all previously unmapped IDs and corrected #13 (Gerd Müller, not Thomas Müller).
 
 | # | eFHUB ID | Player | Mapping status |
 |---:|---:|---|---|
-| 1 | `89136140651034` | Unmapped | ID confirmed, name not mapped |
+| 1 | `89136140651034` | Zlatan Ibrahimović (AC Milan) | eFHUB card page (28 Sep 2026) |
 | 2 | `88040387119642` | Zlatan Ibrahimović | Confirmed mapping |
 | 3 | `88040387118554` | Samuel Eto'o | Confirmed mapping |
 | 4 | `89137214427270` | Eden Hazard | Confirmed mapping |
 | 5 | `88039045074410` | Ruud Gullit | Confirmed mapping |
-| 6 | `88045755964130` | Claude Makélélé | Working mapping from prior roster review |
-| 7 | `88044145348029` | Patrick Vieira | Working mapping from prior roster review |
-| 8 | `88041460993474` | Paolo Maldini | Working mapping from prior roster review |
-| 9 | `88039850289220` | Raphaël Varane | Working mapping from prior roster review |
+| 6 | `88045755964130` | Claude Makélélé | Confirmed via eFHUB card page (28 Sep 2026) |
+| 7 | `88044145348029` | Patrick Vieira | Confirmed via eFHUB card page (28 Sep 2026) |
+| 8 | `88041460993474` | Paolo Maldini | Confirmed via eFHUB card page (28 Sep 2026) |
+| 9 | `88039850289220` | Raphaël Varane | Confirmed via eFHUB card page (28 Sep 2026) |
 | 10 | `89138288270047` | Marcel Desailly | Confirmed mapping |
-| 11 | `88039581948640` | Lilian Thuram | Working mapping from prior roster review |
+| 11 | `88039581948640` | Lilian Thuram | Confirmed via eFHUB card page (28 Sep 2026) |
 | 12 | `89135066911146` | Cristiano Ronaldo | Confirmed mapping |
-| 13 | `88040655554922` | Thomas Müller | Working mapping from prior roster review |
-| 14 | `88045755960841` | Adriano | Working mapping from prior roster review |
+| 13 | `88040655554922` | Gerd Müller | eFHUB card page (28 Sep 2026) — corrects earlier “Thomas Müller” working mapping |
+| 14 | `88045755960841` | Adriano | Confirmed via eFHUB card page (28 Sep 2026) |
 | 15 | `88040387121974` | Wesley Sneijder | Confirmed mapping |
-| 16 | `89138288266704` | Ronaldinho | Working mapping from prior roster review |
-| 17 | `88039581945312` | Andrea Pirlo | Working mapping from prior roster review |
-| 18 | `89136409091415` | Lionel Messi | Working mapping from prior roster review |
-| 19 | `88040387251676` | Unmapped | ID confirmed, name not mapped |
-| 20 | `88041460859805` | Clarence Seedorf | Working mapping from prior roster review |
-| 21 | `88044145348045` | Unmapped | ID confirmed, name not mapped |
-| 22 | `88040387180670` | Unmapped | ID confirmed, name not mapped |
+| 16 | `89138288266704` | Ronaldinho | Confirmed via eFHUB card page (28 Sep 2026) |
+| 17 | `88039581945312` | Andrea Pirlo | Confirmed via eFHUB card page (28 Sep 2026) |
+| 18 | `89136409091415` | Lionel Messi | Confirmed via eFHUB card page (28 Sep 2026) |
+| 19 | `88040387251676` | Frank Lampard | eFHUB card page (28 Sep 2026) |
+| 20 | `88041460859805` | Clarence Seedorf | Confirmed via eFHUB card page (28 Sep 2026) |
+| 21 | `88044145348045` | Cafu | eFHUB card page (28 Sep 2026) |
+| 22 | `88040387180670` | Giovanni van Bronckhorst | eFHUB card page (28 Sep 2026) |
 | 23 | `88045755964131` | Jaap Stam | Confirmed mapping |
-| 24 | `88039581926569` | Unmapped | ID confirmed, name not mapped |
-| 25 | `88039581945329` | Unmapped | ID confirmed, name not mapped |
-| 26 | `88040387126189` | Unmapped | ID confirmed, name not mapped |
-| 27 | `88033139494357` | Unmapped | ID confirmed, name not mapped |
-| 28 | `106765907789861` | Unmapped | ID confirmed, name not mapped |
-| 29 | `106749533210935` | Unmapped | ID confirmed, name not mapped |
-| 30 | `89138556700485` | Jude Bellingham | Working mapping from prior roster review |
-| 31 | `88040387117286` | Unmapped | ID confirmed, name not mapped |
-| 32 | `88044145348046` | Unmapped | ID confirmed, name not mapped |
-| 33 | `106765907771610` | Unmapped | ID confirmed, name not mapped |
-| 34 | `88044145217198` | Kaká | Working mapping from prior roster review |
+| 24 | `88039581926569` | Alessandro Nesta (S.S. Lazio) | eFHUB card page (28 Sep 2026) |
+| 25 | `88039581945329` | Franco Baresi | eFHUB card page (28 Sep 2026) |
+| 26 | `88040387126189` | Pepe | eFHUB card page (28 Sep 2026) |
+| 27 | `88033139494357` | Javier Zanetti | eFHUB card page (28 Sep 2026) |
+| 28 | `106765907789861` | Pedri | eFHUB card page (28 Sep 2026) |
+| 29 | `106749533210935` | Vinícius Júnior | eFHUB card page (28 Sep 2026) |
+| 30 | `89138556700485` | Jude Bellingham | Confirmed via eFHUB card page (28 Sep 2026) |
+| 31 | `88040387117286` | Dragan Stojković | eFHUB card page (28 Sep 2026) |
+| 32 | `88044145348046` | Rivaldo | eFHUB card page (28 Sep 2026) |
+| 33 | `106765907771610` | Eberechi Eze | eFHUB card page (28 Sep 2026) |
+| 34 | `88044145217198` | Kaká | Confirmed via eFHUB card page (28 Sep 2026) |
 | 35 | `89133993205152` | Neymar | Confirmed mapping |
-| 36 | `106768055197475` | Unmapped | ID confirmed, name not mapped |
-| 37 | `88041460993461` | Unmapped | ID confirmed, name not mapped |
-| 38 | `89138556575063` | Lionel Messi | Working mapping from prior roster review |
-| 39 | `88041460993546` | Jan Koller | Working mapping from prior roster review |
-| 40 | `88040387251683` | Unmapped | ID confirmed, name not mapped |
-| 41 | `88041460860895` | Unmapped | ID confirmed, name not mapped |
-| 42 | `88040387120260` | Ferenc Puskás | Working mapping from prior roster review |
-| 43 | `106773692395554` | Unmapped | ID confirmed, name not mapped |
-| 44 | `88039581945358` | Alessandro Del Piero | Working mapping from prior roster review |
-| 45 | `88045755964138` | Andriy Shevchenko | Working mapping from prior roster review |
-| 46 | `88040387251721` | Unmapped | ID confirmed, name not mapped |
-| 47 | `88045755861057` | Unmapped | ID confirmed, name not mapped |
-| 48 | `88045218959416` | Unmapped | ID confirmed, name not mapped |
-| 49 | `88044682118054` | Unmapped | ID confirmed, name not mapped |
+| 36 | `106768055197475` | Mohamed Salah | eFHUB card page (28 Sep 2026) |
+| 37 | `88041460993461` | Luís Figo | eFHUB card page (28 Sep 2026) |
+| 38 | `89138556575063` | Lionel Messi | Confirmed via eFHUB card page (28 Sep 2026) |
+| 39 | `88041460993546` | Jan Koller | Confirmed via eFHUB card page (28 Sep 2026) |
+| 40 | `88040387251683` | Javier Saviola | eFHUB card page (28 Sep 2026) |
+| 41 | `88041460860895` | Roy Makaay | eFHUB card page (28 Sep 2026) |
+| 42 | `88040387120260` | Ferenc Puskás | Confirmed via eFHUB card page (28 Sep 2026) |
+| 43 | `106773692395554` | Ousmane Dembélé | eFHUB card page (28 Sep 2026) |
+| 44 | `88039581945358` | Alessandro Del Piero | Confirmed via eFHUB card page (28 Sep 2026) |
+| 45 | `88045755964138` | Andriy Shevchenko | Confirmed via eFHUB card page (28 Sep 2026) |
+| 46 | `88040387251721` | Adriano | eFHUB card page (28 Sep 2026) |
+| 47 | `88045755861057` | Luis Suárez | eFHUB card page (28 Sep 2026) |
+| 48 | `88045218959416` | Wayne Rooney | eFHUB card page (28 Sep 2026) |
+| 49 | `88044682118054` | Sergio Agüero | eFHUB card page (28 Sep 2026) |
 
 ## Additional confirmed cards outside the 49-ID snapshot
 

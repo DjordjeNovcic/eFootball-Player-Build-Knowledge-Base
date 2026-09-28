@@ -8,11 +8,16 @@ Two parts:
   overall rating — it's the strongest player for the exact role he'll be used in.
 - **[`USER-SQUAD.md`](./USER-SQUAD.md)** — the user-specific registry: owned eFHUB IDs,
   known player mappings, manager inventory, tactical context and dated build snapshots.
-- **The build creator** (`index.html` / `style.css` / `app.js`) — a small,
-  dependency-free tool: pick a position, tune every stat slider, choose a playing
-  style and up to 6 skills, and watch a live player card (with radar chart and
-  overall rating) update as you go. Save builds locally, export them as JSON, or
-  re-import them later.
+- **The Build Lab** (`index.html`) — a dependency-free web UI with tabs:
+  - **My Squad** — every owned card from `USER-SQUAD.md`, with eFHUB stats, styles,
+    boosters, level cap and role notes.
+  - **Trainer** — spend progression points per category (level 0–20, tiered cost from
+    KNOWLEDGE-BASE §12), pick the slot-2 booster, manager and up to 5 additional skills,
+    and see final stats, KB thresholds and the per-position OVR (same formula as eFHUB).
+    Saved dated snapshots from `USER-SQUAD.md` load with one click.
+  - **Skills**, **Managers**, **Playing Styles** — the knowledge base as searchable
+    views, cross-linked to which of my cards have each skill/style/Link-up role.
+  - **Sandbox** — the original free-form stat-slider card builder (`app.js`).
 
 No backend, no build step — plain HTML/CSS/JS, everything persists to the browser's
 `localStorage`. Not affiliated with KONAMI; this is just a fan-made companion tool.
@@ -24,6 +29,18 @@ python3 -m http.server 8080
 ```
 
 Then open http://localhost:8080.
+
+## Refresh card data
+
+`data/players.js` is generated from the public eFHUB card pages of every ID in
+`USER-SQUAD.md`. After adding IDs there, re-run:
+
+```bash
+python3 tools/fetch_players.py
+```
+
+`data/knowledge.js` is a hand-maintained extract of `KNOWLEDGE-BASE.md` / `USER-SQUAD.md`
+for the UI — update it when those documents change.
 
 ## Deploy
 
