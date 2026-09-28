@@ -179,7 +179,18 @@
 
     <div class="lineup-layout">
       <div class="panel">
-        <div class="panel__head"><h2>STARTING XI</h2><p class="panel__meta">★ = rated with your saved Trainer build</p></div>
+        <div class="panel__head">
+          <h2>STARTING XI <small class="layout-state" id="luLayoutState"></small></h2>
+          <p class="panel__meta">★ = rated with your saved Trainer build</p>
+        </div>
+        <div class="pitch-bar">
+          <div class="segmented" id="luModes" role="group" aria-label="Drag mode">
+            <button type="button" data-mode="players">Move players</button>
+            <button type="button" data-mode="positions">Edit positions</button>
+          </div>
+          <button type="button" class="btn btn--icon" id="luResetLayout" hidden>Reset positions</button>
+        </div>
+        <p class="pitch-hint" id="luModeHint"></p>
         <div class="pitch" id="luPitch"></div>
         <div class="slot-legend">
           <span><i class="dot dot--primary"></i>main position</span>

@@ -644,6 +644,28 @@
   const TEAM_TACTICS = ["Possession", "Quick Counter", "Long Ball Counter", "Out Wide", "Long Ball"];
   const BENCH_MAX = 12;
   const slotsFor = (f) => [["GK", 50, 6], ...(FORMATIONS[f] || FORMATIONS["4-3-3"])];
+  const OUTFIELD_ROLES = ["CB", "LB", "RB", "DMF", "CMF", "LMF", "RMF", "AMF", "LWF", "RWF", "SS", "CF"];
+
+  // Per-lineup slot layout [role, x, y]; starts from the formation preset and can be
+  // edited by dragging markers or picking a role.
+  function layoutOf(l) {
+    if (!Array.isArray(l.layout) || l.layout.length !== 11) l.layout = slotsFor(l.formation).map((s) => [...s]);
+    return l.layout;
+  }
+  const isEdited = (l) => JSON.stringify(layoutOf(l)) !== JSON.stringify(slotsFor(l.formation));
+
+  // Role from pitch zone (x from left touchline, y from own goal line) — bands chosen so
+  // every preset formation maps back onto its own roles.
+  function roleAt(x, y) {
+    const wide = x < 25 ? "L" : x > 75 ? "R" : "";
+    if (y < 31) return wide ? `${wide}B` : "CB";
+    if (y < 46) return x < 22 ? "LB" : x > 78 ? "RB" : "DMF";
+    if (y < 58) return wide ? `${wide}MF` : "CMF";
+    if (y < 71) return wide ? `${wide}MF` : "AMF";
+    const wing = x < 28 ? "LWF" : x > 72 ? "RWF" : "";
+    if (y < 80) return wing || "SS";
+    return wing || "CF";
+  }
 
   // Style → compatible positions, for both style slots (§18).
   const styleEntries = (list, kind) => list.map((s) => ({ key: norm(s.name), name: s.name, kind, positions: s.positions.split(/,\s*/) }));
@@ -678,7 +700,7 @@
     if (!l) { l = store.lineups[0]; store.activeLineup = l.id; }
     return l;
   }
-  const lu = { sel: null, q: "" }; // sel = { area: "xi"|"bench", i }
+  const lu = { sel: null, q: "", mode: "players", justDragged: false }; // sel = { area: "xi"|"bench", i }
 
   function slotRating(p, pos, l) {
     const build = store.builds[p.id] || emptyBuild(p);
@@ -701,7 +723,7 @@
 
   function lineupWarnings(l) {
     const w = [];
-    const slots = slotsFor(l.formation);
+    const slots = layoutOf(l);
     const empty = l.xi.filter((x) => !x).length;
     if (empty) w.push(`<b>${empty} empty slot${empty > 1 ? "s" : ""}</b> in the starting XI.`);
     l.xi.forEach((id, i) => {
@@ -725,7 +747,7 @@
   function linkUpStatus(l) {
     const m = managerObj(l.manager);
     if (!m) return null;
-    const slots = slotsFor(l.formation);
+    const slots = layoutOf(l);
     const find = ([style, positions]) => {
       const set = positions.split("/");
       return l.xi.map((id, i) => ({ p: byId[id], pos: slots[i][0] }))
@@ -739,7 +761,7 @@
   function renderLineup() {
     if (!$("#luPitch")) return;
     const l = activeLineup();
-    const slots = slotsFor(l.formation);
+    const slots = layoutOf(l);
     while (l.xi.length < 11) l.xi.push(null);
     l.xi.length = 11;
 
@@ -748,6 +770,13 @@
     $("#luName").value = l.name;
     $("#luFormation").innerHTML = Object.keys(FORMATIONS).map((f) => `<option>${f}</option>`).join("");
     $("#luFormation").value = l.formation;
+    $("#luLayoutState").textContent = isEdited(l) ? `${l.formation} · edited` : l.formation;
+    $("#luResetLayout").hidden = !isEdited(l);
+    $("#luModes").querySelectorAll("[data-mode]").forEach((b) => b.classList.toggle("is-on", b.dataset.mode === lu.mode));
+    $("#luPitch").classList.toggle("is-editing", lu.mode === "positions");
+    $("#luModeHint").textContent = lu.mode === "positions"
+      ? "Drag a marker to move it — its role follows the pitch zone. Tap a marker to set the role by hand."
+      : "Drag a player onto another slot or the bench to swap. Tap a slot to pick from the squad.";
     $("#luManager").innerHTML = `<option value="">No manager</option>` + KB.MANAGERS.map((m) => `<option value="${esc(m.name)}">${esc(m.name)}</option>`).join("");
     $("#luManager").value = l.manager || "";
     $("#luTactic").innerHTML = TEAM_TACTICS.map((t) => `<option>${t}</option>`).join("");
@@ -838,6 +867,8 @@
           <button type="button" class="btn btn--icon" data-lu="cancel">Close</button>
         </div>
       </div>
+      ${pos && lu.sel.i > 0 ? `<div class="role-row"><span class="field__label">Role</span>${OUTFIELD_ROLES.map((r) =>
+        `<button type="button" class="role-btn ${r === pos ? "is-on" : ""}" data-role="${r}">${r}</button>`).join("")}</div>` : ""}
       <input type="text" id="luSearch" placeholder="Search…" value="${esc(lu.q)}" aria-label="Search players">
       <div class="picker__list">${rows.map(({ p, r }) => {
         const where = l.xi.includes(p.id) ? "XI" : l.bench.includes(p.id) ? "Bench" : "";
@@ -877,14 +908,14 @@
 
   $("#luPitch").addEventListener("click", (e) => {
     const b = e.target.closest("[data-slot]");
-    if (!b) return;
+    if (!b || lu.justDragged) return;
     const i = Number(b.dataset.slot);
     lu.sel = lu.sel?.area === "xi" && lu.sel.i === i ? null : { area: "xi", i };
     renderLineup();
   });
   $("#luBench").addEventListener("click", (e) => {
     const b = e.target.closest("[data-bench]");
-    if (!b) return;
+    if (!b || lu.justDragged) return;
     const i = Number(b.dataset.bench);
     lu.sel = lu.sel?.area === "bench" && lu.sel.i === i ? null : { area: "bench", i };
     renderLineup();
@@ -894,6 +925,8 @@
     const pick = e.target.closest("[data-pick]");
     const act = e.target.closest("[data-lu]");
     if (pick) { placePlayer(l, pick.dataset.pick); saveLineup(); renderLineup(); }
+    const role = e.target.closest("[data-role]");
+    if (role && lu.sel?.area === "xi") { layoutOf(l)[lu.sel.i][0] = role.dataset.role; saveLineup(); renderLineup(); return; }
     if (act?.dataset.lu === "cancel") { lu.sel = null; renderLineup(); }
     if (act?.dataset.lu === "clear") {
       if (lu.sel.area === "xi") l.xi[lu.sel.i] = null; else l.bench.splice(lu.sel.i, 1);
@@ -904,12 +937,24 @@
     if (e.target.id !== "luSearch") return;
     lu.q = e.target.value;
     const pos = e.target.selectionStart;
-    renderPicker(activeLineup(), slotsFor(activeLineup().formation));
+    renderPicker(activeLineup(), layoutOf(activeLineup()));
     const s = $("#luSearch"); s.focus(); s.setSelectionRange(pos, pos);
   });
   $("#luSelect").addEventListener("change", (e) => { store.activeLineup = e.target.value; lu.sel = null; saveLineup(); renderLineup(); });
   $("#luName").addEventListener("change", (e) => { activeLineup().name = e.target.value.trim() || "Untitled"; saveLineup(); renderLineup(); });
-  $("#luFormation").addEventListener("change", (e) => { activeLineup().formation = e.target.value; lu.sel = null; saveLineup(); renderLineup(); });
+  $("#luFormation").addEventListener("change", (e) => {
+    const l = activeLineup();
+    l.formation = e.target.value;
+    l.layout = null;
+    lu.sel = null; saveLineup(); renderLineup();
+  });
+  $("#luResetLayout").addEventListener("click", () => { activeLineup().layout = null; saveLineup(); renderLineup(); });
+  $("#luModes").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-mode]");
+    if (!b) return;
+    lu.mode = b.dataset.mode;
+    renderLineup();
+  });
   $("#luManager").addEventListener("change", (e) => { activeLineup().manager = e.target.value; saveLineup(); renderLineup(); });
   $("#luTactic").addEventListener("change", (e) => { activeLineup().tactic = e.target.value; saveLineup(); renderLineup(); });
   $("#luNotes").addEventListener("change", (e) => { activeLineup().notes = e.target.value; saveLineup(); });
@@ -947,7 +992,7 @@
   });
   $("#luCopy").addEventListener("click", async () => {
     const l = activeLineup();
-    const slots = slotsFor(l.formation);
+    const slots = layoutOf(l);
     const text = [
       `${l.name} — ${l.formation} · ${l.tactic}${l.manager ? ` · ${l.manager}` : ""}`,
       ...l.xi.map((id, i) => `${slots[i][0].padEnd(4)} ${byId[id] ? `${byId[id].name} (${slotRating(byId[id], slots[i][0], l)})` : "—"}`),
@@ -957,6 +1002,125 @@
     try { await navigator.clipboard.writeText(text); flash($("#luCopy"), "Copied"); }
     catch { window.prompt("Copy lineup:", text); }
   });
+
+  /* ---- Drag & drop (pointer events: mouse + touch) ---- */
+
+  let drag = null;
+  const DRAG_THRESHOLD = 6;
+
+  function dragSource(el, l) {
+    if (el.dataset.slot != null) {
+      const i = Number(el.dataset.slot);
+      if (lu.mode === "positions") return i === 0 ? null : { area: "xi", i };
+      return l.xi[i] ? { area: "xi", i } : null;
+    }
+    if (lu.mode === "positions") return null;
+    const i = Number(el.dataset.bench);
+    return l.bench[i] ? { area: "bench", i } : null;
+  }
+
+  function onDragStart(e) {
+    if (e.button > 0) return;
+    const el = e.target.closest("[data-slot], [data-bench]");
+    if (!el) return;
+    const src = dragSource(el, activeLineup());
+    if (!src) return;
+    drag = { src, el, id: e.pointerId, x0: e.clientX, y0: e.clientY, active: false, ghost: null, over: null };
+  }
+
+  function pitchPoint(e) {
+    const r = $("#luPitch").getBoundingClientRect();
+    const x = Math.min(96, Math.max(4, ((e.clientX - r.left) / r.width) * 100));
+    const y = Math.min(93, Math.max(12, ((r.bottom - e.clientY) / r.height) * 100));
+    return [Math.round(x), Math.round(y)];
+  }
+
+  function dropTargetAt(e) {
+    const hit = document.elementFromPoint(e.clientX, e.clientY);
+    return hit?.closest("#luPitch [data-slot], #luBench [data-bench]") || hit?.closest("#luBench") || null;
+  }
+
+  function onDragMove(e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag.active) {
+      if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < DRAG_THRESHOLD) return;
+      drag.active = true;
+      drag.el.classList.add("is-dragging");
+      if (lu.mode === "players") {
+        drag.ghost = drag.el.cloneNode(true);
+        drag.ghost.className += " drag-ghost";
+        drag.ghost.style.cssText = "";
+        document.body.appendChild(drag.ghost);
+      }
+    }
+    e.preventDefault();
+    if (lu.mode === "positions") {
+      const [x, y] = pitchPoint(e);
+      drag.el.style.left = `${x}%`;
+      drag.el.style.bottom = `${y}%`;
+      $(".slot__pos", drag.el).textContent = roleAt(x, y);
+      return;
+    }
+    drag.ghost.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+    const over = dropTargetAt(e);
+    if (over !== drag.over) {
+      drag.over?.classList.remove("is-drop");
+      drag.over = over && over !== drag.el ? over : null;
+      drag.over?.classList.add("is-drop");
+    }
+  }
+
+  function applyDrop(l, src, target) {
+    const get = (a) => (a.area === "xi" ? l.xi[a.i] : l.bench[a.i]) ?? null;
+    const set = (a, v) => { if (a.area === "xi") l.xi[a.i] = v; else l.bench[a.i] = v; };
+    let dst = null;
+    if (target.dataset?.slot != null) dst = { area: "xi", i: Number(target.dataset.slot) };
+    else if (target.dataset?.bench != null) dst = { area: "bench", i: Number(target.dataset.bench) };
+    else dst = { area: "bench", i: l.bench.length }; // dropped on the bench area → append
+    if (dst.area === src.area && dst.i === src.i) return;
+    if (dst.area === "bench" && src.area === "bench") {
+      // reorder within the bench
+      const [moved] = l.bench.splice(src.i, 1);
+      l.bench.splice(Math.min(dst.i, l.bench.length), 0, moved);
+      return;
+    }
+    if (dst.area === "bench" && dst.i >= l.bench.length && l.bench.length >= BENCH_MAX) return;
+    const a = get(src);
+    const b = get(dst);
+    set(dst, a);
+    set(src, b);
+    l.bench = l.bench.filter(Boolean);
+  }
+
+  function onDragEnd(e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    const d = drag;
+    drag = null;
+    if (!d.active) return;
+    lu.justDragged = true;
+    setTimeout(() => { lu.justDragged = false; }, 0);
+    d.ghost?.remove();
+    d.over?.classList.remove("is-drop");
+    const l = activeLineup();
+    if (e.type !== "pointercancel") {
+      if (lu.mode === "positions") {
+        const [x, y] = pitchPoint(e);
+        layoutOf(l)[d.src.i] = [roleAt(x, y), x, y];
+      } else {
+        const target = dropTargetAt(e);
+        if (target) applyDrop(l, d.src, target);
+      }
+      lu.sel = null;
+      saveLineup();
+    }
+    renderLineup();
+  }
+
+  $("#luPitch").addEventListener("pointerdown", onDragStart);
+  $("#luBench").addEventListener("pointerdown", onDragStart);
+  document.addEventListener("pointermove", onDragMove, { passive: false });
+  document.addEventListener("pointerup", onDragEnd);
+  document.addEventListener("pointercancel", onDragEnd);
 
   /* ---------------------------------------------------------
      Init

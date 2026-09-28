@@ -918,3 +918,42 @@ textarea:focus{ outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px 
   .sub-row__note{ grid-column: 1 / -1; }
   .lu-kpis b{ font-size: 1.5rem; }
 }
+
+/* ---------- lineup drag & drop ---------- */
+
+.layout-state{ font-family: var(--font-cond); font-size: 0.8rem; letter-spacing: 0.08em; color: var(--paper-dim); margin-left: 0.4rem; }
+.pitch-bar{ display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; justify-content: space-between; margin-bottom: 0.4rem; }
+.pitch-hint{ margin: 0 0 0.75rem; font-size: 0.78rem; color: var(--paper-dim); font-style: italic; }
+.segmented{ display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.segmented button{
+  font-family: var(--font-cond); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.74rem;
+  padding: 0.5rem 0.85rem; background: var(--ink); color: var(--paper-dim); border: 0; cursor: pointer;
+}
+.segmented button + button{ border-left: 1px solid var(--line); }
+.segmented button.is-on{ background: var(--lime); color: var(--ink); }
+
+.slot, .bench-cell{ touch-action: none; user-select: none; -webkit-user-select: none; }
+.slot{ cursor: grab; }
+.slot--empty{ cursor: pointer; }
+.pitch.is-editing .slot:not([data-slot="0"]){ cursor: move; border-style: dotted; }
+.pitch.is-editing .slot__pos{ color: var(--lime); font-weight: 700; font-size: 0.7rem; }
+.pitch.is-editing .slot[data-slot="0"]{ opacity: 0.6; }
+.slot.is-dragging{ opacity: 0.35; transition: none; }
+.pitch.is-editing .slot.is-dragging{ opacity: 1; box-shadow: 0 0 0 3px var(--lime), 0 10px 24px rgba(0,0,0,0.5); z-index: 5; }
+.is-drop{ box-shadow: 0 0 0 3px var(--amber) !important; }
+#luBench.is-drop{ border-radius: var(--radius); }
+.drag-ghost{
+  position: fixed !important; left: 0; top: 0; z-index: 1000; pointer-events: none;
+  opacity: 0.92; box-shadow: 0 12px 28px rgba(0,0,0,0.55); width: 5rem;
+}
+.drag-ghost.bench-cell{ width: 11rem; }
+
+.role-row{ display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+.role-row .field__label{ margin-right: 0.3rem; }
+.role-btn{
+  font-family: var(--font-cond); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.06em;
+  padding: 0.25rem 0.45rem; border-radius: 2px; cursor: pointer;
+  background: var(--ink); color: var(--paper-dim); border: 1px solid var(--line);
+}
+.role-btn:hover{ color: var(--paper); border-color: var(--lime-dim); }
+.role-btn.is-on{ background: var(--lime); color: var(--ink); border-color: var(--lime); }

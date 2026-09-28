@@ -16,7 +16,9 @@ Two parts:
     and see final stats, KB thresholds and the per-position OVR (same formula as eFHUB).
     Saved dated snapshots from `USER-SQUAD.md` load with one click.
   - **Lineup** — pick a formation, manager and team playstyle, place players on the
-    pitch and bench, plan substitutions. Shows each player's OVR at his slot (using his
+    pitch and bench (drag & drop with mouse or touch), move position markers — the role
+    follows the pitch zone or can be set by hand (e.g. DMF vs CMF on the same spot) —
+    and plan substitutions. Shows each player's OVR at his slot (using his
     saved Trainer build), Link-up status, and KB warnings (out of position, style not
     compatible with the slot, two Destroyer CBs, same player twice).
   - **Skills**, **Managers**, **Playing Styles** — the knowledge base as searchable
