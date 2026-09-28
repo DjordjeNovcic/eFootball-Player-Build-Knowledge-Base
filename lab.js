@@ -1485,6 +1485,7 @@
   const makeRecommender = () => window.Recommender({
     players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
     skillMultiplier, managerProficiency, managerObj, notesFor, myPicks, context: recContext(), MAX_LEVEL, boosterPool: DATA.boosterPool,
+    onBench: (id) => lineupRole(id)?.label === "Bench",
   });
   const recState = { q: "", group: "ALL", open: new Set() };
   const mineState = { q: "", group: "ALL", onlyMine: false };

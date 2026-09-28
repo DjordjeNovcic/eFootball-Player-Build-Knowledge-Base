@@ -374,15 +374,17 @@ window.Recommender = (deps) => {
       if (p.height <= 182) push("Double Touch", "Extra close-control move for a mobile attacker.");
       if (["goalPoacher", "foxInTheBox"].includes(key) && f.finishing >= 90) push("Acrobatic Finishing", "Pure finisher with 90+ Finishing — the extra shot animations get used (USER-SQUAD §5).");
       if (["creativePlaymaker", "classicNo10", "deepLyingForward", "crossSpecialist", "prolificWinger", "roamingFlank", "holePlayer"].includes(key)) push("Weighted Pass", "Lofted through balls for runners (§9 attacking).");
-      push("Super-sub", "Weak filler: +5% Finishing, +1% Speed/Acceleration, only when he comes off the bench.");
-      push("Heel Trick", "Weak filler: listed in §9 but no measured effect yet (§19).");
+      // Super-sub only pays off the bench (§19); Heel Trick has no measured effect (§19) —
+      // neither is recommended as filler for a starter.
+      if (deps.onBench?.(p.id)) push("Super-sub", "On your bench — +5% Finishing, +1% Speed/Acceleration when he comes on (§19).");
     }
     // Fallbacks so every card gets exactly five (§15), most useful first.
     const FALLBACK = pos === "GK" ? ["Low Lofted Pass", "Weighted Pass", "Fighting Spirit"]
       : ["CB", "LB", "RB", "DMF", "CMF"].includes(pos)
         ? ["Interception", "Blocker", "Man Marking", "One-touch Pass", "Weighted Pass", "Fighting Spirit", "Sliding Tackle", "Low Lofted Pass", ...(p.height >= 185 ? ["Aerial Superiority"] : []), "Outside Curler"]
-        : ["One-touch Pass", "Outside Curler", "Fighting Spirit", "Long-range Shooting", ...(p.height <= 182 ? ["Double Touch"] : []), "Weighted Pass", "Super-sub", "Heel Trick"];
-    FALLBACK.forEach((n) => push(n, "Fills the fifth slot — best remaining option for the role."));
+        : ["One-touch Pass", "Outside Curler", "Fighting Spirit", "Long-range Shooting", ...(p.height <= 182 ? ["Double Touch"] : []),
+          ...(["CF", "SS"].includes(pos) ? [] : ["Weighted Pass"])];
+    FALLBACK.forEach((n) => push(n, "Best remaining option for the role."));
     return { skills: out, why };
   }
 
