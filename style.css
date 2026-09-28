@@ -1273,3 +1273,20 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
   padding: 0 0.3rem; border-radius: 2px; border: 1px solid rgba(212,255,63,0.35); color: var(--lime-dim);
 }
 .squad-card__skills span.is-mine{ background: var(--lime); color: var(--ink); border-color: var(--lime); font-weight: 700; }
+
+/* ---------- collapsible recommended cards ---------- */
+
+.rec-grid{ align-items: start; }
+.rec-card > summary{ list-style: none; cursor: pointer; }
+.rec-card > summary::-webkit-details-marker{ display: none; }
+.rec-card__head{ grid-template-rows: auto auto; position: relative; padding-right: 2.2rem; transition: background 0.15s ease; }
+.rec-card__head:hover{ background: rgba(212,255,63,0.04); }
+.rec-card__head::after{
+  content: "▸"; position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%);
+  color: var(--lime); font-size: 0.9rem; transition: transform 0.15s ease;
+}
+.rec-card[open] > .rec-card__head::after{ transform: translateY(-50%) rotate(90deg); }
+.rec-card:not([open]) > .rec-card__head{ border-bottom: none; }
+.rec-card__line{ grid-column: 2 / -1; margin: 0; font-size: 0.76rem; color: var(--paper-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rec-card__line code{ font-family: var(--font-display); font-size: 1rem; letter-spacing: 0.05em; color: var(--paper); }
+.rec-card__body{ display: flex; flex-direction: column; }

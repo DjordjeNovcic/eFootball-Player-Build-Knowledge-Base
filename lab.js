@@ -1485,7 +1485,7 @@
     players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
     skillMultiplier, managerProficiency, managerObj, notesFor, myPicks, context: recContext(), MAX_LEVEL, boosterPool: DATA.boosterPool,
   });
-  const recState = { q: "", group: "ALL" };
+  const recState = { q: "", group: "ALL", open: new Set() };
   const mineState = { q: "", group: "ALL", onlyMine: false };
 
   function lineupRole(id) {
@@ -1567,8 +1567,8 @@
       const slot1 = Object.keys(p.booster1?.stats || {});
       const mine = store.builds[p.id];
       return `
-        <article class="rec-card" data-group="${POSITION_GROUP[p.position]}">
-          <header class="rec-card__head">
+        <details class="rec-card" data-group="${POSITION_GROUP[p.position]}" data-rec="${p.id}" ${recState.open.has(p.id) ? "open" : ""}>
+          <summary class="rec-card__head">
             ${cardImg(p, "rec-card__img")}
             <div class="rec-card__who">
               <h3>${esc(p.name)}</h3>
@@ -1581,7 +1581,9 @@
               </div>
             </div>
             <div class="rec-card__ovr"><b>${r.rating}</b><span>${p.position} · card ${p.overall}</span></div>
-          </header>
+            <p class="rec-card__line"><code>${cats.map((c) => r.levels[c.key] || 0).join("-")}</code> · ${esc(r.booster.name)} · ${r.skills.length} skills</p>
+          </summary>
+          <div class="rec-card__body">
 
           <section class="rec-sec">
             <h4>Role</h4>
@@ -1622,7 +1624,8 @@
             <button type="button" class="btn btn--icon" data-rec-open="${p.id}">Open in Trainer</button>
             <button type="button" class="btn btn--icon btn--solid" data-rec-use="${p.id}">${mine ? "Replace my build" : "Use as my build"}</button>
           </div>
-        </article>`;
+          </div>
+        </details>`;
     }).join("") || `<p class="empty-state">No players match.</p>`;
   }
 
@@ -1695,6 +1698,19 @@
     });
   }
   bindFilter("rec", recState, renderRecommended);
+  // Cards are collapsed to a one-line summary; remember which ones are open across re-renders.
+  $("#recGrid").addEventListener("toggle", (e) => {
+    const d = e.target.closest?.("[data-rec]");
+    if (!d) return;
+    if (d.open) recState.open.add(d.dataset.rec); else recState.open.delete(d.dataset.rec);
+  }, true);
+  $("#recExpand").addEventListener("click", () => {
+    document.querySelectorAll("#recGrid [data-rec]").forEach((d) => { d.open = true; recState.open.add(d.dataset.rec); });
+  });
+  $("#recCollapse").addEventListener("click", () => {
+    document.querySelectorAll("#recGrid [data-rec]").forEach((d) => { d.open = false; });
+    recState.open.clear();
+  });
   bindFilter("mine", mineState, renderMyBuilds);
   $("#mineOnly").addEventListener("change", (e) => { mineState.onlyMine = e.target.checked; renderMyBuilds(); });
 
