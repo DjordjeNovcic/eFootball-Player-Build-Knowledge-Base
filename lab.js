@@ -121,11 +121,14 @@
   const root = loadRoot();
   let store = root.profiles[root.active];
   const isMe = () => root.active === "me";
-  const notesFor = (id) => (isMe() ? KB.SQUAD_NOTES[id] : null);
+  // The repo squad (data/players.js + USER-SQUAD notes) belongs to the site owner; cloud.js
+  // switches it off when someone else signs in, so their "My squad" starts empty.
+  let repoSquad = true;
+  const notesFor = (id) => (isMe() && repoSquad ? KB.SQUAD_NOTES[id] : null);
 
   function rebuildPlayers() {
     const removed = new Set(store.removed);
-    const base = isMe() ? DATA.players : FRIEND_FILES[store.fileKey]?.players || [];
+    const base = isMe() ? (repoSquad ? DATA.players : []) : FRIEND_FILES[store.fileKey]?.players || [];
     const all = [...base, ...Object.values(store.customPlayers).filter((c) => !base.some((p) => p.id === c.id))];
     all.forEach((p) => { if (p.labels) Object.assign(DATA.labels, p.labels); });
     players.length = 0;
@@ -133,8 +136,14 @@
     all.filter((p) => !removed.has(p.id)).forEach((p) => { players.push(p); byId[p.id] = p; });
   }
   rebuildPlayers();
-  function saveStore() {
+  // Cloud sync (cloud.js) listens here; `silent` is used when applying remote data so it
+  // isn't echoed back.
+  const changeListeners = [];
+  const deleteListeners = [];
+  function saveStore(opts = {}) {
+    if (!opts.silent) store.updatedAt = Date.now();
     try { localStorage.setItem(STORE_KEY, JSON.stringify(root)); } catch { /* private mode */ }
+    if (!opts.silent) changeListeners.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
   }
 
   /* ---------------------------------------------------------
@@ -1687,7 +1696,7 @@
     store = root.profiles[id];
     view.playerId = null;
     lu.sel = null;
-    saveStore();
+    saveStore({ silent: true }); // which squad is open is a local choice, not synced
     refreshAll();
     route();
   }
@@ -1792,6 +1801,7 @@
     const id = `f_${Date.now().toString(36)}`;
     root.profiles[id] = blankProfile("friend", name);
     switchProfile(id);
+    saveStore(); // new squad → pushed to the cloud when signed in
     go("squad");
     $("#addPanel").hidden = false;
   });
@@ -1806,9 +1816,42 @@
     if (isMe()) return;
     const fromFile = root.active.startsWith("file:");
     if (!confirm(`Delete ${store.name}'s squad and all its builds and lineups from this browser?${fromFile ? " (The squad itself comes from data/friends.js and will come back empty.)" : ""}`)) return;
+    deleteListeners.forEach((f) => { try { f(root.active); } catch (e) { console.error(e); } });
     delete root.profiles[root.active];
     switchProfile("me");
   });
+
+  // Small API for cloud.js (optional Firebase sync).
+  window.BuildLab = {
+    root: () => root,
+    activeId: () => root.active,
+    onChange: (f) => changeListeners.push(f),
+    onDelete: (f) => deleteListeners.push(f),
+    putProfile(id, prof) {
+      root.profiles[id] = normaliseProfile(prof, id === "me" ? "me" : "friend", prof.name || "Friend");
+      if (root.active === id) store = root.profiles[id];
+      saveStore({ silent: true });
+      refreshAll();
+      if (root.active === id) route();
+    },
+    dropProfile(id) {
+      if (id === "me" || !root.profiles[id]) return;
+      delete root.profiles[id];
+      if (root.active === id) { root.active = "me"; store = root.profiles.me; view.playerId = null; }
+      saveStore({ silent: true });
+      refreshAll();
+      route();
+    },
+    switchTo: (id) => switchProfile(id),
+    setRepoSquad(on) {
+      if (repoSquad === on) return;
+      repoSquad = on;
+      if (!on && root.profiles.me.manager === KB.CURRENT_MANAGER) root.profiles.me.manager = "";
+      refreshAll();
+      route();
+    },
+    isRepoSquad: () => repoSquad,
+  };
 
   /* ---------------------------------------------------------
      Init

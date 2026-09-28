@@ -1222,3 +1222,14 @@ textarea:focus{ outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px 
 body.is-friend .tabs__link.is-active{ background: var(--amber); }
 body.is-friend .hero__title span{ background: var(--amber); }
 .train-body{ display: grid; gap: 1.25rem; }
+
+/* ---------- cloud sync ---------- */
+
+.cloud{ margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
+.cloud__avatar{ width: 26px; height: 26px; border-radius: 50%; }
+.cloud__who{ font-weight: 600; }
+.cloud__status{ color: var(--paper-dim); font-size: 0.76rem; }
+.cloud__status.is-ok{ color: var(--lime); }
+.cloud__status.is-ok::before{ content: "● "; }
+.cloud__status.is-busy{ color: var(--amber); }
+.cloud__status.is-error{ color: var(--ember); }

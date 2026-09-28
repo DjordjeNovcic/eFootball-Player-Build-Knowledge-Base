@@ -44,6 +44,12 @@ apply to my squad. Add a friend's cards with the bookmarklet (several pasted at 
 fine), or generate them into the repo with
 `python3 tools/fetch_players.py --friend "Name" <eFHUB IDs…>` (`data/friends.js`).
 
+**Cloud sync (optional):** with an `apiKey` in `firebase-config.js`, *Sign in with Google*
+syncs every squad through Firestore (project `efootballbuild-4a791`, rules in
+`firestore.rules`). Each squad is one document visible only to its members; the owner
+of a friend squad can copy an **Invite link** so the friend signs in and edits it too.
+The browser copy stays as an offline cache; the first sign-in merges it into the cloud.
+
 No backend, no build step — plain HTML/CSS/JS, everything persists to the browser's
 `localStorage`. Not affiliated with KONAMI; this is just a fan-made companion tool.
 
