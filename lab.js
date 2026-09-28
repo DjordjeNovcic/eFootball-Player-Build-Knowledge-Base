@@ -110,12 +110,8 @@
     const root = s.profiles ? s : { active: "me", profiles: { me: s } };
     root.profiles.me = normaliseProfile(root.profiles.me || {}, "me", "My squad");
     Object.entries(root.profiles).forEach(([id, p]) => { if (id !== "me") root.profiles[id] = normaliseProfile(p, "friend", p.name || "Friend"); });
-    // Squads generated into data/friends.js appear automatically.
-    Object.entries(FRIEND_FILES).forEach(([slug, f]) => {
-      const id = `file:${slug}`;
-      if (!root.profiles[id]) root.profiles[id] = blankProfile("friend", f.name, { fileKey: slug });
-    });
-    if (!root.profiles[root.active]) root.active = "me";
+    // One squad per account: the site always shows "My squad" (friends sign in to their own).
+    root.active = "me";
     return root;
   }
   const root = loadRoot();
@@ -1708,15 +1704,6 @@
   }
 
   function renderProfileBar() {
-    $("#profileSelect").innerHTML = Object.entries(root.profiles).map(([id, p]) =>
-      `<option value="${esc(id)}">${esc(id === "me" ? "My squad" : `${p.name}'s squad`)}${id.startsWith("file:") ? " (repo)" : ""}</option>`).join("");
-    $("#profileSelect").value = root.active;
-    $("#profileRename").hidden = isMe();
-    $("#profileDelete").hidden = isMe();
-    document.body.classList.toggle("is-friend", !isMe());
-    $("#squad-heading").textContent = isMe() ? "MY SQUAD" : `${store.name.toUpperCase()}'S SQUAD`;
-    $("#friendBanner").hidden = isMe();
-    $("#friendBannerName").textContent = store.name;
     $("#demoBanner").hidden = !(auth.enabled && !auth.signedIn && ownsRepo());
   }
 
@@ -1801,33 +1788,6 @@
     }
   });
 
-  $("#profileSelect").addEventListener("change", (e) => switchProfile(e.target.value));
-  $("#profileNew").addEventListener("click", () => {
-    const name = (window.prompt("Friend's name:") || "").trim();
-    if (!name) return;
-    const id = `f_${Date.now().toString(36)}`;
-    root.profiles[id] = blankProfile("friend", name);
-    switchProfile(id);
-    saveStore(); // new squad → pushed to the cloud when signed in
-    go("squad");
-    $("#addPanel").hidden = false;
-  });
-  $("#profileRename").addEventListener("click", () => {
-    const name = (window.prompt("Rename squad:", store.name) || "").trim();
-    if (!name) return;
-    store.name = name;
-    saveStore();
-    renderProfileBar();
-  });
-  $("#profileDelete").addEventListener("click", () => {
-    if (isMe()) return;
-    const fromFile = root.active.startsWith("file:");
-    if (!confirm(`Delete ${store.name}'s squad and all its builds and lineups from this browser?${fromFile ? " (The squad itself comes from data/friends.js and will come back empty.)" : ""}`)) return;
-    deleteListeners.forEach((f) => { try { f(root.active); } catch (e) { console.error(e); } });
-    delete root.profiles[root.active];
-    switchProfile("me");
-  });
-
   // Small API for cloud.js (optional Firebase sync).
   window.BuildLab = {
     root: () => root,
@@ -1849,7 +1809,7 @@
       refreshAll();
       route();
     },
-    switchTo: (id) => switchProfile(id),
+    switchTo: () => {}, // single squad per account
     setRepoSquad(on) {
       if (repoSquad === on) return;
       repoSquad = on;

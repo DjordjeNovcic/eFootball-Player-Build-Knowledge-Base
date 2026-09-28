@@ -37,20 +37,12 @@ Two parts:
     views, cross-linked to which of my cards have each skill/style/Link-up role.
   - **Sandbox** — the original free-form stat-slider card builder (`app.js`).
 
-**Friend squads:** the *Squad* picker above the tabs switches between my squad and any
-number of friends' squads. Each has its own cards, builds, lineups, position edits,
-managers (picked from all eFHUB manager cards) and playstyle; my USER-SQUAD notes only
-apply to my squad. Add a friend's cards with the bookmarklet (several pasted at once is
-fine), or generate them into the repo with
-`python3 tools/fetch_players.py --friend "Name" <eFHUB IDs…>` (`data/friends.js`).
-
 **Accounts & cloud sync:** *Sign in* (Google, or email + password with sign-up and
 password reset) gives every person their own squad — cards, managers, builds, lineups —
 while the knowledge (skills, styles, boosters, recommendations, trainer) is shared.
 Signed-out visitors see the owner's squad as a demo (`OWNER_UID` in `firebase-config.js`).
-Data syncs every squad through Firestore (project `efootballbuild-4a791`, rules in
-`firestore.rules`). Each squad is one document visible only to its members; the owner
-of a friend squad can copy an **Invite link** so the friend signs in and edits it too.
+Each account's squad syncs through Firestore (project `efootballbuild-4a791`, rules in
+`firestore.rules`). Each squad is one document visible only to its owner.
 The browser copy stays as an offline cache; the first sign-in merges it into the cloud.
 
 No backend, no build step — plain HTML/CSS/JS, everything persists to the browser's

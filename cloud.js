@@ -207,6 +207,7 @@ async function connect() {
       snap.docChanges().forEach((ch) => {
         if (ch.doc.metadata.hasPendingWrites) return;
         const id = ch.doc.id;
+        if (localIdFor(id) !== "me") return;
         if (ch.type === "removed") {
           delete state.docs[id];
           lab.dropProfile(localIdFor(id));
@@ -239,6 +240,7 @@ function firstMerge(snap) {
   if (demoLocal && !snap.docs.some((d) => d.id === docIdFor("me"))) lab.putProfile("me", { kind: "me", name: "My squad" });
   snap.forEach((docSnap) => {
     const id = docSnap.id;
+    if (localIdFor(id) !== "me") return; // single squad per account
     const d = docSnap.data();
     remoteIds.add(id);
     state.docs[id] = d;
@@ -249,9 +251,7 @@ function firstMerge(snap) {
     state.lastPushed[id] = profileJson(merged) === d.json ? d.json : null; // null → push merged result
     lab.putProfile(lid, merged);
   });
-  Object.keys(root.profiles).forEach((lid) => {
-    if (!remoteIds.has(docIdFor(lid))) state.lastPushed[docIdFor(lid)] = null; // new → create
-  });
+  if (!remoteIds.has(docIdFor("me"))) state.lastPushed[docIdFor("me")] = null; // new → create
   const join = pendingJoin();
   if (join) {
     try { sessionStorage.removeItem(JOIN_KEY); } catch { /* ignore */ }
@@ -287,7 +287,8 @@ async function pushNow() {
   if (!state.user) return;
   const { doc, setDoc, updateDoc, serverTimestamp } = state.fs;
   const root = lab.root();
-  const jobs = Object.entries(root.profiles).map(async ([lid, p]) => {
+  // One squad per account: only "My squad" is synced.
+  const jobs = Object.entries(root.profiles).filter(([lid]) => lid === "me").map(async ([lid, p]) => {
     const id = docIdFor(lid);
     const json = profileJson(p);
     if (json === state.lastPushed[id]) return;
