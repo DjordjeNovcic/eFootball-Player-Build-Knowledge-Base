@@ -76,6 +76,7 @@
     return st ? st.guide.expect : "";
   }
 
+  // Rating colours: blue 90+, green 80s, yellow 70s, red below 70 (darker under 60).
   const statTier = (v) => (v >= 90 ? "elite" : v >= 80 ? "good" : v >= 70 ? "ok" : v >= 60 ? "low" : "poor");
 
   // The working squad: generated cards + cards added in this browser − removed ones.
