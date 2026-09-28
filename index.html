@@ -134,17 +134,19 @@
 
       <div class="panel">
         <div class="panel__head"><h2>RATINGS</h2><p class="panel__meta">Tap a position to rate the build there</p></div>
-        <div class="pos-grid" id="trainPositions"></div>
-        <div class="group">
-          <h3 class="group__title">Position proficiency <span class="group__hint">— <span id="trainProfState"></span>. Tap to cycle None → Intermediate → High.</span></h3>
+        <div class="pmap" id="trainPositions"></div>
+        <details class="prof-editor">
+          <summary><span class="group__title">Edit position proficiency</span> <span class="group__hint">— <span id="trainProfState"></span></span></summary>
+          <p class="source-note">Tap a position to cycle None → Intermediate → High (e.g. positions trained in-game).</p>
           <div class="prof-grid" id="trainProf"></div>
           <button type="button" class="btn btn--icon" id="trainProfReset" hidden>Reset to card default</button>
-        </div>
+        </details>
         <div class="stats-legend">
-          <span><i class="lg lg--base"></i>card base</span>
-          <span><i class="lg lg--gain"></i>training + boosters</span>
-          <span><em>+n</em> boosters &amp; manager</span>
-          <span><span class="th th--hit">90 ✓</span> KB threshold</span>
+          <span><i class="lg lg--base"></i>card</span>
+          <span><i class="lg lg--gain"></i><span class="pill pill--train">+n</span> training</span>
+          <span><i class="lg lg--boost"></i><span class="pill pill--boost">+n</span> boosters &amp; manager</span>
+          <span><i class="lg-tick"></i>KB target not reached</span>
+          <span><i class="hit">✓90</i> target reached</span>
         </div>
         <div id="trainStats"></div>
       </div>

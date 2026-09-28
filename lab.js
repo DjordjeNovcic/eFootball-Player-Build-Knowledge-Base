@@ -33,7 +33,7 @@
   const isGK = (p) => p.position === "GK";
   const categoriesFor = (p) => KB.CATEGORIES.filter((c) => !c.gk || isGK(p));
   const styleText = (p) => [p.playingStyle, p.playingStyleDefensive].filter(Boolean).join(" · ") || "—";
-  const statTier = (v) => (v >= 90 ? "elite" : v >= 80 ? "good" : v >= 70 ? "ok" : "low");
+  const statTier = (v) => (v >= 90 ? "elite" : v >= 80 ? "good" : v >= 70 ? "ok" : v >= 60 ? "low" : "poor");
 
   const players = DATA.players;
   const byId = Object.fromEntries(players.map((p) => [p.id, p]));
@@ -385,12 +385,17 @@
       return `<span class="tag ${kb?.pool === "excl" ? "tag--excl" : ""}" title="${esc(kb?.note || kb?.tested || kb?.official || "")}">${esc(skillLabel(k))}</span>`;
     }).join("") + (p.comSkills.length ? `<span class="tag tag--ai">AI: ${p.comSkills.map((k) => esc(skillLabel(k))).join(", ")}</span>` : "");
 
-    // Position ratings
-    $("#trainPositions").innerHTML = POS_ORDER.map((pos) => {
+    // Position ratings — laid out like the pitch (attack on top)
+    const tile = (pos) => {
       const prof = profAt(p, pos);
-      return `<button type="button" class="pos-cell is-${prof} ${pos === view.position ? "is-current" : ""}" data-pos="${pos}" title="${PROF_LABEL[prof]} proficiency">
+      return `<button type="button" class="pmap__tile is-${prof} ${pos === view.position ? "is-current" : ""}" data-pos="${pos}" title="${pos} · ${PROF_LABEL[prof]} proficiency">
         <span>${pos}</span><b>${res.ratings[pos]}</b></button>`;
-    }).join("");
+    };
+    const stack = (list) => `<div class="pmap__stack">${list.map(tile).join("")}</div>`;
+    $("#trainPositions").innerHTML = `
+      ${tile("LWF")}${stack(["CF", "SS"])}${tile("RWF")}
+      ${tile("LMF")}${stack(["AMF", "CMF", "DMF"])}${tile("RMF")}
+      ${tile("LB")}${stack(["CB", "GK"])}${tile("RB")}`;
 
     // Position proficiency editor
     $("#trainProfState").textContent = positionsEdited(p) ? "edited — saved in this browser" : "card default (eFHUB)";
@@ -401,29 +406,39 @@
         title="${pos}: ${PROF_LABEL[prof]}${prof === "primary" ? "" : " — tap to change"}"><b>${pos}</b><span>${PROF_LABEL[prof]}</span></button>`;
     }).join("");
 
-    // Stats
+    // Stats — bar scale 40→105 so the differences that matter are visible
     const showGK = isGK(p);
+    const pct = (v) => Math.max(0, Math.min(100, ((v - 40) / 65) * 100));
     $("#trainStats").innerHTML = KB.STAT_GROUPS.filter((g) => showGK || g.title !== "Goalkeeping").map((g) => `
-      <div class="stat-block">
-        <h4 class="stat-group__title">${g.title}</h4>
+      <section class="sgroup">
+        <h4 class="sgroup__title">${g.title}</h4>
         ${g.stats.map((k) => {
           const base = p.stats[k];
-          const trainedGain = res.trained[k] - base;
+          const trained = res.trained[k];
           const boost = res.boostOf[k] || 0;
           const fin = res.final[k];
           const th = showGK ? [] : (KB.THRESHOLDS[k] || []);
-          const thHtml = th.map((t) => `<span class="th ${fin >= t.at ? "th--hit" : "th--miss"}" title="${esc(t.note)}">${t.at}${fin >= t.at ? " ✓" : ` −${t.at - fin}`}</span>`).join("");
-          const waste = res.wasted[k] ? `<span class="th th--waste" title="Points past the 99 training cap are lost">${res.wasted[k]} over 99</span>` : "";
+          const ticks = th.filter((t) => fin < t.at).map((t) => `<em class="tick" style="left:${pct(t.at)}%" title="${t.at}: ${esc(t.note)}"></em>`).join("");
+          const hit = th.filter((t) => fin >= t.at);
+          const miss = th.find((t) => fin < t.at);
+          const need = res.wasted[k]
+            ? `<span class="need need--waste" title="Points past the 99 training cap are lost">${res.wasted[k]} lost</span>`
+            : miss ? `<span class="need" title="${esc(miss.note)}">${miss.at} −${miss.at - fin}</span>` : "";
           return `
-            <div class="stat-line">
-              <span class="stat-line__label">${statLabel(k)}</span>
-              <span class="stat-line__bar"><i style="width:${Math.min(100, (base / 105) * 100)}%"></i><i class="gain" style="width:${Math.min(100, ((trainedGain + boost) / 105) * 100)}%"></i></span>
-              <span class="stat-line__delta">${trainedGain ? `+${trainedGain}` : ""}${boost ? ` <em>+${boost}</em>` : ""}</span>
-              <span class="stat-line__val tier-${statTier(fin)}">${fin}</span>
-              <span class="stat-line__th">${thHtml}${waste}</span>
+            <div class="srow">
+              <span class="srow__label">${statLabel(k)}${hit.length ? `<i class="hit" title="${hit.map((t) => `${t.at} ✓ ${esc(t.note)}`).join(" · ")}">✓${hit[hit.length - 1].at}</i>` : ""}</span>
+              <span class="srow__bar">
+                <i class="seg seg--base" style="width:${pct(base)}%"></i>
+                <i class="seg seg--train" style="left:${pct(base)}%;width:${pct(trained) - pct(base)}%"></i>
+                <i class="seg seg--boost" style="left:${pct(trained)}%;width:${pct(fin) - pct(trained)}%"></i>
+                ${ticks}
+              </span>
+              <span class="srow__pills">${trained > base ? `<span class="pill pill--train">+${trained - base}</span>` : ""}${boost ? `<span class="pill pill--boost">+${boost}</span>` : ""}</span>
+              <span class="srow__val tier-bg-${statTier(fin)}">${fin}</span>
+              <span class="srow__need">${need}</span>
             </div>`;
         }).join("")}
-      </div>`).join("");
+      </section>`).join("");
 
     // Warnings (KB hard rules)
     const warns = [];
