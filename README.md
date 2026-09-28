@@ -10,7 +10,9 @@ Two parts:
   known player mappings, manager inventory, tactical context and dated build snapshots.
 - **The Build Lab** (`index.html`) — a dependency-free web UI with tabs:
   - **My Squad** — every owned card from `USER-SQUAD.md`, with eFHUB stats, styles,
-    boosters, level cap and role notes.
+    boosters, level cap and role notes. **+ Add player** imports a card from its eFHUB
+    page via a "Copy to Build Lab" bookmarklet (eFHUB pages can't be fetched cross-site);
+    ✕ removes a card (restorable). Both are stored in the browser.
   - **Recommended** — a build for every card, generated from the knowledge base
     (`recommend.js`): role from position + styles → §7 priorities and §3 thresholds →
     player-model and native-skill adjustments → every point spent → slot-2 booster last →
@@ -53,6 +55,8 @@ Then open http://localhost:8080.
 
 ```bash
 python3 tools/fetch_players.py
+python3 tools/fetch_players.py --add <eFHUB ID> [...]     # add cards to USER-SQUAD, then sync
+python3 tools/fetch_players.py --remove <eFHUB ID> [...]  # remove cards from USER-SQUAD, then sync
 ```
 
 `data/knowledge.js` is a hand-maintained extract of `KNOWLEDGE-BASE.md` / `USER-SQUAD.md`

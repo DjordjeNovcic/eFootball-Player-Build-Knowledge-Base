@@ -43,6 +43,27 @@
       <div class="panel__head">
         <h2 id="squad-heading">MY SQUAD</h2>
         <p class="panel__meta" id="squadMeta"></p>
+        <button type="button" class="btn btn--primary btn--small" id="addToggle">+ Add player</button>
+      </div>
+      <div class="add-panel" id="addPanel" hidden>
+        <ol class="add-steps">
+          <li>
+            <b>One-time setup:</b> drag this button to your browser's bookmarks bar.
+            <div class="add-row">
+              <a class="btn btn--ghost bookmarklet" id="addBookmarklet" href="#">Copy to Build Lab</a>
+              <button type="button" class="btn btn--icon" id="addCopyCode">Copy bookmarklet code</button>
+            </div>
+            <small>On a phone: copy the code, create a bookmark and paste it as the address.</small>
+          </li>
+          <li><b>Open the player on <a href="https://efhub.com/players" target="_blank" rel="noopener">efhub.com</a></b> and click the bookmark — it copies the card.</li>
+          <li>
+            <b>Paste it here:</b>
+            <textarea id="addPaste" rows="3" placeholder="EFBLAB:{…}"></textarea>
+            <div class="add-row"><button type="button" class="btn btn--primary" id="addSubmit">Add to squad</button></div>
+            <p class="add-status" id="addStatus"></p>
+          </li>
+        </ol>
+        <p class="source-note">Added players live in this browser (included in Export all). To add one permanently for every device, run <code>python3 tools/fetch_players.py --add &lt;eFHUB ID&gt;</code> and push — or just send me the ID.</p>
       </div>
       <div class="toolbar">
         <input type="text" id="squadSearch" placeholder="Search name, team, style, ID…" aria-label="Search squad">
@@ -55,6 +76,10 @@
         </div>
       </div>
       <div class="squad-grid" id="squadGrid"></div>
+      <details class="removed-box" id="removedBox" hidden>
+        <summary><span class="group__title">Removed players (<span id="removedCount">0</span>)</span></summary>
+        <ul class="removed-list" id="removedList"></ul>
+      </details>
     </div>
   </div>
 </section>

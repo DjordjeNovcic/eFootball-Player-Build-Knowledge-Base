@@ -1160,3 +1160,27 @@ textarea:focus{ outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px 
 .delta{ font-family: var(--font-cond); font-size: 0.78rem; margin-left: 0.2rem; color: var(--paper-dim); }
 .delta.is-up{ color: var(--lime); }
 .delta.is-down{ color: var(--ember); }
+
+/* ---------- add / remove players ---------- */
+
+.btn--small{ padding: 0.5rem 0.9rem; font-size: 0.78rem; }
+.add-panel{ background: var(--ink); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 1.25rem; }
+.add-steps{ margin: 0 0 0.75rem; padding-left: 1.2rem; display: grid; gap: 0.9rem; font-size: 0.88rem; }
+.add-steps li::marker{ color: var(--lime); font-family: var(--font-display); }
+.add-steps small{ display: block; color: var(--paper-dim); font-size: 0.75rem; margin-top: 0.3rem; }
+.add-steps a{ color: var(--lime); }
+.add-steps textarea{ margin-top: 0.4rem; font-family: ui-monospace, monospace; font-size: 0.78rem; }
+.add-row{ display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; align-items: center; }
+.bookmarklet{ cursor: grab; border-style: dashed; color: var(--lime); }
+.add-status{ margin: 0.5rem 0 0; font-size: 0.84rem; min-height: 1.2em; }
+.add-status.is-ok{ color: var(--lime); }
+.add-status.is-err{ color: var(--ember); }
+.add-status code, .add-panel code{ font-family: ui-monospace, monospace; font-size: 0.78rem; color: var(--paper); background: var(--surface-2); padding: 0 0.3rem; border-radius: 2px; }
+.removed-box{ margin-top: 1.5rem; }
+.removed-box summary{ cursor: pointer; }
+.removed-list{ list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.4rem; }
+.removed-list li{ display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; padding: 0.45rem 0.7rem; background: var(--ink); border: 1px solid var(--line); border-radius: var(--radius); font-size: 0.86rem; }
+.removed-list small{ color: var(--paper-dim); margin-left: 0.3rem; }
+.squad-card__actions{ flex-wrap: wrap; }
+.squad-card__remove{ margin-left: auto; padding: 0.4rem 0.55rem; }
+.squad-card__actions .btn{ white-space: nowrap; }

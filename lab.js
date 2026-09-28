@@ -35,8 +35,10 @@
   const styleText = (p) => [p.playingStyle, p.playingStyleDefensive].filter(Boolean).join(" · ") || "—";
   const statTier = (v) => (v >= 90 ? "elite" : v >= 80 ? "good" : v >= 70 ? "ok" : v >= 60 ? "low" : "poor");
 
-  const players = DATA.players;
-  const byId = Object.fromEntries(players.map((p) => [p.id, p]));
+  // The working squad: generated cards + cards added in this browser − removed ones.
+  // Mutated in place by rebuildPlayers() so every view keeps its reference.
+  const players = [];
+  const byId = {};
   const playerNativeNames = (p) => new Set(p.skills.map((k) => norm(skillLabel(k))));
 
   function cardImg(p, cls) {
@@ -50,12 +52,23 @@
   function loadStore() {
     try {
       const s = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-      return { builds: s.builds || {}, manager: s.manager ?? KB.CURRENT_MANAGER, lineups: s.lineups || [], activeLineup: s.activeLineup, positions: s.positions || {}, tactic: s.tactic || "Long Ball Counter" };
+      return { builds: s.builds || {}, manager: s.manager ?? KB.CURRENT_MANAGER, lineups: s.lineups || [], activeLineup: s.activeLineup, positions: s.positions || {}, tactic: s.tactic || "Long Ball Counter",
+        customPlayers: s.customPlayers || {}, removed: s.removed || [] };
     } catch {
-      return { builds: {}, manager: KB.CURRENT_MANAGER, lineups: [], positions: {}, tactic: "Long Ball Counter" };
+      return { builds: {}, manager: KB.CURRENT_MANAGER, lineups: [], positions: {}, tactic: "Long Ball Counter", customPlayers: {}, removed: [] };
     }
   }
   const store = loadStore();
+
+  function rebuildPlayers() {
+    const removed = new Set(store.removed);
+    const all = [...DATA.players, ...Object.values(store.customPlayers).filter((c) => !DATA.players.some((p) => p.id === c.id))];
+    all.forEach((p) => { if (p.labels) Object.assign(DATA.labels, p.labels); });
+    players.length = 0;
+    Object.keys(byId).forEach((k) => delete byId[k]);
+    all.filter((p) => !removed.has(p.id)).forEach((p) => { players.push(p); byId[p.id] = p; });
+  }
+  rebuildPlayers();
   function saveStore() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { /* private mode */ }
   }
@@ -240,12 +253,14 @@
             <p class="squad-card__boost">${esc(p.booster1?.name || "No booster")}${p.booster2Fixed ? " + " + esc(p.booster2Fixed.name) : ""}</p>
             ${note ? `<p class="squad-card__note">${esc(note.role)}</p>` : ""}
             <div class="squad-card__foot">
+              ${p.custom ? `<span class="badge badge--amber" title="Added in this browser">Added here</span>` : ""}
               ${savedBadge}
               <span class="squad-card__pts">Lv cap ${p.levelCap} · ${budgetFor(p.levelCap)} pts</span>
             </div>
             <div class="squad-card__actions">
               <button type="button" class="btn btn--icon btn--solid" data-open-player="${p.id}">Train</button>
               <a class="btn btn--icon" href="https://efhub.com/players/${p.id}" target="_blank" rel="noopener">eFHUB ↗</a>
+              <button type="button" class="btn btn--icon btn--danger squad-card__remove" data-remove-player="${p.id}" aria-label="Remove ${esc(p.name)} from squad" title="Remove from squad">✕</button>
             </div>
           </div>
         </article>`;
@@ -574,6 +589,9 @@
       const parsed = JSON.parse(await file.text());
       Object.assign(store.builds, parsed.builds || {});
       Object.assign(store.positions, parsed.positions || {});
+      Object.assign(store.customPlayers, parsed.customPlayers || {});
+      (parsed.removed || []).forEach((id) => { if (!store.removed.includes(id)) store.removed.push(id); });
+      refreshAll();
       const known = new Set(store.lineups.map((l) => l.id));
       (parsed.lineups || []).forEach((l) => { if (!known.has(l.id)) store.lineups.push(l); });
       saveStore();
@@ -601,7 +619,11 @@
 
   const skillState = { q: "", cat: "", pool: "", mine: false };
   const nativeIndex = {};
-  players.forEach((p) => p.skills.forEach((k) => { (nativeIndex[norm(skillLabel(k))] ||= []).push(p); }));
+  function rebuildNativeIndex() {
+    Object.keys(nativeIndex).forEach((k) => delete nativeIndex[k]);
+    players.forEach((p) => p.skills.forEach((k) => { (nativeIndex[norm(skillLabel(k))] ||= []).push(p); }));
+  }
+  rebuildNativeIndex();
 
   function playerChips(list) {
     return list.map((p) => `<button type="button" class="pchip" data-open-player="${p.id}" title="${esc(p.team || "")} · ${p.position} ${p.overall}">${esc(p.name)}</button>`).join("");
@@ -1240,6 +1262,10 @@
 
   const REC_CONTEXT = { manager: KB.CURRENT_MANAGER, tactic: "Long Ball Counter" };
   let REC = null; // filled at init (needs the multiplier table above)
+  const makeRecommender = () => window.Recommender({
+    players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
+    skillMultiplier, managerProficiency, MAX_LEVEL, boosterPool: DATA.boosterPool,
+  });
   const recState = { q: "", group: "ALL" };
   const mineState = { q: "", group: "ALL", onlyMine: false };
 
@@ -1470,13 +1496,119 @@
   });
 
   /* ---------------------------------------------------------
+     Add / remove players (stored in this browser)
+  --------------------------------------------------------- */
+
+  // Runs on an eFHUB player page: reads the card data the page already contains and
+  // copies it for pasting into Build Lab. eFHUB pages can't be fetched cross-site.
+  const BOOKMARKLET = `(()=>{const m=location.pathname.match(/players\\/(\\d+)/);if(!location.hostname.endsWith("efhub.com")||!m){alert("Open a player page on efhub.com first.");return}const id=m[1];const s=[...document.scripts].map(x=>x.textContent).join("\\n").match(/self\\.__next_f\\.push\\(\\[1,"(?:[^"\\\\]|\\\\.)*"\\]\\)/g)?.map(t=>JSON.parse(t.slice(22,-2))).join("")||"";const grab=k=>{const i=s.indexOf(k);if(i<0)return null;let j=i+k.search(/[{[]/);const st=j;let d=0,q=false,e=false;for(;j<s.length;j++){const c=s[j];if(q){if(e)e=false;else if(c==="\\\\")e=true;else if(c==='"')q=false;continue}if(c==='"')q=true;else if(c==="{"||c==="[")d++;else if(c==="}"||c==="]"){d--;if(!d)break}}return JSON.parse(s.slice(st,j+1))};try{const player=grab('"player":{"id":"'+id+'"');if(!player){alert("Reload this page (F5), then click the bookmark again.");return}const out={v:1,id,player,baseStats:grab('"baseStats":{'),playerSkills:grab('"playerSkills":[')||[],additionalPositions:grab('"additionalPositions":[')||[]};const msg=grab('"messages":{')||{};out.labels={};[...out.playerSkills,...(player.comSkills||[])].forEach(k=>{if(typeof msg[k]==="string")out.labels[k]=msg[k]});const text="EFBLAB:"+JSON.stringify(out);const done=()=>alert(player.name+" copied — paste it into Build Lab → My Squad → Add player.");navigator.clipboard.writeText(text).then(done,()=>prompt("Copy this and paste it into Build Lab:",text))}catch(err){alert("Could not read this page: "+err.message)}})()`;
+
+  let boostsCache = null;
+  async function efhubBoosts() {
+    if (!boostsCache) boostsCache = fetch("https://efhub.com/data/boosts.json").then((r) => r.json());
+    return boostsCache;
+  }
+  const stripBoost = (b) => b && { id: b.id, name: b.name, stats: Object.fromEntries(Object.entries(b.stats).filter(([, v]) => v)) };
+
+  async function playerFromPaste(text) {
+    const raw = text.trim().replace(/^EFBLAB:/, "");
+    const d = JSON.parse(raw);
+    const p = d.player;
+    if (!p || !d.baseStats || !p.id) throw new Error("That doesn't look like a copied eFHUB card.");
+    let booster1 = null;
+    let booster2Fixed = null;
+    try {
+      const b = await efhubBoosts();
+      const all = [...b.left, ...b.right];
+      booster1 = stripBoost(all.find((x) => x.id === p.boostId));
+      booster2Fixed = p.boostId2 ? stripBoost(all.find((x) => x.id === p.boostId2)) : null;
+    } catch { /* offline: card works without its booster */ }
+    const undef = (v) => (v === "$undefined" ? null : v);
+    return {
+      id: String(p.id), name: p.name, team: p.team, position: p.position,
+      additionalPositions: Array.isArray(d.additionalPositions) ? d.additionalPositions : [],
+      playingStyle: undef(p.playingStyle), playingStyleDefensive: undef(p.playingStyleDefensive),
+      overall: p.overallRating, age: p.age, height: p.height, weight: p.weight, foot: p.preferredFoot,
+      weakFootUsage: p.weakFootUsage, weakFootAccuracy: p.weakFootAccuracy, form: p.form, injuryResistance: p.injuryResistance,
+      skills: d.playerSkills || [], comSkills: p.comSkills || [], stats: d.baseStats, model: p.playerModel,
+      image: p.imageUrl, levelCap: p.levelCap, booster1, booster2Fixed,
+      labels: d.labels || {}, custom: true, addedAt: Date.now(),
+    };
+  }
+
+  function refreshAll() {
+    rebuildPlayers();
+    rebuildNativeIndex();
+    REC = makeRecommender();
+    if (!byId[view.playerId]) view.playerId = null;
+    renderPlayerSelect();
+    renderSquad(); renderSkills(); renderManagers(); renderStyles(); renderLineup(); renderRecommended(); renderMyBuilds();
+    renderRemoved();
+  }
+
+  function renderRemoved() {
+    const all = [...DATA.players, ...Object.values(store.customPlayers)];
+    const gone = store.removed.map((id) => all.find((p) => p.id === id)).filter(Boolean);
+    $("#removedBox").hidden = !gone.length;
+    $("#removedCount").textContent = gone.length;
+    $("#removedList").innerHTML = gone.map((p) => `
+      <li><span>${esc(p.name)} <small>${p.position} ${p.overall} · ${esc(p.team || "")}</small></span>
+        <button type="button" class="btn btn--icon" data-restore="${p.id}">Restore</button></li>`).join("");
+  }
+
+  $("#addToggle").addEventListener("click", () => {
+    const box = $("#addPanel");
+    box.hidden = !box.hidden;
+    if (!box.hidden) $("#addPaste").focus();
+  });
+  $("#addBookmarklet").setAttribute("href", `javascript:${encodeURIComponent(BOOKMARKLET)}`);
+  $("#addBookmarklet").addEventListener("click", (e) => { e.preventDefault(); $("#addStatus").textContent = "Drag this button to your bookmarks bar — don't click it here."; });
+  $("#addCopyCode").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(`javascript:${BOOKMARKLET}`); flash($("#addCopyCode"), "Copied"); }
+    catch { window.prompt("Bookmarklet code:", `javascript:${BOOKMARKLET}`); }
+  });
+  $("#addSubmit").addEventListener("click", async () => {
+    const status = $("#addStatus");
+    status.className = "add-status";
+    try {
+      const p = await playerFromPaste($("#addPaste").value);
+      const wasRemoved = store.removed.includes(p.id);
+      if (byId[p.id]) throw new Error(`${p.name} is already in your squad.`);
+      store.removed = store.removed.filter((id) => id !== p.id);
+      if (!DATA.players.some((x) => x.id === p.id)) store.customPlayers[p.id] = p;
+      saveStore();
+      refreshAll();
+      $("#addPaste").value = "";
+      status.classList.add("is-ok");
+      status.innerHTML = `${wasRemoved ? "Restored" : "Added"} <b>${esc(p.name)}</b> (${p.position} ${p.overall}). Saved in this browser — to make it permanent run <code>python3 tools/fetch_players.py --add ${p.id}</code> or send me the ID.`;
+    } catch (err) {
+      status.classList.add("is-err");
+      status.textContent = err instanceof SyntaxError ? "Couldn't read that — paste exactly what the bookmarklet copied." : err.message;
+    }
+  });
+  document.addEventListener("click", (e) => {
+    const rm = e.target.closest("[data-remove-player]");
+    if (rm) {
+      const p = byId[rm.dataset.removePlayer];
+      if (!p || !confirm(`Remove ${p.name} (${p.position} ${p.overall}) from your squad? You can restore it below.`)) return;
+      store.removed.push(p.id);
+      saveStore();
+      refreshAll();
+    }
+    const rs = e.target.closest("[data-restore]");
+    if (rs) {
+      store.removed = store.removed.filter((id) => id !== rs.dataset.restore);
+      saveStore();
+      refreshAll();
+    }
+  });
+
+  /* ---------------------------------------------------------
      Init
   --------------------------------------------------------- */
 
-  REC = window.Recommender({
-    players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
-    skillMultiplier, managerProficiency, MAX_LEVEL, boosterPool: DATA.boosterPool,
-  });
+  REC = makeRecommender();
+  renderRemoved();
   renderPlayerSelect();
   renderSquad();
   renderSkills();
