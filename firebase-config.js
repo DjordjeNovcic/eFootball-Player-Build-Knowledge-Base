@@ -12,4 +12,4 @@ export const FIREBASE_CONFIG = {
 
 // The account whose squad is data/players.js. Anyone else who signs in gets an empty
 // "My squad" instead of this one. Empty = everyone sees the repo squad.
-export const OWNER_UID = "";
+export const OWNER_UID = "GI1MLGbsl2a81ILmlr88OvtHocm2";
