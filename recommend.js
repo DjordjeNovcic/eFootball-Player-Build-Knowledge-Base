@@ -125,6 +125,15 @@ window.Recommender = (deps) => {
       notes.push("Momentum Dribbling — feed it Dribbling, Tight Possession and Balance (§8).");
     }
     if (has("Magnetic Feet")) { const s = get("ballControl"); if (s) s.cap = s.t + 2; }
+    // Physical Contact = holding off opponents and keeping balance under pressure (§20);
+    // Aerial Strength is the least wasteful place for spare points because of it (§12).
+    // Every attacker/midfielder gets a modest PC target so they don't get brushed off —
+    // lighter players a bit lower (they can't be turned into tanks, §5 model limits).
+    if ((ATTACKERS.has(p.position) || ["DMF", "CMF"].includes(p.position)) && !get("physicalContact")) {
+      const t = p.weight < 73 ? 76 : 80;
+      stats.push({ k: "physicalContact", w: 3, t, cap: t + 2, slope: 0.15 });
+      if (p.weight < 73) notes.push(`${p.weight} kg — light frame; a modest Physical Contact target (${t}) so he isn't brushed off, without chasing a tank build (§5, §20).`);
+    }
     const inTpl = new Set(stats.map((x) => x.k));
     const group = p.position === "GK" ? SECONDARY.GK : ["CB", "LB", "RB"].includes(p.position) ? SECONDARY.DEF
       : ["DMF", "CMF"].includes(p.position) ? SECONDARY.MID : SECONDARY.ATT;
