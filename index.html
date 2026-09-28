@@ -27,6 +27,7 @@
 <nav class="tabs" role="tablist" aria-label="Sections">
   <a href="#squad" class="tabs__link" role="tab" data-tab-link="squad">My Squad</a>
   <a href="#train" class="tabs__link" role="tab" data-tab-link="train">Trainer</a>
+  <a href="#lineup" class="tabs__link" role="tab" data-tab-link="lineup">Lineup</a>
   <a href="#skills" class="tabs__link" role="tab" data-tab-link="skills">Skills</a>
   <a href="#managers" class="tabs__link" role="tab" data-tab-link="managers">Managers</a>
   <a href="#styles" class="tabs__link" role="tab" data-tab-link="styles">Playing Styles</a>
@@ -138,6 +139,78 @@
         </div>
         <div id="trainStats"></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LINEUP ============ -->
+<section class="tab-panel" data-tab="lineup" aria-label="Lineup">
+  <div class="wrap">
+    <div class="panel">
+      <div class="toolbar toolbar--lineup">
+        <label class="field">
+          <span class="field__label">Lineup</span>
+          <select id="luSelect"></select>
+        </label>
+        <label class="field">
+          <span class="field__label">Name</span>
+          <input type="text" id="luName" maxlength="40">
+        </label>
+        <label class="field field--tight">
+          <span class="field__label">Formation</span>
+          <select id="luFormation"></select>
+        </label>
+        <label class="field field--tight">
+          <span class="field__label">Manager</span>
+          <select id="luManager"></select>
+        </label>
+        <label class="field field--tight">
+          <span class="field__label">Team playstyle</span>
+          <select id="luTactic"></select>
+        </label>
+      </div>
+      <div class="panel__actions">
+        <button type="button" class="btn btn--icon" id="luNew">New lineup</button>
+        <button type="button" class="btn btn--icon" id="luDuplicate">Duplicate</button>
+        <button type="button" class="btn btn--icon" id="luCopy">Copy as text</button>
+        <button type="button" class="btn btn--icon btn--danger" id="luDelete">Delete</button>
+      </div>
+    </div>
+
+    <div class="lineup-layout">
+      <div class="panel">
+        <div class="panel__head"><h2>STARTING XI</h2><p class="panel__meta">★ = rated with your saved Trainer build</p></div>
+        <div class="pitch" id="luPitch"></div>
+        <div class="slot-legend">
+          <span><i class="dot dot--primary"></i>main position</span>
+          <span><i class="dot dot--extra"></i>extra position</span>
+          <span><i class="dot dot--none"></i>no proficiency</span>
+          <span><i class="dot dot--style"></i>style inactive here</span>
+        </div>
+        <h3 class="group__title group__title--spaced">Bench <span class="group__hint">— <span id="luBenchCount"></span></span></h3>
+        <div class="bench" id="luBench"></div>
+      </div>
+
+      <div class="lineup-side">
+        <div class="panel picker" id="luPicker"></div>
+        <div class="panel">
+          <div class="panel__head"><h2>ANALYSIS</h2></div>
+          <div id="luSummary"></div>
+          <ul class="warnings" id="luWarnings" hidden></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head">
+        <h2>SUBSTITUTIONS</h2>
+        <button type="button" class="btn btn--ghost" id="luAddSub">Add substitution</button>
+      </div>
+      <div id="luSubs"></div>
+      <label class="field field--notes">
+        <span class="field__label">Match plan / notes</span>
+        <textarea id="luNotes" rows="3" placeholder="e.g. switch to Quick Counter when chasing a goal; Vieira drops into CB when defending"></textarea>
+      </label>
     </div>
   </div>
 </section>

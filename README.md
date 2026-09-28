@@ -15,6 +15,10 @@ Two parts:
     KNOWLEDGE-BASE §12), pick the slot-2 booster, manager and up to 5 additional skills,
     and see final stats, KB thresholds and the per-position OVR (same formula as eFHUB).
     Saved dated snapshots from `USER-SQUAD.md` load with one click.
+  - **Lineup** — pick a formation, manager and team playstyle, place players on the
+    pitch and bench, plan substitutions. Shows each player's OVR at his slot (using his
+    saved Trainer build), Link-up status, and KB warnings (out of position, style not
+    compatible with the slot, two Destroyer CBs, same player twice).
   - **Skills**, **Managers**, **Playing Styles** — the knowledge base as searchable
     views, cross-linked to which of my cards have each skill/style/Link-up role.
   - **Sandbox** — the original free-form stat-slider card builder (`app.js`).
