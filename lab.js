@@ -624,6 +624,8 @@
     const warns = [];
     if (left > 0) warns.push(`<b>${left} point${left > 1 ? "s" : ""} unspent.</b> §12 hard rule: spend every point — park leftovers in Aerial Strength or Defending.`);
     if (left < 0) warns.push(`<b>${-left} points over budget</b> for level cap ${cap}.`);
+    if (res.final.speed >= 97 && res.final.speed <= 99 && res.trained.speed > p.stats.speed)
+      warns.push(`<b>Speed ${res.final.speed}</b> is in the dead zone — 96 is already top speed and 97–99 adds nothing (§3). Drop to 96 or push to 100+.`);
     const wastedTotal = Object.values(res.wasted).reduce((a, v) => a + v, 0);
     if (wastedTotal) warns.push(`${wastedTotal} stat point(s) lost above the 99 training cap (${Object.keys(res.wasted).map(statLabel).join(", ")}).`);
     skillsOf(p.id).forEach((n) => {

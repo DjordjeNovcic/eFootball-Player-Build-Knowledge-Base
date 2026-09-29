@@ -180,35 +180,63 @@ window.Recommender = (deps) => {
       const over = Math.min(f.$gain?.[k] || 0, f[k] - lim);
       if (over > 0) out[k] = over;
     });
+    // Speed trained into the dead 97–99 band is waste too.
+    if (f.speed >= 97 && f.speed <= 99) {
+      const dead = Math.min(f.$gain?.speed || 0, f.speed - 96);
+      if (dead > 0) out.speed = Math.max(out.speed || 0, dead);
+    }
     Object.entries(f.$lost || {}).forEach(([k, v]) => { out[k] = (out[k] || 0) + v; });
     return out;
   }
 
+  // Community tests (Amadeusz, via KNOWLEDGE-BASE §3): 96 Speed is already top speed and
+  // 97–99 adds nothing, while 100+ gives a new step. Value Speed as capped at 96 unless it
+  // reaches 100.
+  const effective = (k, x) => (k === "speed" && x < 100 ? Math.min(x, 96) : x);
   function value(profile, f) {
     let v = 0;
     for (const s of profile.stats) {
-      const x = f[s.k];
+      const x = effective(s.k, f[s.k]);
       v += s.w * (Math.min(x, s.t) + (s.slope ?? 0.25) * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0));
     }
     // Secondary stats: once the role's priorities are met, every extra point in a stat the
     // role still uses beats parking it somewhere useless (§4: KP/Jump/Stamina stay linear).
-    for (const k of profile.secondary) v += 0.25 * Math.min(f[k], WASTE[k] ?? 99);
-    for (const over of Object.values(wasteOf(f))) v -= 3 * over;
+    for (const k of profile.secondary) v += 0.25 * Math.min(effective(k, f[k]), WASTE[k] ?? 99);
+    for (const [k, over] of Object.entries(wasteOf(f))) v -= (k === "speed" ? 8 : 3) * over; // dead-zone Speed is pure loss
     return v;
   }
 
   const pointsOf = (levels) => Object.values(levels).reduce((a, l) => a + cumCost(l), 0);
 
   function optimise(p, profile, booster2) {
+    const levels = optimiseOnce(p, profile, booster2, null);
+    // Speed trained into the dead 97–99 band: step Lower Body back to 96 and spend the
+    // freed points elsewhere (Lower Body frozen for the rerun).
+    let f = finalStats(p, levels, booster2);
+    if (f.speed >= 97 && f.speed <= 99 && (f.$gain?.speed || 0) > 0) {
+      const fixed = { ...levels };
+      while (fixed.lowerBody > 0) {
+        fixed.lowerBody -= 1;
+        f = finalStats(p, fixed, booster2);
+        if (f.speed <= 96) break;
+      }
+      return optimiseOnce(p, profile, booster2, fixed);
+    }
+    return levels;
+  }
+
+  function optimiseOnce(p, profile, booster2, start) {
     const cats = categoriesFor(p).filter((c) => !c.gk || p.position === "GK");
-    const levels = Object.fromEntries(cats.map((c) => [c.key, 0]));
+    const levels = start ? { ...start } : Object.fromEntries(cats.map((c) => [c.key, 0]));
+    const frozen = start ? new Set(["lowerBody"]) : new Set();
     const budget = budgetFor(p.levelCap);
-    let left = budget;
+    let left = budget - pointsOf(levels);
     let cur = value(profile, finalStats(p, levels, booster2));
     // Greedy with 1–4 level lookahead so multi-level jumps to a threshold are found.
     for (;;) {
       let best = null;
       for (const c of cats) {
+        if (frozen.has(c.key)) continue;
         let cost = 0;
         for (let d = 1; d <= 4 && levels[c.key] + d <= MAX_LEVEL; d++) {
           cost += levelCost(levels[c.key] + d);
@@ -224,7 +252,7 @@ window.Recommender = (deps) => {
       left -= best.cost;
       cur += best.gain;
     }
-    spendRemainder(p, profile, booster2, levels, cats, budget);
+    spendRemainder(p, profile, booster2, levels, cats.filter((c) => !frozen.has(c.key)), budget);
     return levels;
   }
 

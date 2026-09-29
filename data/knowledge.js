@@ -39,7 +39,7 @@ window.KB = (() => {
   /* ---- Section 3: thresholds (ideal minimums, not hard caps) ---- */
   const THRESHOLDS = {
     offensiveAwareness: [{ at: 90, note: "OA acceleration benefit peaks ~90 (attacking roles)" }],
-    speed: [{ at: 90, note: "Returns beyond 90 are significantly smaller" }],
+    speed: [{ at: 90, note: "Most important threshold; 96 is already top speed, 97–99 adds nothing, 100+ steps up again (§3)" }],
     acceleration: [{ at: 88, note: "Improved running stride" }, { at: 91, note: "Ideal baseline before bigger diminishing returns" }],
     finishing: [{ at: 90, note: "Sufficient for most attackers" }],
     lowPass: [{ at: 82, note: "Minimum, esp. with Through Passing" }, { at: 87, note: "General ideal range" }],

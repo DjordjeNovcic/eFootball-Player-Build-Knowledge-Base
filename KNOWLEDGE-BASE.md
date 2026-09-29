@@ -81,6 +81,15 @@ Acceleration therefore does NOT simply mean:
 
 Instead, it represents how fast the player moves during the first ~16-18 metres.
 
+### Other things that change a player's acceleration (official patch notes, v5.x)
+
+- **Stamina:** Acceleration drops as stamina is lost during a match (Konami reduced
+  how much, but it still happens) — Stamina matters for anyone who has to sprint late.
+- **Attacking Awareness** affects acceleration on attacking runs; **Defensive Awareness**
+  affects acceleration when marking an opponent (see the DA 70 note in §12).
+- Konami also raised the minimum speed of low Speed/Acceleration players, narrowing the
+  gap between slow and fast cards somewhat.
+
 ## Full-speed stage
 
 After the acceleration phase:
@@ -156,6 +165,19 @@ Typical targets:
 - CF/SS: 90-96
 - Wingback: 90-95
 
+### Speed bands from community testing (added 29 Sep 2026)
+
+Reported from Amadeusz's tests via community posts (the original test wasn't
+directly reviewed here — treat as strong working knowledge, re-check after patches):
+
+- 80 → 90 is worth far more than 90 → 99; **90 is the most important threshold**.
+- **96 Speed is already top speed. 96 → 99 gives no improvement** — the worst
+  place to spend progression.
+- **100+ gives a noticeable step again** (relevant for strong boosters).
+
+Practical rule: aim for ~90; above that stop at **96**, or go to **100+** only when it's
+cheap (boosters). Never train into 97–99.
+
 ---
 
 ## Acceleration
@@ -168,6 +190,10 @@ Important values:
 Around 88 appears to unlock an improved running stride.
 
 Around 91 is a strong efficiency point before larger diminishing returns.
+
+Community testing (Amadeusz, via community posts, 29 Sep 2026) puts the benefit per point
+at roughly **3 : 2 : 1** for the ranges **below 88 : 88–91 : above 91** — so points below 88
+are the most valuable, and 91 is where each further point is worth a third of the first ones.
 
 For explosive roles:
 
