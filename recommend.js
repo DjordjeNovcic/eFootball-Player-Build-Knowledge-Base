@@ -446,6 +446,19 @@ window.Recommender = (deps) => {
           ["Weighted Pass", "Lofted through balls for runners (§9 attacking)."], ["Through Passing", "+20% passing stats on through balls (§19)."],
           ["Dipping Shot", "Long-range shot that dips under the bar."], ["Knuckle Shot", "Unpredictable free-kick / long shot."]];
     FALLBACK.forEach(([n, why]) => push(n, why));
+    // Always five (user rule): when the role-specific options run out, fill from the
+    // rest of the addable pool, closest to the role first — never avoid-listed skills,
+    // and Super-sub / Heel Trick only as the very last resort.
+    const LAST = pos === "GK"
+      ? ["Outside Curler", "Acrobatic Clearance", "Pinpoint Crossing", "Through Passing"]
+      : ["CB", "LB", "RB", "DMF", "CMF"].includes(pos)
+        ? ["Track Back", "Aerial Superiority", "Acrobatic Clearance", "Heading", "Pinpoint Crossing", "Through Passing", "Long-range Shooting", "Gamesmanship", "Sole Control"]
+        : ["Cut Behind & Turn", "Scissors Feint", "Chop Turn", "Marseille Turn", "Sole Control", "Flip Flap", "Heading", "Aerial Superiority", "Gamesmanship", "Track Back", "Long-range Curler", "Pinpoint Crossing"];
+    LAST.forEach((n) => push(n, "Fills the fifth slot — smaller benefit for this role than the picks above."));
+    const gkSkill = (n) => /^GK /.test(n);
+    [...addable].filter((n) => !["Super-sub", "Heel Trick"].includes(n) && gkSkill(n) === (pos === "GK"))
+      .forEach((n) => push(n, "Fills the fifth slot — smaller benefit for this role than the picks above."));
+    [...addable].forEach((n) => push(n, "Fills the fifth slot — minimal benefit for this role."));
     return { skills: out, why };
   }
 
