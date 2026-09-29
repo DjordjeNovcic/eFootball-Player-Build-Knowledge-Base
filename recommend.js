@@ -93,6 +93,13 @@ window.Recommender = (deps) => {
       notes.push(`${has("Phenomenal Finishing") ? "Phenomenal Finishing" : "Willpower"} — no need to chase 97–99 Finishing (§8, §13).`);
     }
     if (["foxInTheBox", "targetMan"].includes(tpl.key)) { const pc = get("physicalContact"); if (pc) pc.cap = 97; }
+    // §7 Fox in the Box: "Heading/Jump if player model supports it" — below 185 cm he
+    // won't win the aerial duels, so those points go to finishing and reception instead.
+    if (tpl.key === "foxInTheBox" && p.height < 185 && !has("Bullet Header")) {
+      scale("heading", 0.35); scale("jump", 0.35);
+      const h = get("heading"); if (h) { h.t = 80; h.cap = 82; }
+      notes.push(`${p.height} cm — not an aerial Fox in the Box; Heading/Jump kept low (§6, §7).`);
+    }
     if (has("Bullet Header")) {
       ensure("heading", 5, 89); ensure("jump", 4, 85); ensure("physicalContact", 4, 85);
       scale("heading", 1.6); scale("jump", 1.5); scale("physicalContact", 1.3);
@@ -193,16 +200,24 @@ window.Recommender = (deps) => {
   // 97–99 adds nothing, while 100+ gives a new step. Value Speed as capped at 96 unless it
   // reaches 100.
   const effective = (k, x) => (k === "speed" && x < 100 ? Math.min(x, 96) : x);
+  // Acceleration pays roughly 3 : 2 : 1 per point below 88 : 88–91 : above 91 (§3,
+  // community testing), so each point past 91 is worth a third of one below 88 — and
+  // nothing past the role's cap.
+  const accelCurve = (x, cap) => Math.min(x, 88) + (2 / 3) * Math.max(0, Math.min(x, 91) - 88)
+    + (1 / 3) * Math.max(0, Math.min(x, cap) - 91);
   function value(profile, f) {
     let v = 0;
     for (const s of profile.stats) {
       const x = effective(s.k, f[s.k]);
+      if (s.k === "acceleration") { v += s.w * (accelCurve(x, s.cap) + (x >= s.t ? 2 : 0)); continue; }
       v += s.w * (Math.min(x, s.t) + (s.slope ?? 0.25) * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0));
     }
     // Secondary stats: once the role's priorities are met, every extra point in a stat the
     // role still uses beats parking it somewhere useless (§4: KP/Jump/Stamina stay linear).
     for (const k of profile.secondary) v += 0.25 * Math.min(effective(k, f[k]), WASTE[k] ?? 99);
-    for (const [k, over] of Object.entries(wasteOf(f))) v -= (k === "speed" ? 8 : 3) * over; // dead-zone Speed is pure loss
+    // Trained points past the useful range (dead-zone Speed included) are pure loss —
+    // penalised hard enough that the optimiser moves them to a stat the role still uses.
+    for (const over of Object.values(wasteOf(f))) v -= 8 * over;
     return v;
   }
 
@@ -307,7 +322,9 @@ window.Recommender = (deps) => {
   }
 
   /* ---------- additional skills (§9, USER-SQUAD §5) ---------- */
-  function chooseSkills(p, profile, f) {
+  // `pure`: the knowledge-base picks alone, ignoring the user's own choices — shown as
+  // "Recommended by AI" next to the player's actual skill list.
+  function chooseSkills(p, profile, f, pure = false) {
     const has = profile.has;
     const key = profile.tpl.key;
     const pos = p.position;
@@ -320,8 +337,8 @@ window.Recommender = (deps) => {
       out.push(name); why[name] = reason;
     };
     // Skill choices the user already made in Build Lab come first (USER-SQUAD §4).
-    const note = notesFor(p.id);
-    [...(note?.prefSkills || []), ...(note?.snapshot?.skills || []), ...(deps.myPicks ? deps.myPicks(p.id) : [])].forEach((n) => {
+    const note = pure ? null : notesFor(p.id);
+    [...(note?.prefSkills || []), ...(note?.snapshot?.skills || []), ...(!pure && deps.myPicks ? deps.myPicks(p.id) : [])].forEach((n) => {
       if (out.length >= 5 || out.includes(n) || has(n)) return;
       out.push(n);
       why[n] = "Your choice for this card."
@@ -406,13 +423,29 @@ window.Recommender = (deps) => {
       // neither is recommended as filler for a starter.
       if (deps.onBench?.(p.id)) push("Super-sub", "On your bench — +5% Finishing, +1% Speed/Acceleration when he comes on (§19).");
     }
-    // Fallbacks so every card gets exactly five (§15), most useful first.
-    const FALLBACK = pos === "GK" ? ["Low Lofted Pass", "Weighted Pass", "Fighting Spirit"]
+    // Fallbacks so every card gets all five (§9, §15), most useful first — still only
+    // skills that fit the role and the player model, never avoid-listed ones.
+    const pressing = /frontlinepressure/.test(norm(p.playingStyleDefensive));
+    const FALLBACK = pos === "GK" ? [["Low Lofted Pass", "Faster, more accurate long distribution."], ["Weighted Pass", "Accurate lofted outlets."], ["Fighting Spirit", "Accuracy under pressure."]]
       : ["CB", "LB", "RB", "DMF", "CMF"].includes(pos)
-        ? ["Interception", "Blocker", "Man Marking", "One-touch Pass", "Weighted Pass", "Fighting Spirit", "Sliding Tackle", "Low Lofted Pass", ...(p.height >= 185 ? ["Aerial Superiority"] : []), "Outside Curler"]
-        : ["One-touch Pass", "Outside Curler", "Fighting Spirit", "Long-range Shooting", ...(p.height <= 182 ? ["Double Touch"] : []),
-          ...(["CF", "SS"].includes(pos) ? [] : ["Weighted Pass"])];
-    FALLBACK.forEach((n) => push(n, "Best remaining option for the role."));
+        ? [["Interception", "Defensive coverage (§9)."], ["Blocker", "Defensive coverage (§9)."], ["Man Marking", "Defensive coverage (§9)."],
+          ["One-touch Pass", "Distribution once coverage is complete (§9)."], ["Weighted Pass", "Distribution (§9)."], ["Fighting Spirit", "Accuracy under pressure."],
+          ["Sliding Tackle", "Recovery tackles."], ["Low Lofted Pass", "Faster lofted distribution (§9 CB)."],
+          ...(p.height >= 185 ? [["Aerial Superiority", `${p.height} cm — wins more aerial duels.`]] : []),
+          ...(["DMF", "CMF"].includes(pos) ? [["Track Back", "Tracks runners from midfield (§9 midfielder)."]] : []),
+          ["Acrobatic Clearance", "Clears awkward balls in the box."], ["Outside Curler", "Distribution with the outside of the foot (§9 CB)."]]
+        : [["One-touch Pass", "Quick combinations (§9 attacking)."], ["Outside Curler", "Strong-foot trivela shots and passes (§9 attacking)."],
+          ["Fighting Spirit", "Shooting accuracy under pressure (§9 attacking)."], ["Long-range Shooting", "+10% Finishing from outside the box (§9 attacking)."],
+          ...(pressing ? [["Track Back", "Front Line Pressure — pressing from the front line (§9 midfielder)."]] : []),
+          ...(["goalPoacher", "foxInTheBox", "targetMan", "holePlayer", "dummyRunner"].includes(key) && f.finishing >= 88
+            ? [["Acrobatic Finishing", "Finisher — extra shot animations in the box (§9 attacking)."]] : []),
+          ["Chip Shot Control", "One-on-one finishing option over a rushing keeper."],
+          ...(p.height <= 182 ? [["Double Touch", "Extra close-control move for a mobile attacker."], ["Sole Control", "Ball-roll control package (§8)."],
+            ["Flip Flap", "Ball-roll control package (§8)."], ["Marseille Turn", "Turns out of pressure in tight spaces."]] : []),
+          ...(p.height >= 185 && f.heading >= 80 ? [["Heading", "More downward, accurate headers (§19)."], ["Aerial Superiority", `${p.height} cm — wins more aerial duels.`]] : []),
+          ["Weighted Pass", "Lofted through balls for runners (§9 attacking)."], ["Through Passing", "+20% passing stats on through balls (§19)."],
+          ["Dipping Shot", "Long-range shot that dips under the bar."], ["Knuckle Shot", "Unpredictable free-kick / long shot."]];
+    FALLBACK.forEach(([n, why]) => push(n, why));
     return { skills: out, why };
   }
 
@@ -432,7 +465,8 @@ window.Recommender = (deps) => {
     const targets = [...profile.stats].sort((x, y) => y.w - x.w).slice(0, 8)
       .map((s) => ({ stat: s.k, value: f[s.k], target: s.t, hit: f[s.k] >= s.t, weight: s.w }));
     const { skills, why } = chooseSkills(p, profile, f);
-    return { id: p.id, template: profile.tpl.key, roleLabel: profile.tpl.label, levels, booster2: b.fixed ? null : b.booster.id,
+    const ai = chooseSkills(p, profile, f, true);
+    return { aiSkills: ai.skills, aiWhy: ai.why, id: p.id, template: profile.tpl.key, roleLabel: profile.tpl.label, levels, booster2: b.fixed ? null : b.booster.id,
       booster: b.booster, boosterFixed: b.fixed, boosterOverlap: b.overlap || 0, final: f, rating, targets, skills, skillWhy: why, notes: profile.notes };
   }
 

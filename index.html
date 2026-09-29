@@ -225,12 +225,18 @@
         </div>
 
         <div class="group">
-          <h3 class="group__title">Additional skills <span class="group__hint">— <span id="trainSkillCount"></span> on this player · ★ your pick, others recommended from the knowledge base</span></h3>
+          <h3 class="group__title">Additional skills <span class="group__hint">— <span id="trainSkillCount"></span> on this player · ★ your pick · AI = added from Recommended by AI</span></h3>
           <div class="skill-plan">
             <div class="tags" id="trainSkillPlan"></div>
-            <button type="button" class="btn btn--icon" id="trainSkillReset" title="Replace with the knowledge-base recommendation">Reset to recommended</button>
           </div>
-          <p class="source-note">Tap to add or remove. Skills already on the card are greyed out.</p>
+          <div class="ai-skills">
+            <div class="ai-skills__head">
+              <h4>Recommended by AI</h4>
+              <button type="button" class="btn btn--icon" id="trainSkillReset" title="Replace this player's skills with the AI picks">Use all AI picks</button>
+            </div>
+            <ul class="ai-skills__list" id="trainAiSkills"></ul>
+          </div>
+          <p class="source-note">All addable skills — tap to add or remove. Skills already on the card are greyed out.</p>
           <div class="chips" id="trainSkills"></div>
         </div>
 

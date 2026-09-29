@@ -401,7 +401,7 @@
             <h3 class="squad-card__name">${esc(p.name)}</h3>
             <p class="squad-card__team">${esc(p.team || "")} · ${p.height} cm · ${esc(p.foot || "")}</p>
             <p class="squad-card__style">${esc(styleText(p))}</p>
-            ${skillsOf(p.id).length ? `<p class="squad-card__skills" title="Additional skills — ★ your pick, others recommended">${skillsOf(p.id).map((n) => `<span class="${skillSrc(p.id, n) === "mine" ? "is-mine" : ""}">${skillSrc(p.id, n) === "mine" ? "★ " : ""}${esc(n)}</span>`).join("")}</p>` : ""}
+            ${skillsOf(p.id).length ? `<p class="squad-card__skills" title="Additional skills — ★ your pick, AI = Recommended by AI">${skillsOf(p.id).map((n) => `<span class="${skillSrc(p.id, n) === "mine" ? "is-mine" : ""}">${skillSrc(p.id, n) === "mine" ? "★ " : `<i class="ai-mark">AI</i> `}${esc(n)}</span>`).join("")}</p>` : ""}
             ${styleExpectShort(p) ? `<p class="squad-card__expect" title="${esc(stylesOf(p).filter((x) => x.guide).map((x) => `${x.name}: ${x.guide.expect} ${x.guide.use}`).join("\n\n"))}">${esc(styleExpectShort(p))}</p>` : ""}
             <p class="squad-card__pos">${positionList(p).map(({ pos, prof }) => `<span class="pp pp--${prof}">${pos}</span>`).join("")}${positionsEdited(p) ? `<span class="pp-edited" title="Edited in Trainer">✎</span>` : ""}</p>
             <p class="squad-card__boost">${esc(p.booster1?.name || "No booster")}${p.booster2Fixed ? " + " + esc(p.booster2Fixed.name) : ""}</p>
@@ -562,8 +562,18 @@
     $("#trainSkillCount").textContent = `${mine.length}/${SKILL_CAP}`;
     const why = REC?.recs[p.id]?.skillWhy || {};
     $("#trainSkillPlan").innerHTML = mine.length
-      ? mine.map((n) => `<span class="tag ${skillSrc(p.id, n) === "mine" ? "tag--mine" : "tag--rec"}" title="${esc(why[n] || "")}">${skillSrc(p.id, n) === "mine" ? "★ " : ""}${esc(n)}</span>`).join("")
+      ? mine.map((n) => `<span class="tag ${skillSrc(p.id, n) === "mine" ? "tag--mine" : "tag--rec"}" title="${esc(why[n] || "")}">${skillSrc(p.id, n) === "mine" ? "★ " : `<i class="ai-mark">AI</i> `}${esc(n)}</span>`).join("")
       : `<em class="rec-muted">none yet</em>`;
+    // Recommended by AI: the knowledge-base picks on their own, each with its reason.
+    const ai = REC?.recs[p.id]?.aiSkills || [];
+    const aiWhy = REC?.recs[p.id]?.aiWhy || {};
+    $("#trainAiSkills").innerHTML = ai.map((n) => {
+      const on = mine.includes(n);
+      return `<li class="${on ? "is-on" : ""}"><div><b>${esc(n)}</b><span>${esc(aiWhy[n] || "")}</span></div>
+        ${on ? `<span class="badge badge--green">on player</span>`
+          : `<button type="button" class="btn btn--icon" data-ai-skill="${esc(n)}" ${mine.length >= SKILL_CAP ? `disabled title="5/5 — remove one first"` : ""}>+ Add</button>`}</li>`;
+    }).join("") || `<li class="rec-muted">The card already has every skill worth adding for this role natively.</li>`;
+    if (ai.length && ai.length < SKILL_CAP) $("#trainAiSkills").insertAdjacentHTML("beforeend", `<li class="rec-muted">Only ${ai.length} worthwhile — the card has the rest natively (§9).</li>`);
     $("#trainSkills").innerHTML = addable.map((s) => {
       const has = native.has(norm(s.name));
       const sel = mine.includes(s.name);
@@ -698,6 +708,17 @@
     list.forEach((x) => { src[x] = "mine"; });
     src.__touched = true;
     setSkills(id, list, src);
+    saveStore();
+    renderTrainer(); renderSquad(); renderMyBuilds();
+  });
+  $("#trainAiSkills").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-ai-skill]");
+    if (!b || b.disabled) return;
+    const id = view.playerId;
+    const list = [...skillsOf(id)];
+    if (list.length >= SKILL_CAP || list.includes(b.dataset.aiSkill)) return;
+    list.push(b.dataset.aiSkill);
+    setSkills(id, list, { ...(store.skillSource[id] || {}), [b.dataset.aiSkill]: "rec", __touched: true });
     saveStore();
     renderTrainer(); renderSquad(); renderMyBuilds();
   });
@@ -1806,8 +1827,10 @@
     delete store.playerSkills[p.id];
     delete store.skillSource[p.id];
     REC = makeRecommender();
-    const plan = recommendedSkillPlan(p);
-    setSkills(p.id, plan.list, { ...plan.sources, __touched: false });
+    const list = REC.recs[p.id]?.aiSkills || [];
+    // Explicit choice: keep exactly the AI picks (an untouched list would be refilled
+    // from the squad notes on the next refresh).
+    setSkills(p.id, list, { ...Object.fromEntries(list.map((n) => [n, "rec"])), __touched: true });
     saveStore();
     renderTrainer(); renderSquad(); renderMyBuilds();
   });

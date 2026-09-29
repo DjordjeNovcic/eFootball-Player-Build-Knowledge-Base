@@ -1375,3 +1375,17 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .mgr-link small{ display: block; color: var(--paper-dim); font-size: 0.72rem; margin-bottom: 0.25rem; }
 .mgr-credit{ margin-top: 0.6rem; }
 .mgr-credit a{ color: var(--lime-dim); }
+
+/* ---------- Recommended by AI skills (Trainer) ---------- */
+
+.ai-skills{ margin: 0.8rem 0 1rem; padding: 0.7rem 0.8rem; border: 1px solid rgba(182,156,255,0.4); border-radius: 4px; background: var(--surface-2); }
+.ai-skills__head{ display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.4rem; }
+.ai-skills__head h4{ margin: 0; font-family: var(--font-cond); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--violet); }
+.ai-skills__list{ list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+.ai-skills__list li{ display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+.ai-skills__list li div{ min-width: 0; }
+.ai-skills__list b{ font-family: var(--font-cond); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; margin-right: 0.4rem; }
+.ai-skills__list span:not(.badge){ color: var(--paper-dim); font-size: 0.75rem; }
+.ai-skills__list li.is-on b{ color: var(--paper-dim); }
+.ai-mark{ font-style: normal; font-family: var(--font-cond); font-size: 0.6rem; letter-spacing: 0.06em; color: var(--violet); border: 1px solid rgba(182,156,255,0.5); border-radius: 2px; padding: 0 0.2rem; }
+.ai-skills__list .badge, .ai-skills__list .btn{ flex: none; white-space: nowrap; }
