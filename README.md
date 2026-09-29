@@ -13,7 +13,14 @@ Two parts:
     boosters, level cap and role notes. **+ Add player** imports a card from its eFHUB
     page via a "Copy to Build Lab" bookmarklet (eFHUB pages can't be fetched cross-site);
     ✕ removes a card (restorable). Both are stored in the browser.
-  - **Recommended** — a build for every card, generated from the knowledge base
+  - **CoinPlayTV Builds** — builds the owner publishes for any card (Trainer → *Publish as
+    CoinPlayTV build*, with an optional note). They're public — anyone can read them, even
+    signed out — while *Save build · private* keeps your own copy just for you (My Builds marks
+    which ones are also public). Signed-in users can use one as their own build, or add the
+    card to their squad together with the build. Each published
+    build carries its own card snapshot, so viewers don't need the card first. Stored in
+    Firestore `creatorBuilds/{playerId}`; anyone can read, only the owner can write (`firestore.rules`).
+  - **Recommended by AI** — a build for every card, generated from the knowledge base
     (`recommend.js`): role from position + styles → §7 priorities and §3 thresholds →
     player-model and native-skill adjustments → every point spent → slot-2 booster last →
     5 additional skills → verdict, in the §15 format. Never optimised for OVR.
@@ -70,6 +77,11 @@ python3 tools/fetch_players.py
 python3 tools/fetch_players.py --add <eFHUB ID> [...]     # add cards to USER-SQUAD, then sync
 python3 tools/fetch_players.py --remove <eFHUB ID> [...]  # remove cards from USER-SQUAD, then sync
 ```
+
+`data/managers.js` (every manager card) is written on each run too — boosters and
+proficiency from eFHUB, photos, Link-up plays and release dates from
+[amine250's eFootball Managers](https://amine250.github.io/efootball-managers/). Refresh only it with
+`python3 tools/fetch_players.py --managers`.
 
 `data/knowledge.js` is a hand-maintained extract of `KNOWLEDGE-BASE.md` / `USER-SQUAD.md`
 for the UI — update it when those documents change.

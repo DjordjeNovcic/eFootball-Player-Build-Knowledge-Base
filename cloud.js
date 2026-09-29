@@ -2,7 +2,7 @@
 // Every squad (profile) is one document squads/{id} holding the profile as JSON;
 // firestore.rules limits each document to its members. Without an apiKey in
 // firebase-config.js this module does nothing and the site stays local-only.
-import { FIREBASE_CONFIG, OWNER_UID } from "./firebase-config.js";
+import { FIREBASE_CONFIG, OWNER_UID, CREATOR_NAME } from "./firebase-config.js";
 
 const SDK = "https://www.gstatic.com/firebasejs/11.10.0";
 const lab = window.BuildLab;
@@ -32,7 +32,7 @@ if (!lab || !box) {
   });
 }
 
-let state = { user: null, db: null, fs: null, unsub: null, docs: {}, lastPushed: {}, first: true, pushTimer: null };
+let state = { user: null, db: null, fs: null, unsub: null, unsubPro: null, docs: {}, lastPushed: {}, first: true, pushTimer: null };
 
 function setStatus(kind, text) {
   state.status = { kind, text };
@@ -55,7 +55,7 @@ function render() {
        ${canInvite ? `<button type="button" class="btn btn--icon" id="cloudInvite">Invite link</button>` : ""}
        ${d && active !== "me" && d.owner !== u.uid ? `<span class="badge">shared with you</span>` : ""}
        <button type="button" class="btn btn--icon" id="cloudOut">Sign out</button>`
-    : `<button type="button" class="btn btn--primary btn--small" id="cloudIn">Sign in</button>
+    : `<button type="button" class="btn btn--primary btn--small" id="cloudIn">Sign in / Register</button>
        <span class="cloud__status" id="cloudStatus">${pendingJoin() ? "Sign in to join the shared squad" : "Local only — sign in to sync across devices"}</span>`;
   if (u && state.status) setStatus(state.status.kind, state.status.text);
   $("#cloudIn")?.addEventListener("click", openDialog);
@@ -83,6 +83,7 @@ async function start() {
     reset: (email) => auth.sendPasswordResetEmail(a, email),
   };
   bindDialog();
+  document.addEventListener("click", (e) => { if (e.target.closest("[data-auth-open]") && !state.user) openDialog(); });
   lab.onChange(schedulePush);
   lab.onDelete(onLocalDelete);
   render();
@@ -90,6 +91,8 @@ async function start() {
     state.user = user;
     state.unsub?.();
     state.unsub = null;
+    state.unsubPro?.();
+    state.unsubPro = null;
     state.docs = {};
     state.lastPushed = {};
     state.first = true;
@@ -100,6 +103,7 @@ async function start() {
     if (user) console.info(`[cloud] signed in — uid ${user.uid}`);
     render();
     if (user) connect();
+    connectCreator(user);
   });
 }
 
@@ -328,6 +332,38 @@ async function onLocalDelete(lid) {
   } catch (err) {
     console.error("[cloud] delete", err);
   }
+}
+
+/* ---------- creator builds (CoinPlayTV) ---------- */
+
+// creatorBuilds/{playerId}: public (readable signed out too), written only by the owner.
+function connectCreator(user) {
+  const isCreator = !!user && !!OWNER_UID && user.uid === OWNER_UID;
+  lab.setCreator({ name: CREATOR_NAME, isCreator, publish: isCreator ? publishBuild : null, unpublish: isCreator ? unpublishBuild : null });
+  const { collection, onSnapshot } = state.fs;
+  state.unsubPro = onSnapshot(collection(state.db, "creatorBuilds"), (snap) => {
+    const map = {};
+    snap.forEach((d) => {
+      try { map[d.id] = JSON.parse(d.data().json); } catch (err) { console.error("[cloud] creator build", d.id, err); }
+    });
+    lab.setCreatorBuilds(map);
+  }, (err) => {
+    console.error("[cloud] creator builds", err);
+    lab.setCreatorBuilds({}, err?.code || String(err));
+  });
+}
+
+async function publishBuild(entry) {
+  const { doc, setDoc, serverTimestamp } = state.fs;
+  await setDoc(doc(state.db, "creatorBuilds", entry.playerId), {
+    owner: state.user.uid, playerId: entry.playerId, name: String(entry.player.name || "").slice(0, 80),
+    position: entry.position, json: JSON.stringify(entry), updatedAt: serverTimestamp(),
+  });
+}
+
+async function unpublishBuild(playerId) {
+  const { doc, deleteDoc } = state.fs;
+  await deleteDoc(doc(state.db, "creatorBuilds", playerId));
 }
 
 /* ---------- sharing ---------- */

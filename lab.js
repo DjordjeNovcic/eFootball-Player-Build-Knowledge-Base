@@ -23,7 +23,7 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const norm = (s) => {
     const k = String(s || "").toLowerCase().replace(/^the /, "").replace(/[^a-z0-9]/g, "");
-    return { offensivewingback: "offensivefullback", offensivegoalkeeper: "attackinggk" }[k] || k;
+    return { offensivewingback: "offensivefullback", attackingfullback: "offensivefullback", offensivegoalkeeper: "attackinggk" }[k] || k;
   };
   const statLabel = (k) => KB.STAT_LABELS[k] || k;
   const skillLabel = (k) => DATA.labels[k] || k;
@@ -134,6 +134,9 @@
   const ownsRepo = () => isMe() && repoSquad;
   const notesFor = (id) => (ownsRepo() ? KB.SQUAD_NOTES[id] : null);
   const auth = { enabled: false, signedIn: false };
+  // Builds the site owner publishes for everyone (cloud.js → creatorBuilds/{playerId}).
+  // Each carries its own card snapshot, so viewers don't need the card in their squad.
+  const pro = { name: "CoinPlayTV", isCreator: false, loaded: false, error: null, builds: {}, publish: null, unpublish: null };
 
   function rebuildPlayers() {
     const removed = new Set(store.removed);
@@ -233,10 +236,18 @@
 
   // Managers: the user's seven (with Link-up data, §22) plus every eFHUB manager card.
   // Keys: "kb:<name>" / "ef:<id>"; older saves stored the bare name.
+  // Photos and Link-up plays come from amine250's manager database (tools/fetch_players.py);
+  // the seven KB cards borrow the photo of the eFHUB card with the same proficiencies.
+  const efSame = (m) => (window.EF_MANAGERS || []).find((e) => e.prof.slice(0, 5).join() === m.prof.slice(0, 5).join());
   const ALL_MANAGERS = [
-    ...KB.MANAGERS.map((m) => ({ ...m, key: `kb:${m.name}` })),
-    ...(window.EF_MANAGERS || []).map((m) => ({ ...m, key: `ef:${m.id}`, linkUp: null, centerPiece: null, keyMan: null, affinity: null })),
+    ...KB.MANAGERS.map((m) => ({ ...m, key: `kb:${m.name}`, photo: efSame(m)?.photo || null,
+      linkUps: m.linkUp ? [{ name: m.linkUp, centerPiece: m.centerPiece, keyMan: m.keyMan }] : [] })),
+    ...(window.EF_MANAGERS || []).map((m) => ({ ...m, key: `ef:${m.id}`, linkUps: m.linkUps || [], affinity: null })),
   ];
+  const mgrPhoto = (m, cls = "mgr-photo") => (m?.photo
+    ? `<img class="${cls}" src="${esc(m.photo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : "");
+  const linkUpText = (m) => m.linkUps.map((l) =>
+    `<b>${esc(l.name)}</b><small>${esc(l.centerPiece.join(" "))} → ${esc(l.keyMan.join(" "))}</small>`).join("") || "—";
   function managerObj(v = store.manager) {
     if (!v) return null;
     return ALL_MANAGERS.find((m) => m.key === v) || ALL_MANAGERS.find((m) => m.name === v) || null;
@@ -315,7 +326,7 @@
      Tabs / routing
   --------------------------------------------------------- */
 
-  const TABS = ["squad", "recommended", "mybuilds", "train", "lineup", "skills", "managers", "styles", "sandbox"];
+  const TABS = ["squad", "pro", "recommended", "mybuilds", "train", "lineup", "skills", "managers", "styles", "sandbox"];
   const view = { playerId: null, draft: null, position: null };
 
   function route() {
@@ -335,6 +346,7 @@
     if (active === "lineup") renderLineup();
     if (active === "recommended") renderRecommended();
     if (active === "mybuilds") renderMyBuilds();
+    if (active === "pro") renderPro();
   }
   function go(tab, arg) {
     const hash = `#${tab}${arg ? "/" + arg : ""}`;
@@ -636,7 +648,24 @@
     $("#trainWarnings").hidden = !warns.length;
 
     const savedFlag = store.builds[p.id];
-    $("#trainSaveState").textContent = savedFlag ? `Saved ${new Date(savedFlag.savedAt).toLocaleString()}` : "Not saved";
+    $("#trainSaveState").textContent = savedFlag ? `Saved privately ${new Date(savedFlag.savedAt).toLocaleString()}` : "Not saved";
+    renderPublish(p);
+  }
+
+  // Owner only: publish the Trainer's current draft as a CoinPlayTV build.
+  function renderPublish(p) {
+    $("#trainPublishRow").hidden = !pro.isCreator;
+    if (!pro.isCreator) return;
+    const pub = pro.builds[p.id];
+    if (view.publishFor !== p.id) {
+      view.publishFor = p.id;
+      $("#trainPublishNote").value = pub?.note || "";
+    }
+    $("#trainUnpublish").hidden = !pub;
+    $("#trainPublish").textContent = pub ? "Update public build" : "Publish · public";
+    $("#trainPublishState").textContent = pub
+      ? `Public since ${new Date(pub.publishedAt).toLocaleString()}${pub.updatedAt !== pub.publishedAt ? ` · updated ${new Date(pub.updatedAt).toLocaleString()}` : ""}`
+      : "Not public";
   }
 
   $("#trainPlayer").addEventListener("change", (e) => go("train", e.target.value));
@@ -722,6 +751,41 @@
     renderSquad();
     renderLineup();
     renderMyBuilds();
+  });
+  $("#trainPublish").addEventListener("click", async () => {
+    const p = byId[view.playerId];
+    if (!pro.publish || !p) return;
+    const btn = $("#trainPublish");
+    const { custom, addedAt, ...card } = p;
+    const labels = Object.fromEntries([...p.skills, ...p.comSkills].map((k) => [k, skillLabel(k)]));
+    const prev = pro.builds[p.id];
+    btn.disabled = true;
+    try {
+      await pro.publish({
+        playerId: p.id,
+        player: { ...card, labels },
+        build: { levels: { ...view.draft.levels }, booster2: view.draft.booster2 ?? null, levelCap: view.draft.levelCap || p.levelCap, skills: [...skillsOf(p.id)] },
+        position: view.position || p.position,
+        manager: store.manager || "",
+        tactic: store.tactic,
+        note: $("#trainPublishNote").value.trim(),
+        publishedAt: prev?.publishedAt || Date.now(),
+        updatedAt: Date.now(),
+      });
+      flash(btn, prev ? "Updated" : "Published");
+    } catch (err) {
+      console.error("[pro] publish", err);
+      $("#trainPublishState").textContent = `Couldn't publish: ${err?.code || err}`;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  $("#trainUnpublish").addEventListener("click", async () => {
+    const p = byId[view.playerId];
+    if (!pro.unpublish || !p || !pro.builds[p.id]) return;
+    if (!confirm(`Remove the published ${pro.name} build for ${p.name}? Everyone stops seeing it.`)) return;
+    try { await pro.unpublish(p.id); }
+    catch (err) { console.error("[pro] unpublish", err); $("#trainPublishState").textContent = `Couldn't unpublish: ${err?.code || err}`; }
   });
   $("#trainDelete").addEventListener("click", () => {
     if (!store.builds[view.playerId]) return;
@@ -878,23 +942,24 @@
     $("#mgrMeta").textContent = me
       ? "Seven owned cards · team booster is a flat +1/+1 on the whole squad (§17)"
       : `${list.length} owned by ${isMe() ? "you" : store.name} · pick them from eFHUB's ${ALL_MANAGERS.filter((m) => m.key.startsWith("ef:")).length} manager cards below`;
-    const head = `<tr><th>Manager</th><th>Team booster</th>${KB.TACTICS.map((t) => `<th class="num">${t}</th>`).join("")}${me ? "" : "<th></th>"}</tr>`;
+    const head = `<tr><th>Manager</th><th>Team booster</th>${KB.TACTICS.map((t) => `<th class="num">${t}</th>`).join("")}<th>Link-up · Center Piece → Key Man</th>${me ? "" : "<th></th>"}</tr>`;
     const row = (m, owned) => `
       <tr class="${m.key === current ? "is-current" : ""}">
-        <td><b>${esc(m.name)}</b>${m.key === current ? ` <span class="badge badge--lime">current</span>` : ""}</td>
+        <td><div class="mgr-cell">${mgrPhoto(m)}<span><b>${esc(m.name)}</b>${m.key === current ? ` <span class="badge badge--lime">current</span>` : ""}${m.released ? `<small>${esc(m.released)}</small>` : ""}</span></div></td>
         <td>${m.boost.map((k) => `${statLabel(k)} +1`).join("<br>") || "—"}</td>
         ${m.prof.map((v) => `<td class="num ${v >= 89 ? "hot" : v >= 70 ? "warm" : ""}">${v ?? "N/A"}</td>`).join("")}
+        <td class="mgr-link">${linkUpText(m)}</td>
         ${me ? "" : `<td class="actions">${owned
           ? `<button type="button" class="btn btn--icon" data-mgr-current="${esc(m.key)}">Set current</button> <button type="button" class="btn btn--icon btn--danger" data-mgr-toggle="${esc(m.key)}">Remove</button>`
           : `<button type="button" class="btn btn--icon btn--solid" data-mgr-toggle="${esc(m.key)}">+ Owned</button>`}</td>`}
       </tr>`;
-    $("#mgrTable").innerHTML = `<thead>${head}</thead><tbody>${list.map((m) => row(m, true)).join("") || `<tr><td colspan="9"><em>No managers yet — mark the ones ${isMe() ? "you own" : `${esc(store.name)} owns`} in the list below.</em></td></tr>`}</tbody>`;
+    $("#mgrTable").innerHTML = `<thead>${head}</thead><tbody>${list.map((m) => row(m, true)).join("") || `<tr><td colspan="10"><em>No managers yet — mark the ones ${isMe() ? "you own" : `${esc(store.name)} owns`} in the list below.</em></td></tr>`}</tbody>`;
     $("#mgrPickerBox").hidden = me;
     $("#mgrLinkBox").hidden = !me;
     if (!me) {
       const q = mgrState.q.trim().toLowerCase();
       const pool = ALL_MANAGERS.filter((m) => m.key.startsWith("ef:") && !store.ownedManagers.includes(m.key))
-        .filter((m) => !q || `${m.name} ${m.boost.map(statLabel).join(" ")}`.toLowerCase().includes(q));
+        .filter((m) => !q || `${m.name} ${m.boost.map(statLabel).join(" ")} ${m.linkUps.map((l) => `${l.name} ${l.centerPiece.join(" ")} ${l.keyMan.join(" ")}`).join(" ")}`.toLowerCase().includes(q));
       $("#mgrPool").innerHTML = `<thead>${head}</thead><tbody>${pool.map((m) => row(m, false)).join("")}</tbody>`;
       return;
     }
@@ -906,7 +971,7 @@
       return `
         <article class="kb-card">
           <header class="kb-card__head">
-            <h3>${esc(m.name)}</h3>
+            <h3>${mgrPhoto(ALL_MANAGERS.find((x) => x.key === `kb:${m.name}`), "mgr-photo mgr-photo--head")}${esc(m.name)}</h3>
             <div class="kb-card__badges">
               <span class="badge">${esc(m.linkUp)}</span>
               <span class="badge ${live ? "badge--lime" : "badge--ember"}">${live ? "Squad can activate" : "Missing a role"}</span>
@@ -1092,7 +1157,7 @@
 
   function linkUpStatus(l) {
     const m = managerObj(l.manager);
-    if (!m || !m.centerPiece) return null; // eFHUB-only managers carry no Link-up data
+    if (!m || !m.linkUps.length) return []; // older cards have no Link-up play
     const slots = layoutOf(l);
     const find = ([style, positions]) => {
       const set = positions.split("/");
@@ -1101,7 +1166,7 @@
           (norm(p.playingStyle) === norm(style) || norm(p.playingStyleDefensive) === norm(style)))
         .map(({ p }) => p);
     };
-    return { m, cp: find(m.centerPiece), km: find(m.keyMan) };
+    return m.linkUps.map((link) => ({ link, cp: find(link.centerPiece), km: find(link.keyMan) }));
   }
 
   function renderLineup() {
@@ -1171,20 +1236,20 @@
     const m = managerObj(l.manager);
     const tIdx = KB.TACTICS.indexOf(l.tactic);
     const prof = m && tIdx >= 0 ? m.prof[tIdx] : null;
-    const link = linkUpStatus(l);
+    const links = linkUpStatus(l);
     $("#luSummary").innerHTML = `
       <div class="lu-kpis">
         <div><b>${avg}</b><span>avg XI rating</span></div>
         <div><b>${ratings.length}/11</b><span>starters</span></div>
         <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${esc(l.tactic)} proficiency${prof != null ? ` · +${((skillMultiplier(prof) - 1) * 100).toFixed(1)}%` : ""}</span></div>
       </div>
-      ${m ? `<p class="lu-line">Team booster: ${m.boost.map((k) => `${statLabel(k)} +1`).join(", ")}, plus the proficiency multiplier — both included in the ratings.</p>` : ""}
-      ${link ? `<div class="lu-link ${link.cp.length && link.km.length ? "is-on" : ""}">
-          <span class="field__label">Link-up · ${esc(link.m.linkUp)}</span>
-          <p>Center Piece (${esc(link.m.centerPiece.join(" "))}): ${link.cp.length ? link.cp.map((p) => esc(p.name)).join(", ") : "<em>not in XI</em>"}</p>
-          <p>Key Man (${esc(link.m.keyMan.join(" "))}): ${link.km.length ? link.km.map((p) => esc(p.name)).join(", ") : "<em>not in XI</em>"}</p>
-          <p class="lu-link__state">${link.cp.length && link.km.length ? "Active" : "Inactive — both roles must be fielded"}</p>
-        </div>` : ""}`;
+      ${m ? `<p class="lu-line">${mgrPhoto(m, "mgr-photo mgr-photo--inline")}Team booster: ${m.boost.map((k) => `${statLabel(k)} +1`).join(", ")}, plus the proficiency multiplier — both included in the ratings.</p>` : ""}
+      ${links.map(({ link, cp, km }) => `<div class="lu-link ${cp.length && km.length ? "is-on" : ""}">
+          <span class="field__label">Link-up · ${esc(link.name)}</span>
+          <p>Center Piece (${esc(link.centerPiece.join(" "))}): ${cp.length ? cp.map((p) => esc(p.name)).join(", ") : "<em>not in XI</em>"}</p>
+          <p>Key Man (${esc(link.keyMan.join(" "))}): ${km.length ? km.map((p) => esc(p.name)).join(", ") : "<em>not in XI</em>"}</p>
+          <p class="lu-link__state">${cp.length && km.length ? "Active" : "Inactive — both roles must be fielded"}</p>
+        </div>`).join("")}`;
     const warns = lineupWarnings(l);
     if (m && prof == null) warns.unshift(`<b>${esc(m.name)}</b> has no ${esc(l.tactic)} proficiency (N/A) — pick another team playstyle.`);
     else if (m && prof < PROF_MIN) warns.unshift(`${esc(l.tactic)} proficiency ${prof} is below 70 — the in-game penalty isn't modelled, ratings assume 70.`);
@@ -1689,7 +1754,7 @@
           <td class="num">${rOvr}</td>
           <td>${mine ? `<code>${line(mine)}</code>${diffs}` : "<em>—</em>"}</td>
           <td class="num">${mOvr} ${delta}</td>
-          <td>${status}</td>
+          <td>${status}${pro.isCreator && pro.builds[p.id] ? ` <span class="badge badge--violet" title="Also published as a public ${esc(pro.name)} build">Public</span>` : ""}</td>
           <td class="actions">
             <button type="button" class="btn btn--icon btn--solid" data-mine-edit="${p.id}">${mine ? "Tweak" : "Start from recommended"}</button>
             ${mine ? `<button type="button" class="btn btn--icon" data-rec-use="${p.id}">Reset to recommended</button>` : ""}
@@ -1750,6 +1815,115 @@
     const p = byId[view.playerId];
     view.draft = recBuild(p.id);
     renderTrainer();
+  });
+
+  /* ---------------------------------------------------------
+     CoinPlayTV builds tab — published by the owner, read by every signed-in account
+  --------------------------------------------------------- */
+
+  const proState = { q: "", group: "ALL", open: new Set() };
+
+  function renderPro() {
+    // Public: everyone sees the builds; copying one into a squad needs an account.
+    const signedOut = auth.enabled && !auth.signedIn;
+    $("#proGate").hidden = !signedOut;
+    const all = Object.values(pro.builds);
+    const q = proState.q.trim().toLowerCase();
+    const list = all
+      .filter((b) => proState.group === "ALL" || POSITION_GROUP[b.position] === proState.group)
+      .filter((b) => !q || `${b.player.name} ${b.player.team} ${b.position} ${styleText(b.player)} ${b.note}`.toLowerCase().includes(q))
+      .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.updatedAt - a.updatedAt);
+    $("#proMeta").textContent = pro.error ? "" : pro.loaded ? `${all.length} build${all.length === 1 ? "" : "s"} by ${pro.name}` : "Loading…";
+    $("#proGrid").innerHTML = list.map((b) => {
+      const p = b.player;
+      Object.assign(DATA.labels, p.labels || {});
+      const cats = categoriesFor(p);
+      const res = compute(p, b.build, b.manager, b.tactic);
+      const rating = res.ratings[b.position];
+      const b2 = booster2Of(p, b.build);
+      const mgr = managerObj(b.manager);
+      const owned = !!byId[p.id];
+      const statKeys = KB.STAT_GROUPS.flatMap((g) => g.stats).filter((k) => (isGK(p) || !k.startsWith("gk")) && res.final[k] != null);
+      const trained = new Set(cats.filter((c) => b.build.levels[c.key]).flatMap((c) => c.stats));
+      return `
+        <details class="rec-card pro-card" data-group="${POSITION_GROUP[b.position]}" data-pro="${p.id}" ${proState.open.has(p.id) ? "open" : ""}>
+          <summary class="rec-card__head">
+            ${cardImg(p, "rec-card__img")}
+            <div class="rec-card__who">
+              <h3>${esc(p.name)}</h3>
+              <p>${esc(p.team || "")} · ${p.height} cm · Lv cap ${b.build.levelCap || p.levelCap}</p>
+              <div class="kb-card__badges">
+                <span class="badge badge--violet">${esc(pro.name)}</span>
+                ${owned ? `<span class="badge badge--green">in your squad</span>` : ""}
+                ${owned && store.builds[p.id] ? `<span class="badge">★ you have a build</span>` : ""}
+              </div>
+            </div>
+            <div class="rec-card__ovr"><b>${rating}</b><span>${b.position} · card ${p.overall}</span></div>
+            <p class="rec-card__line"><code>${cats.map((c) => b.build.levels[c.key] || 0).join("-")}</code> · ${esc(b2?.name || "no booster")} · ${b.build.skills.length} skills</p>
+          </summary>
+          <div class="rec-card__body">
+          ${b.note ? `<section class="rec-sec pro-note"><h4>${esc(pro.name)} says</h4><p>${esc(b.note).replace(/\n/g, "<br>")}</p></section>` : ""}
+          <section class="rec-sec">
+            <h4>Role</h4>
+            <p><b>${b.position} — ${esc(styleText(p))}</b></p>
+            <p class="rec-muted">Rated with ${esc(mgr?.name || "no manager")} at ${esc(b.tactic)}.</p>
+          </section>
+          <section class="rec-sec">
+            <h4>Build <span class="rec-muted">${pointsUsed(b.build)}/${budgetFor(b.build.levelCap || p.levelCap)} pts</span></h4>
+            <div class="rec-levels">${cats.map((c) => `<span class="${b.build.levels[c.key] ? "" : "is-zero"}"><b>${b.build.levels[c.key] || 0}</b><i>${c.label.replace("Lower Body Strength", "Lower Body").replace("Aerial Strength", "Aerial")}</i></span>`).join("")}</div>
+          </section>
+          <section class="rec-sec">
+            <h4>Boosters</h4>
+            <p>${esc(p.booster1?.name || "—")} <span class="rec-muted">(slot 1, fixed)</span> + <b>${esc(b2?.name || "—")}</b>${b2 ? ` — ${Object.keys(b2.stats).map(statLabel).join(", ")}` : ""}</p>
+          </section>
+          <section class="rec-sec">
+            <h4>Final stats</h4>
+            <div class="rec-targets">${statKeys.map((k) => `<span class="rec-t ${trained.has(k) ? "is-hit" : ""}"><i>${statLabel(k)}</i><b class="tier-bg-${statTier(res.final[k])}">${res.final[k]}</b></span>`).join("")}</div>
+          </section>
+          <section class="rec-sec">
+            <h4>Additional skills <span class="rec-muted">${b.build.skills.length}/5</span></h4>
+            <ul class="rec-skills">${b.build.skills.map((n) => `<li><b>${esc(n)}</b></li>`).join("") || `<li class="rec-muted">None.</li>`}</ul>
+          </section>
+          <div class="rec-card__actions">
+            ${signedOut
+              ? `<button type="button" class="btn btn--icon btn--solid" data-auth-open>Sign in to copy this build</button>`
+              : `<button type="button" class="btn btn--icon btn--solid" data-pro-use="${p.id}">${owned ? (store.builds[p.id] ? "Replace my build" : "Use as my build") : "Add card + build to my squad"}</button>`}
+            <a class="btn btn--icon" href="https://efhub.com/players/${p.id}" target="_blank" rel="noopener">eFHUB ↗</a>
+          </div>
+          </div>
+        </details>`;
+    }).join("") || `<p class="empty-state">${pro.error ? `Couldn't load the builds (${esc(pro.error)}).` : !pro.loaded ? "Loading builds…" : all.length ? "No builds match." : `No ${esc(pro.name)} builds published yet.`}</p>`;
+  }
+
+  // Copy a published build into this account's squad (adding the card if it's missing)
+  // and open it in the Trainer.
+  function usePro(id) {
+    const b = pro.builds[id];
+    if (!b) return;
+    const p = b.player;
+    if (byId[id] && store.builds[id] && !confirm(`Replace your saved build for ${p.name} with the ${pro.name} build?`)) return;
+    if (!byId[id]) {
+      store.removed = store.removed.filter((x) => x !== id);
+      store.customPlayers[id] = { ...p, custom: true, addedAt: Date.now() };
+      rebuildPlayers();
+    }
+    const build = { ...emptyBuild(byId[id]), ...structuredClone(b.build) };
+    store.builds[id] = { ...build, savedAt: Date.now() };
+    setSkills(id, build.skills, { ...Object.fromEntries(build.skills.map((n) => [n, "mine"])), __touched: true });
+    saveStore();
+    refreshAll();
+    openInTrainer(id, store.builds[id]);
+  }
+
+  bindFilter("pro", proState, renderPro);
+  $("#proGrid").addEventListener("toggle", (e) => {
+    const d = e.target.closest?.("[data-pro]");
+    if (!d) return;
+    if (d.open) proState.open.add(d.dataset.pro); else proState.open.delete(d.dataset.pro);
+  }, true);
+  document.addEventListener("click", (e) => {
+    const use = e.target.closest("[data-pro-use]");
+    if (use) usePro(use.dataset.proUse);
   });
 
   /* ---------------------------------------------------------
@@ -1817,7 +1991,7 @@
     if (!byId[view.playerId]) view.playerId = null;
     renderPlayerSelect();
     renderSquad(); renderSkills(); renderManagers(); renderStyles(); renderLineup(); renderRecommended(); renderMyBuilds();
-    renderRemoved();
+    renderRemoved(); renderPro();
   }
 
   function renderRemoved() {
@@ -1921,11 +2095,26 @@
       route();
     },
     isRepoSquad: () => repoSquad,
+    // Creator builds: cloud.js wires publishing (owner only) and feeds the published list.
+    setCreator({ name, isCreator, publish, unpublish }) {
+      Object.assign(pro, { name: name || pro.name, isCreator: !!isCreator, publish, unpublish });
+      if (view.playerId && byId[view.playerId]) renderPublish(byId[view.playerId]);
+      renderPro();
+    },
+    setCreatorBuilds(map, error = null) {
+      pro.builds = map || {};
+      pro.loaded = true;
+      pro.error = error;
+      renderPro();
+      if (pro.isCreator) renderMyBuilds();
+      if (view.playerId && byId[view.playerId]) renderPublish(byId[view.playerId]);
+    },
     clearLocal() { try { localStorage.removeItem(STORE_KEY); localStorage.removeItem(OWNER_FLAG); } catch { /* private mode */ } },
     setAuth(state) {
       Object.assign(auth, state);
       renderProfileBar();
       renderSquad();
+      renderPro();
       if (auth.signedIn && isMe() && !repoSquad && !players.length) $("#addPanel").hidden = false;
     },
   };
@@ -1944,5 +2133,6 @@
   renderManagers();
   renderStyles();
   renderLineup();
+  renderPro();
   route();
 })();

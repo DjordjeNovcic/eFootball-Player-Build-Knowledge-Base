@@ -1351,3 +1351,27 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 @media (prefers-reduced-motion: reduce){ .chg{ animation: none; } .srow.is-changed{ animation: none; background: rgba(212,255,63,0.12); } }
 .chg{ font-size: 0.78rem; padding: 0.2rem 0.34rem; top: -0.7rem; right: -0.7rem; }
 .pmap__tile .chg{ top: 0.2rem; right: 0.2rem; }
+
+/* ---------- CoinPlayTV builds ---------- */
+
+.pro-gate{ display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.8rem; padding: 1rem 1.1rem; margin-bottom: 1rem; border: 1px solid rgba(182,156,255,0.45); border-radius: 4px; background: var(--surface-2); }
+.pro-gate p{ margin: 0; font-size: 0.9rem; }
+.pro-card::before{ background: linear-gradient(90deg, var(--violet), var(--grp, var(--lime))); }
+.pro-note p{ color: var(--paper); font-size: 0.86rem; }
+.publish-row{ margin-top: 0.8rem; padding: 0.8rem 0.9rem 0.2rem; border: 1px dashed rgba(182,156,255,0.45); border-radius: 4px; }
+.publish-row .field{ display: block; }
+.publish-row textarea{ width: 100%; margin-top: 0.3rem; }
+.publish-row small{ text-transform: none; letter-spacing: 0; color: var(--paper-dim); }
+
+/* ---------- manager photos & Link-ups ---------- */
+
+.mgr-cell{ display: flex; align-items: center; gap: 0.6rem; }
+.mgr-cell small{ display: block; color: var(--paper-dim); font-size: 0.7rem; margin-top: 0.1rem; }
+.mgr-photo{ width: 40px; height: 40px; flex: none; object-fit: cover; object-position: top; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--line-soft); }
+.mgr-photo--head{ width: 32px; height: 32px; vertical-align: middle; margin-right: 0.5rem; }
+.mgr-photo--inline{ width: 28px; height: 28px; vertical-align: middle; margin-right: 0.5rem; }
+.kb-table td.mgr-link{ min-width: 190px; font-size: 0.78rem; }
+.mgr-link b{ display: block; font-family: var(--font-cond); letter-spacing: 0.03em; }
+.mgr-link small{ display: block; color: var(--paper-dim); font-size: 0.72rem; margin-bottom: 0.25rem; }
+.mgr-credit{ margin-top: 0.6rem; }
+.mgr-credit a{ color: var(--lime-dim); }

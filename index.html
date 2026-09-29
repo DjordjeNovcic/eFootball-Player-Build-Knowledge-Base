@@ -26,12 +26,13 @@
 
 <div class="profile-bar">
   <div class="cloud" id="cloudBox" hidden></div>
-  <p class="profile-bar__note profile-bar__note--demo" id="demoBanner" hidden><b>Sign in</b> to build your own squad — add your cards, managers and lineups. Skills, playing styles, boosters and the trainer are open to everyone.</p>
+  <p class="profile-bar__note profile-bar__note--demo" id="demoBanner" hidden><b>Sign in or register (free)</b> to build your own squad — add your cards, managers and lineups — and to see all CoinPlayTV builds. Skills, playing styles, boosters and the trainer are open to everyone.</p>
 </div>
 
 <nav class="tabs" role="tablist" aria-label="Sections">
   <a href="#squad" class="tabs__link" role="tab" data-tab-link="squad">My Squad</a>
-  <a href="#recommended" class="tabs__link" role="tab" data-tab-link="recommended">Recommended</a>
+  <a href="#pro" class="tabs__link" role="tab" data-tab-link="pro">CoinPlayTV Builds</a>
+  <a href="#recommended" class="tabs__link" role="tab" data-tab-link="recommended">Recommended by AI</a>
   <a href="#mybuilds" class="tabs__link" role="tab" data-tab-link="mybuilds">My Builds</a>
   <a href="#train" class="tabs__link" role="tab" data-tab-link="train">Trainer</a>
   <a href="#lineup" class="tabs__link" role="tab" data-tab-link="lineup">Lineup</a>
@@ -89,12 +90,40 @@
   </div>
 </section>
 
+<!-- ============ COINPLAYTV BUILDS ============ -->
+<section class="tab-panel" data-tab="pro" aria-labelledby="pro-heading">
+  <div class="wrap">
+    <div class="panel">
+      <div class="panel__head">
+        <h2 id="pro-heading">COINPLAYTV BUILDS</h2>
+        <p class="panel__meta" id="proMeta"></p>
+      </div>
+      <p class="source-note">Public builds made by CoinPlayTV for all kinds of cards. Own the card? Use the build as yours and tweak it in the Trainer. Don't have it yet? Add the card to your squad along with the build.</p>
+      <div class="pro-gate" id="proGate" hidden>
+        <p><b>Sign in or create a free account</b> to copy these builds into your own squad and tweak them.</p>
+        <button type="button" class="btn btn--primary" data-auth-open>Sign in / Register</button>
+      </div>
+      <div class="toolbar" id="proToolbar">
+        <input type="text" id="proSearch" placeholder="Search name, team, style…" aria-label="Search CoinPlayTV builds">
+        <div class="chips" id="proGroups">
+          <button type="button" class="chip is-selected" data-group="ALL">All</button>
+          <button type="button" class="chip" data-group="GK">GK</button>
+          <button type="button" class="chip" data-group="DEF">DEF</button>
+          <button type="button" class="chip" data-group="MID">MID</button>
+          <button type="button" class="chip" data-group="FWD">FWD</button>
+        </div>
+      </div>
+      <div class="rec-grid" id="proGrid"></div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ RECOMMENDED ============ -->
 <section class="tab-panel" data-tab="recommended" aria-labelledby="rec-heading">
   <div class="wrap">
     <div class="panel">
       <div class="panel__head">
-        <h2 id="rec-heading">RECOMMENDED BUILDS</h2>
+        <h2 id="rec-heading">RECOMMENDED BY AI</h2>
         <p class="panel__meta" id="recMeta"></p>
       </div>
       <p class="source-note">My build for every card, following KNOWLEDGE-BASE §14: role → priorities &amp; thresholds → player model &amp; native skills → every point spent → slot-2 booster last → 5 additional skills. Never optimised for overall rating (§16). Take one as your starting point in <b>My Builds</b>.</p>
@@ -217,7 +246,20 @@
             <button type="button" class="btn btn--ghost" id="trainSnapshot" hidden>Load snapshot</button>
             <button type="button" class="btn btn--ghost" id="trainReset">Reset</button>
             <button type="button" class="btn btn--ghost" id="trainCopy">Copy</button>
-            <button type="button" class="btn btn--primary" id="trainSave">Save build</button>
+            <button type="button" class="btn btn--primary" id="trainSave" title="Only you can see it (My Builds)">Save build · private</button>
+          </div>
+        </div>
+        <div class="publish-row" id="trainPublishRow" hidden>
+          <label class="field">
+            <span class="field__label">Public CoinPlayTV build <small>— everyone can see it, even without an account. Your private build above stays separate.</small></span>
+            <textarea id="trainPublishNote" rows="2" maxlength="1500" placeholder="How to use him, which manager, what to watch out for…"></textarea>
+          </label>
+          <div class="submit-row">
+            <span class="save-state" id="trainPublishState"></span>
+            <div class="panel__actions">
+              <button type="button" class="btn btn--icon btn--danger" id="trainUnpublish" hidden>Unpublish</button>
+              <button type="button" class="btn btn--primary" id="trainPublish">Publish · public</button>
+            </div>
           </div>
         </div>
         <div class="submit-row submit-row--minor">
@@ -373,14 +415,15 @@
         <p class="panel__meta" id="mgrMeta"></p>
       </div>
       <div class="table-wrap"><table class="kb-table" id="mgrTable"></table></div>
+      <p class="source-note mgr-credit">Manager photos, Link-up plays and release dates: <a href="https://amine250.github.io/efootball-managers/" target="_blank" rel="noopener">eFootball Managers by amine250</a>. Boosters and proficiency: eFHUB.</p>
       <div id="mgrLinkBox">
         <h3 class="group__title group__title--spaced">Link-up — who in my squad fills each role</h3>
         <p class="source-note">A Link-up only works when both the Center Piece and the Key Man play with the named style and position. Playing styles come from eFHUB and may differ from a newer card screenshot.</p>
         <div class="kb-grid" id="mgrLinks"></div>
       </div>
       <div id="mgrPickerBox" hidden>
-        <h3 class="group__title group__title--spaced">All eFHUB manager cards</h3>
-        <p class="source-note">Mark the ones your friend owns. Link-up requirements aren't in eFHUB's data, so they aren't shown for these.</p>
+        <h3 class="group__title group__title--spaced">All manager cards</h3>
+        <p class="source-note">Mark the ones you own with <b>+ Owned</b>, then <b>Set current</b> for the one you use — its team booster, playstyle proficiency and Link-up are then applied in the Trainer and Lineup. Search by name, booster, Link-up or playing style.</p>
         <div class="toolbar"><input type="text" id="mgrSearch" placeholder="Search manager or boosted stat…" aria-label="Search managers"></div>
         <div class="table-wrap"><table class="kb-table" id="mgrPool"></table></div>
       </div>

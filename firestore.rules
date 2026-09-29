@@ -57,5 +57,20 @@ service cloud.firestore {
                     || memberEdit() || joining() || leaving();
       allow delete: if isOwner();
     }
+
+    // Published builds by the site owner (CoinPlayTV), one per card:
+    //   creatorBuilds/{playerId} = { owner, playerId, name, position, json, updatedAt }
+    // Public: anyone can read them, even without an account; only the owner
+    // (OWNER_UID in firebase-config.js) can publish, edit or unpublish.
+    match /creatorBuilds/{playerId} {
+      function isCreator() { return request.auth != null && request.auth.uid == "GI1MLGbsl2a81ILmlr88OvtHocm2"; }
+      allow read: if true;
+      allow create, update: if isCreator()
+        && request.resource.data.owner == request.auth.uid
+        && request.resource.data.playerId == playerId
+        && request.resource.data.name is string && request.resource.data.name.size() <= 80
+        && request.resource.data.json is string && request.resource.data.json.size() < 200000;
+      allow delete: if isCreator();
+    }
   }
 }

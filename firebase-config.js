@@ -13,3 +13,7 @@ export const FIREBASE_CONFIG = {
 // The account whose squad is data/players.js. Anyone else who signs in gets an empty
 // "My squad" instead of this one. Empty = everyone sees the repo squad.
 export const OWNER_UID = "GI1MLGbsl2a81ILmlr88OvtHocm2";
+
+// Builds the owner publishes for everyone (the "CoinPlayTV builds" tab). Only OWNER_UID
+// can publish (firestore.rules); anyone can read them, signed in or not.
+export const CREATOR_NAME = "CoinPlayTV";

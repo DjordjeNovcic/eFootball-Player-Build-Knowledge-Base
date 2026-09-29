@@ -9,7 +9,7 @@ This repo has two parts:
   `data/managers.js` (all eFHUB managers) and `data/friends.js` (friends' squads, via
   `--friend`) are generated too. Friend squads never use USER-SQUAD.md notes.
   `recommend.js` encodes the §14 build workflow (role templates, thresholds, skill rules)
-  for the Recommended tab — update it when build doctrine in the knowledge base changes.
+  for the Recommended by AI tab — update it when build doctrine in the knowledge base changes.
 - `KNOWLEDGE-BASE.md` — the actual build doctrine: stat thresholds, diminishing returns,
   player-model physics, role priorities, skill/booster synergy, official screenshot cross-checks,
   new-skill mechanics, and anti-patterns.
