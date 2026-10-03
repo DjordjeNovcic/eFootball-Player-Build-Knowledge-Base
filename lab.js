@@ -1976,6 +1976,11 @@
             <div class="rec-levels">${cats.map((c) => `<span class="${r.levels[c.key] ? "" : "is-zero"}"><b>${r.levels[c.key] || 0}</b><i>${c.label.replace("Lower Body Strength", "Lower Body").replace("Aerial Strength", "Aerial")}</i></span>`).join("")}</div>
           </section>
 
+          ${r.path.length ? `<section class="rec-sec">
+            <h4>Spending order <span class="rec-muted">while he levels up · 2 pts per level</span></h4>
+            ${pathRows(p, r)}
+          </section>` : ""}
+
           <section class="rec-sec">
             <h4>Booster</h4>
             <p><b>${esc(b.name)}</b> — ${Object.keys(b.stats).map(statLabel).join(", ")}${r.boosterFixed ? " <span class=\"rec-muted\">(fixed on this card)</span>" : ""}</p>
@@ -2008,6 +2013,27 @@
       : !lineup ? "No lineup yet — set up your starting XI and bench in the Lineup tab."
       : order.some(Boolean) && !q ? `None of the ${recState.group === "XI" ? "starters" : "bench players"} in “${esc(lineup.name)}” are in your squad any more.`
       : q ? "No players match." : `“${esc(lineup.name)}” has no ${recState.group === "XI" ? "starting XI" : "bench"} yet — fill it in the Lineup tab.`}</p>`;
+  }
+
+  // The build at every 5th player level along the recommended spending order (§12).
+  function pathRows(p, r) {
+    const cats = categoriesFor(p);
+    const lv = Object.fromEntries(cats.map((c) => [c.key, 0]));
+    const rows = [];
+    let spent = 0;
+    let s = 0;
+    const marks = [];
+    for (let L = 6; L < p.levelCap; L += 5) marks.push(L);
+    marks.push(p.levelCap);
+    marks.forEach((L) => {
+      const pts = budgetFor(L);
+      const before = { ...lv };
+      while (s < r.path.length && spent + r.path[s].cost <= pts) { lv[r.path[s].key] = r.path[s].level; spent += r.path[s].cost; s++; }
+      const added = cats.filter((c) => lv[c.key] > before[c.key])
+        .map((c) => `${c.label.replace(" Strength", "")} ${before[c.key]}→${lv[c.key]}`);
+      rows.push(`<li><b>Lv ${L}</b><span class="rec-muted">${pts} pts</span><code>${cats.map((c) => lv[c.key]).join("-")}</code><em>${added.join(", ") || "—"}</em></li>`);
+    });
+    return `<ol class="rec-path">${rows.join("")}</ol>`;
   }
 
   function useRecommendation(id) {

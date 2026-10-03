@@ -962,6 +962,10 @@ textarea:focus{ outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px 
 .rec-levels i{ font-style: normal; font-family: var(--font-cond); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--paper-dim); text-align: center; }
 .rec-levels span.is-zero b{ color: var(--paper-dim); }
 .rec-targets{ display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.rec-path{ list-style: none; margin: 0; padding: 0; display: grid; gap: 0.2rem; font-size: 0.8rem; }
+.rec-path li{ display: grid; grid-template-columns: 3.2rem 3.6rem auto 1fr; gap: 0.5rem; align-items: baseline; }
+.rec-path code{ font-family: var(--font-cond); letter-spacing: 0.04em; color: var(--lime); }
+.rec-path em{ font-style: normal; color: var(--paper-dim); font-size: 0.74rem; }
 .rec-t{ display: inline-flex; align-items: center; gap: 0.3rem; background: var(--surface-2); border-radius: 3px; padding: 0.15rem 0.2rem 0.15rem 0.45rem; }
 .rec-t i{ font-style: normal; font-size: 0.74rem; }
 .rec-t b{ font-family: var(--font-display); font-weight: 500; font-size: 1rem; color: var(--ink); padding: 0 0.3rem; border-radius: 2px; line-height: 1.3; }

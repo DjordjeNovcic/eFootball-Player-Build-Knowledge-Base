@@ -361,6 +361,32 @@ window.Recommender = (deps) => {
     Object.assign(levels, bestLv || options[0]);
   }
 
+  // §12: a training card earns 2 progression points per player level. The path buys the
+  // final build's levels in the order worth the most at each step (same value model, never
+  // past the final build), so a half-trained player is already built for his role.
+  function spendingPath(p, profile, final, booster2) {
+    const keys = Object.keys(final);
+    const lv = Object.fromEntries(keys.map((k) => [k, 0]));
+    let cur = value(profile, finalStats(p, lv, booster2));
+    const steps = [];
+    for (;;) {
+      let best = null;
+      for (const k of keys) {
+        let cost = 0;
+        for (let d = 1; d <= 4 && lv[k] + d <= final[k]; d++) {
+          cost += levelCost(lv[k] + d);
+          const v = value(profile, finalStats(p, { ...lv, [k]: lv[k] + d }, booster2));
+          const ratio = (v - cur) / cost;
+          if (!best || ratio > best.ratio) best = { k, d, ratio, v };
+        }
+      }
+      if (!best) break;
+      for (let i = 0; i < best.d; i++) { lv[best.k] += 1; steps.push({ key: best.k, level: lv[best.k], cost: levelCost(lv[best.k]) }); }
+      cur = best.v;
+    }
+    return steps;
+  }
+
   function chooseBooster(p, profile, levels) {
     if (p.booster2Fixed) return { booster: p.booster2Fixed, fixed: true };
     const gk = p.position === "GK";
@@ -573,6 +599,7 @@ window.Recommender = (deps) => {
       b = { booster: pick.booster, fixed: false, overlap: pick.overlap };
     }
     const f = finalStats(p, levels, b.fixed ? null : b.booster);
+    const path = spendingPath(p, profile, levels, b.fixed ? null : b.booster);
     const rating = OVR.rating(p.position, p.height, p.weakFootAccuracy, f);
     const targets = [...profile.stats].sort((x, y) => y.w - x.w).slice(0, 8)
       .map((s) => ({ stat: s.k, value: f[s.k], target: s.t, hit: f[s.k] >= s.t, weight: s.w, soft: !!s.soft }));
@@ -581,7 +608,7 @@ window.Recommender = (deps) => {
     const { skills, why } = chooseSkills(p, profile, f);
     const ai = chooseSkills(p, profile, f, true);
     return { aiSkills: ai.skills, aiWhy: ai.why, id: p.id, template: profile.tpl.key, roleLabel: profile.tpl.label, levels, booster2: b.fixed ? null : b.booster.id,
-      booster: b.booster, boosterFixed: b.fixed, boosterOverlap: b.overlap || 0, final: f, rating, targets, skills, skillWhy: why, notes };
+      booster: b.booster, boosterFixed: b.fixed, boosterOverlap: b.overlap || 0, final: f, rating, targets, skills, skillWhy: why, notes, path };
   }
 
   const recs = Object.fromEntries(players.map((p) => [p.id, recommend(p)]));
