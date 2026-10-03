@@ -178,6 +178,18 @@ directly reviewed here — treat as strong working knowledge, re-check after pat
 Practical rule: aim for ~90; above that stop at **96**, or go to **100+** only when it's
 cheap (boosters). Never train into 97–99.
 
+### Build targets actually used (user decision, 3 Oct 2026)
+
+The user judged builds sitting at the bottom of the ranges above (CB 88, winger 90)
+as too slow, so recommended builds aim at the **upper part** of each range, paid for
+mostly with defensive/attacking overshoot (DA 96 → 95, OA 95 → 94) rather than core
+thresholds:
+
+- CB 91 (Covering Role 92), DMF / Box-to-Box 90, Orchestrator 88
+- Goal Poacher, Dummy Runner, Hole Player, wingers, full-backs: 92
+- Fox in the Box, Target Man and pure creators stay lower (section 7: Fox in the Box
+  does not need extreme Speed)
+
 ---
 
 ## Acceleration
