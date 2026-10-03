@@ -1076,7 +1076,7 @@
     "3-5-2": [...BACK3, ["LMF", 10, 56], ["CMF", 32, 51], ["DMF", 50, 41], ["CMF", 68, 51], ["RMF", 90, 56], ["CF", 37, 85], ["CF", 63, 85]],
     "5-3-2": [["LB", 8, 32], ["CB", 29, 20], ["CB", 50, 18], ["CB", 71, 20], ["RB", 92, 32], ["CMF", 27, 51], ["DMF", 50, 43], ["CMF", 73, 51], ["CF", 37, 84], ["CF", 63, 84]],
   };
-  const TEAM_TACTICS = ["Possession", "Quick Counter", "Long Ball Counter", "Out Wide", "Long Ball"];
+  const TEAM_TACTICS = KB.TACTICS; // incl. Overload (v6.0.0)
   const BENCH_MAX = 12;
   const slotsFor = (f) => [["GK", 50, 6], ...(FORMATIONS[f] || FORMATIONS["4-3-3"])];
   const OUTFIELD_ROLES = ["CB", "LB", "RB", "DMF", "CMF", "LMF", "RMF", "AMF", "LWF", "RWF", "SS", "CF"];
@@ -1272,8 +1272,7 @@
     return w;
   }
 
-  function linkUpStatus(l) {
-    const m = managerObj(l.manager);
+  function linkUpStatus(l, m = managerObj(l.manager)) {
     if (!m || !m.linkUps.length) return []; // older cards have no Link-up play
     const slots = layoutOf(l);
     const find = ([style, positions]) => {
@@ -1385,10 +1384,63 @@
     $("#luWarnings").innerHTML = warns.map((x) => `<li>${x}</li>`).join("");
     $("#luWarnings").hidden = !warns.length;
 
+    renderManagerFit(l);
     renderPicker(l, slots);
     renderSubs(l, layoutOf(l));
     $("#luNotes").value = l.notes || "";
   }
+
+  // Manager fit (§17, §22): the XI's average rating with each of the profile's managers —
+  // their team booster and playstyle-proficiency multiplier — at the lineup's playstyle
+  // and at the manager's own best one, plus which Link-up plays this XI switches on.
+  function xiAverage(l, managerKey, tactic) {
+    const slots = layoutOf(l);
+    const r = l.xi.map((id, i) => (byId[id] ? compute(byId[id], lineupBuild(byId[id]), managerKey, tactic).ratings[slots[i][0]] : null)).filter((x) => x != null);
+    return r.length ? r.reduce((a, b) => a + b, 0) / r.length : null;
+  }
+  function renderManagerFit(l) {
+    const box = $("#luManagers");
+    if (!box) return;
+    if (!l.xi.some((id) => byId[id])) { box.innerHTML = `<p class="empty-state">Put players in the XI to compare managers.</p>`; return; }
+    const cur = managerObj(l.manager);
+    const rows = profileManagers().map((m) => {
+      const profAtTactic = (t) => m.prof[KB.TACTICS.indexOf(t)];
+      const bestIdx = m.prof.reduce((b, v, j) => ((v ?? -1) > (m.prof[b] ?? -1) ? j : b), 0);
+      const best = KB.TACTICS[bestIdx];
+      const here = profAtTactic(l.tactic);
+      const links = linkUpStatus(l, m);
+      return { m, best, bestProf: m.prof[bestIdx], here, avgHere: here == null ? null : xiAverage(l, m.key, l.tactic),
+        avgBest: xiAverage(l, m.key, best), on: links.filter((x) => x.cp.length && x.km.length) };
+    // What you'd actually play first: the lineup's own playstyle, then Link-ups, then each
+    // manager's best playstyle.
+    }).sort((a, b) => (b.avgHere ?? 0) - (a.avgHere ?? 0) || b.on.length - a.on.length || (b.avgBest ?? 0) - (a.avgBest ?? 0));
+    const f = (x) => (x == null ? "—" : x.toFixed(1));
+    box.innerHTML = `<div class="mfit">${rows.map((r) => `
+      <div class="mfit__row ${cur && cur.key === r.m.key ? "is-current" : ""}">
+        <span class="mfit__ph">${mgrPhoto(r.m, "mgr-photo")}</span>
+        <div class="mfit__who">
+          <b>${esc(r.m.name)}</b>
+          <span>${r.m.boost.map((k) => `${statLabel(k)} +1`).join(" · ")}</span>
+          ${r.on.length ? r.on.map((x) => `<span class="mfit__link">Link-up ${esc(x.link.name)}: ${x.cp.map((p) => esc(shortName(p))).join("/")} → ${x.km.map((p) => esc(shortName(p))).join("/")}</span>`).join("")
+            : `<span class="mfit__nolink">No Link-up with this XI</span>`}
+        </div>
+        <div class="mfit__num" title="Average XI rating at ${esc(l.tactic)} (proficiency ${r.here ?? "N/A"})">
+          <b>${f(r.avgHere)}</b><span>${esc(l.tactic)} ${r.here ?? "N/A"}</span></div>
+        <div class="mfit__num" title="Average XI rating at his best playstyle">
+          <b>${f(r.avgBest)}</b><span>${esc(r.best)} ${r.bestProf}</span></div>
+        ${cur && cur.key === r.m.key ? `<span class="badge badge--lime">Current</span>`
+          : `<button type="button" class="btn btn--icon" data-mfit="${esc(r.m.key)}" data-mfit-tactic="${esc(r.here >= PROF_MIN ? l.tactic : r.best)}">Use</button>`}
+      </div>`).join("")}</div>
+      <p class="mfit__note">Ratings include each manager's +1/+1 booster and playstyle multiplier (§17). Link-up needs both roles in the XI at their positions (§22) — its strength isn't measured.</p>`;
+  }
+  $("#luManagers").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-mfit]");
+    if (!b) return;
+    const l = activeLineup();
+    l.manager = b.dataset.mfit;
+    l.tactic = b.dataset.mfitTactic;
+    saveLineup(); renderLineup();
+  });
 
   function renderPicker(l, slots) {
     const box = $("#luPicker");

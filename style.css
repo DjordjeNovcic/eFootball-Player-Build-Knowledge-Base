@@ -703,6 +703,24 @@ a.btn{ text-decoration: none; display: inline-flex; align-items: center; }
 .lu-line{ font-size: 0.82rem; color: var(--paper-dim); margin: 0 0 0.8rem; }
 .lu-link{ border-left: 3px solid var(--ember); background: rgba(255,90,60,0.06); padding: 0.6rem 0.8rem; margin-bottom: 1rem; }
 .lu-link.is-on{ border-left-color: var(--lime); background: rgba(212,255,63,0.06); }
+.mfit{ display: grid; gap: 0.45rem; }
+.mfit__row{ display: grid; grid-template-columns: auto 1fr auto auto auto; gap: 0.6rem; align-items: center; padding: 0.5rem 0.6rem; background: var(--ink); border: 1px solid var(--line); border-radius: var(--radius); }
+.mfit__row.is-current{ border-color: var(--lime-dim); }
+.mfit__who{ display: grid; gap: 0.1rem; min-width: 0; font-size: 0.78rem; }
+.mfit__who b{ font-size: 0.88rem; }
+.mfit__who span{ color: var(--paper-dim); overflow: hidden; text-overflow: ellipsis; }
+.mfit__who .mfit__link{ color: var(--lime); }
+.mfit__who .mfit__nolink{ font-style: italic; }
+.mfit__num{ display: grid; justify-items: center; min-width: 4.4rem; }
+.mfit__num b{ font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; line-height: 1; }
+.mfit__num span{ font-family: var(--font-cond); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--paper-dim); text-align: center; }
+.mfit__note{ margin: 0.7rem 0 0; font-size: 0.74rem; color: var(--paper-dim); }
+.mfit__ph{ width: 30px; height: 30px; }
+.mfit__ph .mgr-photo{ width: 30px; height: 30px; }
+@media (max-width: 560px){
+  .mfit__row{ grid-template-columns: 1fr auto auto auto; }
+  .mfit__ph{ display: none; }
+}
 .lu-link p{ margin: 0.2rem 0 0; font-size: 0.82rem; }
 .lu-link em{ color: var(--paper-dim); }
 .lu-link__state{ font-family: var(--font-cond); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
