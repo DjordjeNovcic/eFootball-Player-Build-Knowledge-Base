@@ -829,6 +829,7 @@ a.btn{ text-decoration: none; display: inline-flex; align-items: center; }
 }
 .slot:hover{ transform: translate(-50%, 50%) scale(1.05); }
 .slot.is-selected{ box-shadow: 0 0 0 3px var(--lime); }
+.slot__img{ width: 100%; height: clamp(1.5rem, 4.2vw, 2.1rem); object-fit: cover; object-position: 50% 14%; border-radius: 3px; background: rgba(242,243,234,0.06); pointer-events: none; }
 .slot__ovr{ font-family: var(--font-display); font-size: clamp(1.1rem, 3.4vw, 1.6rem); line-height: 1; }
 .slot__ovr sup{ font-size: 0.55em; color: var(--amber); margin-left: 1px; }
 .slot__name{ font-size: clamp(0.58rem, 1.6vw, 0.76rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -856,7 +857,10 @@ a.btn{ text-decoration: none; display: inline-flex; align-items: center; }
   padding: 0.45rem 0.6rem; background: var(--ink); border: 1px solid var(--line); border-radius: var(--radius);
   color: var(--paper); cursor: pointer; font-family: var(--font-body);
 }
+.bench-cell:not(.bench-cell--add){ grid-template-columns: auto auto 1fr; }
+.bench-cell__img{ grid-row: 1 / 3; width: 2.4rem; height: 2.4rem; object-fit: cover; object-position: 50% 16%; border-radius: 4px; pointer-events: none; }
 .bench-cell b{ grid-row: 1 / 3; font-family: var(--font-display); font-size: 1.5rem; font-weight: 500; color: var(--lime); line-height: 1; }
+.bench-cell b sup{ font-size: 0.55em; color: var(--amber); margin-left: 1px; }
 .bench-cell span{ font-size: 0.8rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bench-cell em{ font-style: normal; font-family: var(--font-cond); font-size: 0.68rem; letter-spacing: 0.08em; color: var(--paper-dim); }
 .bench-cell:hover{ border-color: var(--lime-dim); }

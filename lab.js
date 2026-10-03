@@ -1123,6 +1123,8 @@
     return l.defLayout;
   }
   const inDefence = (l) => !!l.fluid && lu.phase === "def";
+  // Markers are centred on their spot; keep the card-image markers fully on the pitch.
+  const slotBottom = (y) => `clamp(3.4rem, ${y}%, calc(100% - 3.4rem))`;
   // The shape on screen: the defence one while Fluid Formation is on and Defence is picked.
   const shownLayout = (l) => (inDefence(l) ? defLayoutOf(l) : layoutOf(l));
   const shownEdited = (l) => (inDefence(l) ? JSON.stringify(defLayoutOf(l)) !== JSON.stringify(freshDefLayout(l)) : isEdited(l));
@@ -1195,9 +1197,12 @@
   }
   const lu = { sel: null, q: "", mode: "players", phase: "att", justDragged: false }; // sel = { area: "xi"|"bench", i }
 
+  // Ratings use the player's saved Trainer build, else his Recommended by AI build — not
+  // the untrained card.
+  const lineupBuild = (p) => store.builds[p.id] || (REC?.recs[p.id] ? recBuild(p.id) : emptyBuild(p));
+  const buildTag = (p) => (store.builds[p.id] ? "your saved build" : REC?.recs[p.id] ? "Recommended by AI build" : "untrained");
   function slotRating(p, pos, l) {
-    const build = store.builds[p.id] || emptyBuild(p);
-    return compute(p, build, l.manager, l.tactic).ratings[pos];
+    return compute(p, lineupBuild(p), l.manager, l.tactic).ratings[pos];
   }
 
   function placePlayer(l, id) {
@@ -1305,15 +1310,16 @@
         const p = byId[l.xi[i]];
         const sel = lu.sel?.area === "xi" && lu.sel.i === i;
         if (!p) {
-          return `<button type="button" class="slot slot--empty ${sel ? "is-selected" : ""}" style="left:${x}%;bottom:${y}%" data-slot="${i}" aria-label="Pick ${pos}">
+          return `<button type="button" class="slot slot--empty ${sel ? "is-selected" : ""}" style="left:${x}%;bottom:${slotBottom(y)}" data-slot="${i}" aria-label="Pick ${pos}">
             <span class="slot__ovr">+</span><span class="slot__pos">${pos}</span></button>`;
         }
         const r = slotRating(p, pos, l);
         ratings.push(r);
         const prof = proficiency(p, pos);
         const bad = styleFit(p, pos).some((f) => !f.ok);
-        return `<button type="button" class="slot slot--${prof} ${sel ? "is-selected" : ""} ${bad ? "slot--style" : ""}" style="left:${x}%;bottom:${y}%" data-slot="${i}"
-            title="${esc(p.name)} — ${pos} ${r}${store.builds[p.id] ? " (saved build)" : " (untrained)"}">
+        return `<button type="button" class="slot slot--${prof} ${sel ? "is-selected" : ""} ${bad ? "slot--style" : ""}" style="left:${x}%;bottom:${slotBottom(y)}" data-slot="${i}"
+            title="${esc(p.name)} — ${pos} ${r} (${buildTag(p)})">
+          ${cardImg(p, "slot__img")}
           <span class="slot__ovr">${r}${store.builds[p.id] ? "<sup>★</sup>" : ""}</span>
           <span class="slot__name">${esc(shortName(p))}</span>
           <span class="slot__pos">${pos}</span></button>`;
@@ -1324,8 +1330,9 @@
       const p = byId[id];
       if (!p) return "";
       const sel = lu.sel?.area === "bench" && lu.sel.i === i;
-      return `<button type="button" class="bench-cell ${sel ? "is-selected" : ""}" data-bench="${i}">
-        <b>${p.overall}</b><span>${esc(p.name)}</span><em>${p.position}</em></button>`;
+      const r = slotRating(p, p.position, l);
+      return `<button type="button" class="bench-cell ${sel ? "is-selected" : ""}" data-bench="${i}" title="${esc(p.name)} — ${p.position} ${r} (${buildTag(p)})">
+        ${cardImg(p, "bench-cell__img")}<b>${r}${store.builds[p.id] ? "<sup>★</sup>" : ""}</b><span>${esc(p.name)}</span><em>${p.position}</em></button>`;
     });
     if (l.bench.length < BENCH_MAX) {
       const sel = lu.sel?.area === "bench" && lu.sel.i === l.bench.length;
