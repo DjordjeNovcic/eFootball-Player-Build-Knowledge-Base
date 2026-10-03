@@ -10,6 +10,8 @@ This repo has two parts:
   `--friend`) are generated too. Friend squads never use USER-SQUAD.md notes.
   `recommend.js` encodes the §14 build workflow (role templates, thresholds, skill rules)
   for the Recommended by AI tab — update it when build doctrine in the knowledge base changes.
+  After changing any CSS/JS (or regenerating `data/`), run `python3 tools/stamp_assets.py`
+  so index.html loads the new files instead of 10-minute-cached GitHub Pages copies.
 - `KNOWLEDGE-BASE.md` — the actual build doctrine: stat thresholds, diminishing returns,
   player-model physics, role priorities, skill/booster synergy, official screenshot cross-checks,
   new-skill mechanics, and anti-patterns.

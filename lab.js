@@ -1952,7 +1952,10 @@
           </div>
           </div>
         </details>`;
-    }).join("") || `<p class="empty-state">${order && !lineup ? "No lineup yet — set up your starting XI and bench in the Lineup tab." : "No players match."}</p>`;
+    }).join("") || `<p class="empty-state">${!order ? "No players match."
+      : !lineup ? "No lineup yet — set up your starting XI and bench in the Lineup tab."
+      : order.some(Boolean) && !q ? `None of the ${recState.group === "XI" ? "starters" : "bench players"} in “${esc(lineup.name)}” are in your squad any more.`
+      : q ? "No players match." : `“${esc(lineup.name)}” has no ${recState.group === "XI" ? "starting XI" : "bench"} yet — fill it in the Lineup tab.`}</p>`;
   }
 
   function useRecommendation(id) {
