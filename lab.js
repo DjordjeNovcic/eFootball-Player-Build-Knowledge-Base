@@ -1126,6 +1126,26 @@
     return { id: uid(), name, formation: "4-2-2-2", manager: ownsRepo() ? KB.CURRENT_MANAGER : store.manager, tactic: store.tactic || "Long Ball Counter",
       xi: Array(11).fill(null), bench: [], subs: [], notes: "" };
   }
+  // The owner's agreed match plans (USER-SQUAD §3 via KB.MATCH_PLANS) are added to the
+  // Lineup tab once each and opened; after that they're ordinary lineups — edit or delete
+  // freely, a deleted plan doesn't come back.
+  function seedMatchPlans() {
+    if (!ownsRepo()) return false;
+    store.seededPlans ||= [];
+    let added = false;
+    (KB.MATCH_PLANS || []).forEach((plan) => {
+      if (store.seededPlans.includes(plan.id)) return;
+      store.seededPlans.push(plan.id);
+      if (store.lineups.some((l) => l.id === plan.id)) return;
+      const keep = (id) => (byId[id] ? id : null);
+      store.lineups.push({ ...plan, xi: plan.xi.map(keep), bench: plan.bench.filter((id) => byId[id]),
+        subs: plan.subs.map((s) => ({ ...s })) });
+      store.activeLineup = plan.id;
+      added = true;
+    });
+    if (added) saveStore();
+    return added;
+  }
   function activeLineup() {
     if (!store.lineups.length) store.lineups.push(newLineup());
     let l = store.lineups.find((x) => x.id === store.activeLineup);
@@ -2008,6 +2028,7 @@
   function refreshAll() {
     renderProfileBar();
     rebuildPlayers();
+    seedMatchPlans();
     rebuildNativeIndex();
     REC = makeRecommender();
     ensureSkillPlans();
@@ -2146,6 +2167,7 @@
      Init
   --------------------------------------------------------- */
 
+  seedMatchPlans();
   REC = makeRecommender();
   ensureSkillPlans();
   renderProfileBar();

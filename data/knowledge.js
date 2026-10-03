@@ -298,5 +298,30 @@ window.KB = (() => {
     "88040387118039": { role: "GK — current squad keeper; trained build needs a current screenshot." },
   };
 
-  return { CATEGORIES, STAT_LABELS, STAT_GROUPS, THRESHOLDS, SKILLS, ATT_STYLES, DEF_STYLES, AI_STYLES, STYLE_GUIDE, TACTICS, MANAGERS, CURRENT_MANAGER, SQUAD_NOTES };
+  /* ---- USER-SQUAD §3: agreed match plans, added once to the owner's Lineup tab ---- */
+  // xi follows the formation's slot order (lab.js FORMATIONS): GK, LB, CB, CB, RB, then
+  // the formation's own slots left to right, back to front.
+  const MATCH_PLANS = [
+    { id: "plan-2026-10-03", name: "Deschamps LBC 4-2-2-2 (3 Oct)", formation: "4-2-2-2", manager: "D. Deschamps", tactic: "Long Ball Counter",
+      xi: ["88040387118039", // GK Buffon
+        "88041460993474", "88039850289220", "89138288270047", "88039581948640", // Maldini, Varane, Desailly, Thuram
+        "88044145348029", "88041460859805", // DMF Vieira, Seedorf
+        "89137214427270", "89138288266704", // AMF Hazard (left), Ronaldinho (right)
+        "89136140651034", "88040387118554"], // CF Ibrahimović (Willpower card), Eto'o
+      bench: ["88045755964131", "88039581945329", "88044145348045", "88033139494357", // Stam, Baresi, Cafu, Zanetti
+        "88045755964130", "88039581945312", "89138556700485", // Makélélé, Pirlo, Bellingham
+        "89138556575063", "88044145217198", "88039045074410", "89133993205152", "88045755964138"], // Messi SS, Kaká, Gullit, Neymar, Shevchenko
+      subs: [
+        { minute: 60, out: "89138288266704", in: "88044145217198", note: "Super-sub — or for a tired Hazard" },
+        { minute: 65, out: "89136140651034", in: "89138556575063", note: "If losing: Messi (DLF) + Eto'o (Poacher)" },
+        { minute: 75, out: "88041460859805", in: "88045755964130", note: "If leading: Defensive instruction" },
+      ],
+      notes: "Fluid Formation ON — attack 4-2-2-2, defence 4-4-2 (AMFs drop to LMF/RMF); don't send both full-backs high.\n"
+        + "Sub-tactic: Possession (Deschamps 89) vs Long Ball Counter / deep blocks.\n"
+        + "Instructions: Counter Target — Eto'o; Defensive — Vieira; Tight Marking — Desailly on their most dangerous striker.\n"
+        + "Link-up: Breakthrough Pass A — Ronaldinho (Creative Playmaker AMF) → Eto'o (Goal Poacher CF).\n"
+        + "No second goalkeeper owned yet." },
+  ];
+
+  return { CATEGORIES, STAT_LABELS, STAT_GROUPS, THRESHOLDS, SKILLS, ATT_STYLES, DEF_STYLES, AI_STYLES, STYLE_GUIDE, TACTICS, MANAGERS, CURRENT_MANAGER, SQUAD_NOTES, MATCH_PLANS };
 })();
