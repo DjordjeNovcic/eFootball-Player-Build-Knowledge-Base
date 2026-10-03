@@ -1295,7 +1295,7 @@
     $("#luModeHint").textContent = lu.mode === "positions"
       ? "Drag a marker to move it — its role follows the pitch zone. Tap a marker to set the role by hand."
       : inDefence(l) ? "Defence shape: drag one starter onto another to swap where they defend — their attacking spots stay. Drag from the bench to bring a player on."
-      : "Drag a player onto another slot or the bench to swap. Tap a slot to pick from the squad.";
+      : "Drag a player onto another slot or the bench to swap. Tap a player for his builds, an empty slot to pick from the squad.";
     const mgrs = profileManagers();
     const cur = managerObj(l.manager);
     $("#luManager").innerHTML = `<option value="">No manager</option>` + (cur && !mgrs.includes(cur) ? managerOption(cur) : "") + mgrs.map(managerOption).join("");
@@ -1374,7 +1374,7 @@
   function renderPicker(l, slots) {
     const box = $("#luPicker");
     if (!lu.sel) {
-      box.innerHTML = `<p class="empty-state">Tap a position on the pitch or a bench slot to pick a player.</p>`;
+      box.innerHTML = `<p class="empty-state">Tap a player to see his AI build next to yours (and to replace him), or an empty slot to pick a player.</p>`;
       return;
     }
     const pos = lu.sel.area === "xi" ? slots[lu.sel.i][0] : null;
@@ -1440,10 +1440,13 @@
 
   function saveLineup() { saveStore(); }
 
+  // Tapping a player opens his builds; an empty slot (or Edit positions) opens the picker.
   $("#luPitch").addEventListener("click", (e) => {
     const b = e.target.closest("[data-slot]");
     if (!b || lu.justDragged) return;
     const i = Number(b.dataset.slot);
+    const id = activeLineup().xi[i];
+    if (id && lu.mode === "players") { openBuildDialog(id, "xi", i); return; }
     lu.sel = lu.sel?.area === "xi" && lu.sel.i === i ? null : { area: "xi", i };
     renderLineup();
   });
@@ -1451,8 +1454,91 @@
     const b = e.target.closest("[data-bench]");
     if (!b || lu.justDragged) return;
     const i = Number(b.dataset.bench);
+    const id = activeLineup().bench[i];
+    if (id) { openBuildDialog(id, "bench", i); return; }
     lu.sel = lu.sel?.area === "bench" && lu.sel.i === i ? null : { area: "bench", i };
     renderLineup();
+  });
+
+  /* ---- Player build dialog: the AI build next to the player's own ---- */
+
+  const bd = { id: null, area: null, i: null };
+  function openBuildDialog(id, area, i) {
+    const p = byId[id];
+    const r = REC?.recs[id];
+    if (!p || !r) return;
+    Object.assign(bd, { id, area, i });
+    const l = activeLineup();
+    const pos = area === "xi" ? shownLayout(l)[i][0] : p.position;
+    const cats = categoriesFor(p);
+    const stats = r.targets.map((t) => t.stat);
+    const ai = recBuild(id);
+    const mine = store.builds[id] || null;
+    const aiRes = compute(p, ai, l.manager, l.tactic);
+    const col = (title, build, res, isMine) => {
+      if (!build) {
+        return `<section class="bd-col bd-col--empty"><h4>${title}</h4>
+          <p class="rec-muted">No saved build for this card yet — make one in the Trainer, or take the AI build as yours.</p></section>`;
+      }
+      const pts = cats.reduce((t, c) => t + cumCost(build.levels[c.key] || 0), 0);
+      const b2 = booster2Of(p, build);
+      return `<section class="bd-col ${isMine ? "is-mine" : ""}">
+        <h4>${title}<span>${pos} <b>${res.ratings[pos]}</b></span></h4>
+        <div class="rec-levels">${cats.map((c) => `<span class="${build.levels[c.key] ? "" : "is-zero"}"><b>${build.levels[c.key] || 0}</b><i>${c.label.replace("Lower Body Strength", "Lower Body").replace("Aerial Strength", "Aerial")}</i></span>`).join("")}</div>
+        <p class="bd-meta">${pts}/${budgetFor(p.levelCap)} pts · ${b2 ? `${esc(b2.name)}${p.booster2Fixed ? " (fixed)" : ""}` : "no slot-2 booster"}</p>
+        <div class="rec-targets">${stats.map((k) => {
+          const d = isMine ? res.final[k] - aiRes.final[k] : 0;
+          return `<span class="rec-t" title="${statLabel(k)}"><i>${statLabel(k)}</i><b class="tier-bg-${statTier(res.final[k])}">${res.final[k]}</b>${d ? `<em class="${d > 0 ? "is-up" : "is-down"}">${d > 0 ? "+" : ""}${d}</em>` : ""}</span>`;
+        }).join("")}</div>
+      </section>`;
+    };
+    const skills = skillsOf(id);
+    $("#bdBody").innerHTML = `
+      <div class="bd-head">
+        ${cardImg(p, "bd-img")}
+        <div>
+          <h2 id="bdTitle">${esc(p.name)}</h2>
+          <p>${area === "xi" ? `${pos} in “${esc(l.name)}”` : "On the bench"} · ${esc(styleText(p))} · card ${p.overall} · Lv cap ${p.levelCap}</p>
+          <p class="rec-muted">Rated with ${esc(managerObj(l.manager)?.name || "no manager")} at ${esc(l.tactic)}.</p>
+        </div>
+      </div>
+      <div class="bd-cols">
+        ${col("Recommended by AI", ai, aiRes, false)}
+        ${col("★ Your build", mine, mine ? compute(p, mine, l.manager, l.tactic) : null, true)}
+      </div>
+      <section class="bd-skills">
+        <h4>Additional skills</h4>
+        <p>${skills.length ? skills.map((n) => `<span class="${skillSrc(id, n) === "mine" ? "is-mine" : ""}">${skillSrc(id, n) === "mine" ? "★ " : `<i class="ai-mark">AI</i> `}${esc(n)}</span>`).join("") : `<span class="rec-muted">None set.</span>`}</p>
+        <p class="rec-muted">AI picks: ${r.aiSkills.map(esc).join(", ")}</p>
+      </section>
+      <div class="bd-actions">
+        <button type="button" class="btn btn--icon" data-bd="replace">Replace player</button>
+        ${mine ? `<button type="button" class="btn btn--icon" data-bd="mine">Open my build in Trainer</button>` : ""}
+        <button type="button" class="btn btn--icon" data-bd="ai">Open AI build in Trainer</button>
+        <button type="button" class="btn btn--icon btn--solid" data-bd="use">${mine ? "Replace my build with AI" : "Use AI build as mine"}</button>
+      </div>`;
+    const dlg = $("#buildDialog");
+    if (!dlg.open) dlg.showModal();
+  }
+  $("#bdBody").addEventListener("click", (e) => {
+    const act = e.target.closest("[data-bd]")?.dataset.bd;
+    if (!act) return;
+    const dlg = $("#buildDialog");
+    if (act === "replace") {
+      dlg.close();
+      lu.sel = { area: bd.area, i: bd.i };
+      renderLineup();
+      $("#luPicker").scrollIntoView({ block: "nearest", behavior: "smooth" });
+    } else if (act === "mine") {
+      dlg.close();
+      openInTrainer(bd.id, store.builds[bd.id]);
+    } else if (act === "ai") {
+      dlg.close();
+      openInTrainer(bd.id, recBuild(bd.id));
+    } else if (act === "use") {
+      useRecommendation(bd.id);
+      openBuildDialog(bd.id, bd.area, bd.i);
+    }
   });
   $("#luPicker").addEventListener("click", (e) => {
     const l = activeLineup();
