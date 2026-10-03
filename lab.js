@@ -1874,11 +1874,15 @@
   function renderRecommended() {
     if (!REC) return;
     const q = recState.q.trim().toLowerCase();
+    // "Starting XI" / "Bench" follow the active lineup (Lineup tab), in its own order.
+    const lineup = store.lineups.find((x) => x.id === store.activeLineup) || store.lineups[0] || null;
+    const order = recState.group === "XI" ? (lineup?.xi || []) : recState.group === "BENCH" ? (lineup?.bench || []) : null;
     const list = players
-      .filter((p) => recState.group === "ALL" || POSITION_GROUP[p.position] === recState.group)
+      .filter((p) => recState.group === "ALL" || (order ? order.includes(p.id) : POSITION_GROUP[p.position] === recState.group))
       .filter((p) => !q || `${p.name} ${p.team} ${p.position} ${styleText(p)}`.toLowerCase().includes(q))
-      .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || REC.recs[b.id].rating - REC.recs[a.id].rating);
-    $("#recMeta").textContent = `${list.length} builds · rated with ${recContextLabel()}`;
+      .sort((a, b) => (order ? order.indexOf(a.id) - order.indexOf(b.id)
+        : POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || REC.recs[b.id].rating - REC.recs[a.id].rating));
+    $("#recMeta").textContent = `${list.length} builds${order && lineup ? ` · ${recState.group === "XI" ? "starting XI" : "bench"} of “${lineup.name}”` : ""} · rated with ${recContextLabel()}`;
     $("#recGrid").innerHTML = list.map((p) => {
       const r = REC.recs[p.id];
       const cats = categoriesFor(p);
@@ -1948,7 +1952,7 @@
           </div>
           </div>
         </details>`;
-    }).join("") || `<p class="empty-state">No players match.</p>`;
+    }).join("") || `<p class="empty-state">${order && !lineup ? "No lineup yet — set up your starting XI and bench in the Lineup tab." : "No players match."}</p>`;
   }
 
   function useRecommendation(id) {

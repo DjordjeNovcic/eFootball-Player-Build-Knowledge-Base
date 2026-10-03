@@ -23,7 +23,8 @@ Two parts:
   - **Recommended by AI** — a build for every card, generated from the knowledge base
     (`recommend.js`): role from position + styles → §7 priorities and §3 thresholds →
     player-model and native-skill adjustments → every point spent → slot-2 booster last →
-    5 additional skills → verdict, in the §15 format. Never optimised for OVR.
+    5 additional skills → verdict, in the §15 format. Never optimised for OVR. Filter
+    by position group, or by **Starting XI** / **Bench** of the active lineup.
   - **My Builds** — your builds next to the recommended ones (status, OVR delta); start
     from a recommendation and tweak it in the Trainer.
   - **Additional skills live on the player** (up to 5, as in the game): your picks (★ —
