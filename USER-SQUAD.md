@@ -51,7 +51,7 @@ all previously unmapped IDs and corrected #13 (Gerd Müller, not Thomas Müller)
 | 21 | `88044145348045` | Cafu | eFHUB card page (28 Sep 2026) |
 | 22 | `88040387180670` | Giovanni van Bronckhorst | eFHUB card page (28 Sep 2026) |
 | 23 | `88045755964131` | Jaap Stam | Confirmed mapping |
-| 24 | `88039581926569` | Alessandro Nesta (S.S. Lazio) | User-confirmed as his only Nesta (3 Oct 2026) |
+| 24 | `88039581926569` | Alessandro Nesta (S.S. Lazio) | User-confirmed as the only Nesta card owned (3 Oct 2026) |
 | 25 | `88039581945329` | Franco Baresi | eFHUB card page (28 Sep 2026) |
 | 26 | `88040387126189` | Pepe | eFHUB card page (28 Sep 2026) |
 | 27 | `88033139494357` | Javier Zanetti | eFHUB card page (28 Sep 2026) |
