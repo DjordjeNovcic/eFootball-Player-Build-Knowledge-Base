@@ -317,8 +317,19 @@
           <input type="text" id="luName" maxlength="40">
         </label>
         <label class="field field--tight">
-          <span class="field__label">Formation</span>
+          <span class="field__label" id="luFormationLabel">Formation</span>
           <select id="luFormation"></select>
+        </label>
+        <label class="field field--tight">
+          <span class="field__label">Fluid Formation</span>
+          <select id="luFluid">
+            <option value="">Off</option>
+            <option value="on">On — own defence shape</option>
+          </select>
+        </label>
+        <label class="field field--tight" id="luDefFormationField" hidden>
+          <span class="field__label">Defence formation</span>
+          <select id="luDefFormation"></select>
         </label>
         <label class="field field--tight">
           <span class="field__label">Manager</span>
@@ -344,6 +355,10 @@
           <p class="panel__meta">★ = rated with your saved Trainer build</p>
         </div>
         <div class="pitch-bar">
+          <div class="segmented" id="luPhase" role="group" aria-label="Fluid Formation shape" hidden>
+            <button type="button" data-phase="att">Attack</button>
+            <button type="button" data-phase="def">Defence</button>
+          </div>
           <div class="segmented" id="luModes" role="group" aria-label="Drag mode">
             <button type="button" data-mode="players">Move players</button>
             <button type="button" data-mode="positions">Edit positions</button>

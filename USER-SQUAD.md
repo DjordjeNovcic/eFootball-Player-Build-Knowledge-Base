@@ -140,8 +140,10 @@ Fluid Formation and sub-tactic advice is based on community guides, not measured
 re-check it against results.
 
 - **Manager / style:** D. Deschamps, **Long Ball Counter** (89).
-- **Fluid Formation ON:** attack **4-2-2-2**, defence **4-4-2** (the two AMFs drop to
-  LMF/RMF). Don't send both full-backs high in the attacking shape.
+- **Fluid Formation ON:** attack **4-2-2-2**, defence **4-4-2** — the two AMFs drop to
+  LMF/RMF, and the central pair is moved back to **DMF** (Edit positions) so Vieira keeps
+  Anchor Man (active only at DMF) and Seedorf Box-to-Box. Don't send both full-backs high
+  in the attacking shape.
 - **Sub-tactic:** **Possession Game** (Deschamps 89) — switch to it against Long Ball
   Counter or deep-block opponents (Possession beats LBC; LBC beats Quick Counter).
 - **Link-up active:** Breakthrough Pass A — Ronaldinho (Creative Playmaker, AMF) →

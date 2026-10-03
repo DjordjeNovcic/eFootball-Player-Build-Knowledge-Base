@@ -1089,6 +1089,44 @@
   }
   const isEdited = (l) => JSON.stringify(layoutOf(l)) !== JSON.stringify(slotsFor(l.formation));
 
+  // Fluid Formation (eFootball 2027 Game Plan): a second shape the same XI takes without the
+  // ball. defLayout[i] is where xi[i] defends. A defence preset is laid onto the attacking
+  // shape by the cheapest total move (exact assignment over the 10 outfield spots), so
+  // each player drops into the defensive spot nearest his attacking one.
+  const bitCount = (m) => { let c = 0; for (; m; m &= m - 1) c++; return c; };
+  function mapShape(from, to) {
+    const n = from.length;
+    const full = (1 << n) - 1;
+    const best = new Float64Array(full + 1).fill(Infinity);
+    const pick = new Int8Array(full + 1);
+    best[0] = 0;
+    for (let mask = 0; mask < full; mask++) {
+      if (best[mask] === Infinity) continue;
+      const i = bitCount(mask);
+      for (let j = 0; j < n; j++) {
+        if (mask & (1 << j)) continue;
+        const c = best[mask] + Math.hypot(from[i][1] - to[j][1], from[i][2] - to[j][2]);
+        if (c < best[mask | (1 << j)]) { best[mask | (1 << j)] = c; pick[mask | (1 << j)] = j; }
+      }
+    }
+    const out = [];
+    for (let mask = full, i = n - 1; i >= 0; i--) { const j = pick[mask]; out[i] = [...to[j]]; mask &= ~(1 << j); }
+    return out;
+  }
+  const DEFAULT_DEF_FORMATION = "4-4-2";
+  function freshDefLayout(l) {
+    const preset = slotsFor(l.defFormation || DEFAULT_DEF_FORMATION);
+    return [[...preset[0]], ...mapShape(layoutOf(l).slice(1), preset.slice(1))];
+  }
+  function defLayoutOf(l) {
+    if (!Array.isArray(l.defLayout) || l.defLayout.length !== 11) l.defLayout = freshDefLayout(l);
+    return l.defLayout;
+  }
+  const inDefence = (l) => !!l.fluid && lu.phase === "def";
+  // The shape on screen: the defence one while Fluid Formation is on and Defence is picked.
+  const shownLayout = (l) => (inDefence(l) ? defLayoutOf(l) : layoutOf(l));
+  const shownEdited = (l) => (inDefence(l) ? JSON.stringify(defLayoutOf(l)) !== JSON.stringify(freshDefLayout(l)) : isEdited(l));
+
   // Role from pitch zone (x from left touchline, y from own goal line) — bands chosen so
   // every preset formation maps back onto its own roles.
   function roleAt(x, y) {
@@ -1134,11 +1172,14 @@
     store.seededPlans ||= [];
     let added = false;
     (KB.MATCH_PLANS || []).forEach((plan) => {
+      const seeded = store.lineups.find((l) => l.id === plan.id);
+      const shape = () => ({ fluid: plan.fluid, defFormation: plan.defFormation, defLayout: plan.defLayout ? plan.defLayout.map((s) => [...s]) : null });
+      if (seeded && seeded.fluid === undefined && plan.fluid !== undefined) { Object.assign(seeded, shape()); added = true; }
       if (store.seededPlans.includes(plan.id)) return;
       store.seededPlans.push(plan.id);
-      if (store.lineups.some((l) => l.id === plan.id)) return;
+      if (seeded) return;
       const keep = (id) => (byId[id] ? id : null);
-      store.lineups.push({ ...plan, xi: plan.xi.map(keep), bench: plan.bench.filter((id) => byId[id]),
+      store.lineups.push({ ...plan, ...shape(), xi: plan.xi.map(keep), bench: plan.bench.filter((id) => byId[id]),
         subs: plan.subs.map((s) => ({ ...s })) });
       store.activeLineup = plan.id;
       added = true;
@@ -1152,7 +1193,7 @@
     if (!l) { l = store.lineups[0]; store.activeLineup = l.id; }
     return l;
   }
-  const lu = { sel: null, q: "", mode: "players", justDragged: false }; // sel = { area: "xi"|"bench", i }
+  const lu = { sel: null, q: "", mode: "players", phase: "att", justDragged: false }; // sel = { area: "xi"|"bench", i }
 
   function slotRating(p, pos, l) {
     const build = store.builds[p.id] || emptyBuild(p);
@@ -1190,6 +1231,17 @@
     [...l.xi, ...l.bench].filter(Boolean).forEach((id) => { const n = norm(byId[id]?.name); (names[n] ||= []).push(id); });
     Object.values(names).filter((ids) => ids.length > 1).forEach((ids) =>
       w.push(`<b>${esc(byId[ids[0]].name)}</b> is selected ${ids.length}× (different cards of the same player).`));
+    if (l.fluid) {
+      const def = defLayoutOf(l);
+      l.xi.forEach((id, i) => {
+        const p = byId[id];
+        if (!p || i === 0) return;
+        const pos = def[i][0];
+        if (proficiency(p, pos) === "none") w.push(`In defence <b>${esc(p.name)}</b> drops to ${pos} — no ${pos} proficiency.`);
+        styleFit(p, pos).filter((f) => !f.ok).forEach((f) =>
+          w.push(`In defence <b>${esc(p.name)}</b> drops to ${pos}: ${esc(f.name)} isn't active there (§18) — Edit positions to keep him where it is.`));
+      });
+    }
     const destroyerCBs = l.xi.filter((id, i) => byId[id] && slots[i][0] === "CB" &&
       [byId[id].playingStyle, byId[id].playingStyleDefensive].some((s) => norm(s) === "destroyer"));
     if (destroyerCBs.length > 1) w.push(`<b>${destroyerCBs.length} Destroyer CBs</b> — both can step out at once; pair a Destroyer with Build Up / Covering Role (§18).`);
@@ -1213,7 +1265,8 @@
   function renderLineup() {
     if (!$("#luPitch")) return;
     const l = activeLineup();
-    const slots = layoutOf(l);
+    if (!l.fluid) lu.phase = "att";
+    const slots = shownLayout(l);
     while (l.xi.length < 11) l.xi.push(null);
     l.xi.length = 11;
 
@@ -1222,12 +1275,21 @@
     $("#luName").value = l.name;
     $("#luFormation").innerHTML = Object.keys(FORMATIONS).map((f) => `<option>${f}</option>`).join("");
     $("#luFormation").value = l.formation;
-    $("#luLayoutState").textContent = isEdited(l) ? `${l.formation} · edited` : l.formation;
-    $("#luResetLayout").hidden = !isEdited(l);
+    $("#luFormationLabel").textContent = l.fluid ? "Attack formation" : "Formation";
+    $("#luFluid").value = l.fluid ? "on" : "";
+    $("#luDefFormationField").hidden = !l.fluid;
+    $("#luDefFormation").innerHTML = Object.keys(FORMATIONS).map((f) => `<option>${f}</option>`).join("");
+    $("#luDefFormation").value = l.defFormation || DEFAULT_DEF_FORMATION;
+    $("#luPhase").hidden = !l.fluid;
+    $("#luPhase").querySelectorAll("[data-phase]").forEach((b) => b.classList.toggle("is-on", b.dataset.phase === lu.phase));
+    const shapeName = inDefence(l) ? `${l.defFormation || DEFAULT_DEF_FORMATION} · defence` : l.fluid ? `${l.formation} · attack` : l.formation;
+    $("#luLayoutState").textContent = shownEdited(l) ? `${shapeName} · edited` : shapeName;
+    $("#luResetLayout").hidden = !shownEdited(l);
     $("#luModes").querySelectorAll("[data-mode]").forEach((b) => b.classList.toggle("is-on", b.dataset.mode === lu.mode));
     $("#luPitch").classList.toggle("is-editing", lu.mode === "positions");
     $("#luModeHint").textContent = lu.mode === "positions"
       ? "Drag a marker to move it — its role follows the pitch zone. Tap a marker to set the role by hand."
+      : inDefence(l) ? "Defence shape: drag one starter onto another to swap where they defend — their attacking spots stay. Drag from the bench to bring a player on."
       : "Drag a player onto another slot or the bench to swap. Tap a slot to pick from the squad.";
     const mgrs = profileManagers();
     const cur = managerObj(l.manager);
@@ -1280,7 +1342,7 @@
     const links = linkUpStatus(l);
     $("#luSummary").innerHTML = `
       <div class="lu-kpis">
-        <div><b>${avg}</b><span>avg XI rating</span></div>
+        <div><b>${avg}</b><span>avg XI rating${l.fluid ? (inDefence(l) ? " · defence" : " · attack") : ""}</span></div>
         <div><b>${ratings.length}/11</b><span>starters</span></div>
         <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${esc(l.tactic)} proficiency${prof != null ? ` · +${((skillMultiplier(prof) - 1) * 100).toFixed(1)}%` : ""}</span></div>
       </div>
@@ -1298,7 +1360,7 @@
     $("#luWarnings").hidden = !warns.length;
 
     renderPicker(l, slots);
-    renderSubs(l, slots);
+    renderSubs(l, layoutOf(l));
     $("#luNotes").value = l.notes || "";
   }
 
@@ -1391,9 +1453,9 @@
     const act = e.target.closest("[data-lu]");
     if (pick) { placePlayer(l, pick.dataset.pick); saveLineup(); renderLineup(); }
     const role = e.target.closest("[data-role]");
-    if (role && lu.sel?.area === "xi") { layoutOf(l)[lu.sel.i][0] = role.dataset.role; saveLineup(); renderLineup(); return; }
+    if (role && lu.sel?.area === "xi") { shownLayout(l)[lu.sel.i][0] = role.dataset.role; saveLineup(); renderLineup(); return; }
     if (act?.dataset.lu === "cancel") { lu.sel = null; renderLineup(); }
-    if (act?.dataset.lu === "others") { lu.showOthers = !lu.showOthers; renderPicker(l, layoutOf(l)); }
+    if (act?.dataset.lu === "others") { lu.showOthers = !lu.showOthers; renderPicker(l, shownLayout(l)); }
     if (act?.dataset.lu === "clear") {
       if (lu.sel.area === "xi") l.xi[lu.sel.i] = null; else l.bench.splice(lu.sel.i, 1);
       lu.sel = null; saveLineup(); renderLineup();
@@ -1403,7 +1465,7 @@
     if (e.target.id !== "luSearch") return;
     lu.q = e.target.value;
     const pos = e.target.selectionStart;
-    renderPicker(activeLineup(), layoutOf(activeLineup()));
+    renderPicker(activeLineup(), shownLayout(activeLineup()));
     const s = $("#luSearch"); s.focus(); s.setSelectionRange(pos, pos);
   });
   $("#luSelect").addEventListener("change", (e) => { store.activeLineup = e.target.value; lu.sel = null; saveLineup(); renderLineup(); });
@@ -1412,9 +1474,33 @@
     const l = activeLineup();
     l.formation = e.target.value;
     l.layout = null;
+    l.defLayout = null; // the defence shape is laid onto the attacking one
     lu.sel = null; saveLineup(); renderLineup();
   });
-  $("#luResetLayout").addEventListener("click", () => { activeLineup().layout = null; saveLineup(); renderLineup(); });
+  $("#luResetLayout").addEventListener("click", () => {
+    const l = activeLineup();
+    if (inDefence(l)) l.defLayout = null; else l.layout = null;
+    saveLineup(); renderLineup();
+  });
+  $("#luFluid").addEventListener("change", (e) => {
+    const l = activeLineup();
+    l.fluid = e.target.value === "on";
+    if (l.fluid && !l.defFormation) l.defFormation = DEFAULT_DEF_FORMATION;
+    lu.phase = l.fluid ? "def" : "att"; // show the new shape straight away
+    lu.sel = null; saveLineup(); renderLineup();
+  });
+  $("#luDefFormation").addEventListener("change", (e) => {
+    const l = activeLineup();
+    l.defFormation = e.target.value;
+    l.defLayout = null;
+    lu.phase = "def"; lu.sel = null; saveLineup(); renderLineup();
+  });
+  $("#luPhase").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-phase]");
+    if (!b) return;
+    lu.phase = b.dataset.phase;
+    lu.sel = null; renderLineup();
+  });
   $("#luModes").addEventListener("click", (e) => {
     const b = e.target.closest("[data-mode]");
     if (!b) return;
@@ -1459,9 +1545,10 @@
   $("#luCopy").addEventListener("click", async () => {
     const l = activeLineup();
     const slots = layoutOf(l);
+    const def = l.fluid ? defLayoutOf(l) : null;
     const text = [
-      `${l.name} — ${l.formation} · ${l.tactic}${l.manager ? ` · ${l.manager}` : ""}`,
-      ...l.xi.map((id, i) => `${slots[i][0].padEnd(4)} ${byId[id] ? `${byId[id].name} (${slotRating(byId[id], slots[i][0], l)})` : "—"}`),
+      `${l.name} — ${l.fluid ? `Fluid: attack ${l.formation} / defence ${l.defFormation || DEFAULT_DEF_FORMATION}` : l.formation} · ${l.tactic}${l.manager ? ` · ${l.manager}` : ""}`,
+      ...l.xi.map((id, i) => `${(def ? `${slots[i][0]}/${def[i][0]}` : slots[i][0]).padEnd(def ? 9 : 4)} ${byId[id] ? `${byId[id].name} (${slotRating(byId[id], slots[i][0], l)})` : "—"}`),
       `Bench: ${l.bench.map((id) => byId[id]?.name).filter(Boolean).join(", ") || "—"}`,
       ...l.subs.map((s) => `${s.minute ?? "?"}' ${byId[s.out]?.name || "?"} → ${byId[s.in]?.name || "?"}${s.note ? ` (${s.note})` : ""}`),
     ].join("\n");
@@ -1544,6 +1631,12 @@
     else if (target.dataset?.bench != null) dst = { area: "bench", i: Number(target.dataset.bench) };
     else dst = { area: "bench", i: l.bench.length }; // dropped on the bench area → append
     if (dst.area === src.area && dst.i === src.i) return;
+    if (inDefence(l) && src.area === "xi" && dst.area === "xi" && src.i && dst.i) {
+      // Two starters swap where they defend; their attacking spots stay as they are.
+      const d = defLayoutOf(l);
+      [d[src.i], d[dst.i]] = [d[dst.i], d[src.i]];
+      return;
+    }
     if (dst.area === "bench" && src.area === "bench") {
       // reorder within the bench
       const [moved] = l.bench.splice(src.i, 1);
@@ -1571,7 +1664,7 @@
     if (e.type !== "pointercancel") {
       if (lu.mode === "positions") {
         const [x, y] = pitchPoint(e);
-        layoutOf(l)[d.src.i] = [roleAt(x, y), x, y];
+        shownLayout(l)[d.src.i] = [roleAt(x, y), x, y];
       } else {
         const target = dropTargetAt(e);
         if (target) applyDrop(l, d.src, target);

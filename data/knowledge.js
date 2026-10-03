@@ -303,6 +303,11 @@ window.KB = (() => {
   // the formation's own slots left to right, back to front.
   const MATCH_PLANS = [
     { id: "plan-2026-10-03", name: "Deschamps LBC 4-2-2-2 (3 Oct)", formation: "4-2-2-2", manager: "D. Deschamps", tactic: "Long Ball Counter",
+      // Fluid Formation: defend in a 4-4-2 whose central pair stays at DMF (Vieira keeps
+      // Anchor Man, Seedorf Box-to-Box); the AMFs drop to LMF/RMF. Aligned with xi.
+      fluid: true, defFormation: "4-4-2",
+      defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
+        ["DMF", 36, 41], ["DMF", 64, 41], ["LMF", 12, 55], ["RMF", 88, 55], ["CF", 37, 84], ["CF", 63, 84]],
       xi: ["88040387118039", // GK Buffon
         "88041460993474", "88039850289220", "89138288270047", "88039581948640", // Maldini, Varane, Desailly, Thuram
         "88044145348029", "88041460859805", // DMF Vieira, Seedorf
@@ -316,7 +321,7 @@ window.KB = (() => {
         { minute: 65, out: "89136140651034", in: "89138556575063", note: "If losing: Messi (DLF) + Eto'o (Poacher)" },
         { minute: 75, out: "88041460859805", in: "88045755964130", note: "If leading: Defensive instruction" },
       ],
-      notes: "Fluid Formation ON — attack 4-2-2-2, defence 4-4-2 (AMFs drop to LMF/RMF); don't send both full-backs high.\n"
+      notes: "Fluid Formation: don't send both full-backs high in the attacking shape.\n"
         + "Sub-tactic: Possession (Deschamps 89) vs Long Ball Counter / deep blocks.\n"
         + "Instructions: Counter Target — Eto'o; Defensive — Vieira; Tight Marking — Desailly on their most dangerous striker.\n"
         + "Link-up: Breakthrough Pass A — Ronaldinho (Creative Playmaker AMF) → Eto'o (Goal Poacher CF).\n"

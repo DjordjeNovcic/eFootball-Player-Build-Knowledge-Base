@@ -43,7 +43,11 @@ Two parts:
     follows the pitch zone or can be set by hand (e.g. DMF vs CMF on the same spot) —
     and plan substitutions. Shows each player's OVR at his slot (using his
     saved Trainer build), Link-up status, and KB warnings (out of position, style not
-    compatible with the slot, two Destroyer CBs, same player twice).
+    compatible with the slot, two Destroyer CBs, same player twice). **Fluid
+    Formation**: give the lineup its own defence formation — each player drops into the
+    nearest defensive spot, an Attack / Defence switch shows both shapes with their
+    ratings, and dragging one starter onto another in Defence swaps only where they
+    defend; warns when a style goes inactive in the defence shape.
   - **Skills**, **Managers**, **Playing Styles** — the knowledge base as searchable
     views, cross-linked to which of my cards have each skill/style/Link-up role.
   - **Sandbox** — the original free-form stat-slider card builder (`app.js`).
