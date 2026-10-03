@@ -392,6 +392,10 @@ window.Recommender = (deps) => {
         + (n === "Double Touch" && p.height >= 188 ? " Less valuable on a tall target man (§8)." : "")
         + (n === "Heel Trick" ? " No measured effect yet (§19)." : "");
     });
+    // A set-piece specialist: Knuckle Shot is usable at free kicks (§19).
+    const setPiece = f.setPieceTaking >= 88;
+    const setPieceWhy = `Set-piece taker (Set Piece Taking ${f.setPieceTaking}) — knuckleball free kicks and long shots (§19).`;
+    const aerialWhy = `${p.height} cm with ${f.heading} Heading — wins more aerial duels on long balls and flick-ons; headers won through it aren't more accurate (§19).`;
     const dtPackage = () => {
       // Double Touch + Flip Flap + Sole Control ball roll (§8) — only for smaller technical players.
       if (p.height > 182) return;
@@ -440,6 +444,7 @@ window.Recommender = (deps) => {
         push("Interception", "Adds defensive value to the midfield (§9 midfielder).");
         push("Blocker", "Screens shots (§9 midfielder).");
         push("Long-range Shooting", "+10% Finishing from outside the box.");
+        if (setPiece) push("Knuckle Shot", setPieceWhy);
         push("Fighting Spirit", "Accuracy under pressure.");
       }
       push("Fighting Spirit", "Accuracy under pressure.");
@@ -450,7 +455,7 @@ window.Recommender = (deps) => {
       if (["goalPoacher", "dummyRunner", "holePlayer", "prolificWinger", "roamingFlank", "creativePlaymaker", "deepLyingForward", "classicNo10"].includes(key)) dtPackage();
       if ((striker || key === "targetMan" || key === "foxInTheBox") && tall && f.heading >= 80) {
         push("Heading", "More downward, accurate headers (§19).");
-        push("Aerial Superiority", `${p.height} cm with ${f.heading} Heading — model supports it (§8).`);
+        push("Aerial Superiority", aerialWhy);
       }
       push("One-touch Pass", "Quick combinations (§9 attacking).");
       if (["creativePlaymaker", "classicNo10", "deepLyingForward"].includes(key)) push("Through Passing", "Creator — +20% passing stats on through balls (§19).");
@@ -472,35 +477,56 @@ window.Recommender = (deps) => {
     // Fallbacks so every card gets all five (§9, §15), most useful first — still only
     // skills that fit the role and the player model, never avoid-listed ones.
     const pressing = /frontlinepressure/.test(norm(p.playingStyleDefensive));
+    const sec = pos === "CB" ? "§9 CB" : ["DMF", "CMF"].includes(pos) ? "§9 midfielder" : "§9";
+    // §3: Through Passing wants Low Pass 82 (78 tolerated); a pure striker's lofted
+    // passing rarely justifies Weighted Pass.
+    const tpOk = f.lowPass >= 78;
+    const wpOk = f.loftedPass >= 78 || !["goalPoacher", "foxInTheBox", "targetMan", "dummyRunner"].includes(key);
     const FALLBACK = pos === "GK" ? [["Low Lofted Pass", "Faster, more accurate long distribution."], ["Weighted Pass", "Accurate lofted outlets."], ["Fighting Spirit", "Accuracy under pressure."]]
       : ["CB", "LB", "RB", "DMF", "CMF"].includes(pos)
-        ? [["Interception", "Defensive coverage (§9)."], ["Blocker", "Defensive coverage (§9)."], ["Man Marking", "Defensive coverage (§9)."],
-          ["One-touch Pass", "Distribution once coverage is complete (§9)."], ["Weighted Pass", "Distribution (§9)."], ["Fighting Spirit", "Accuracy under pressure."],
-          ["Sliding Tackle", "Recovery tackles."], ["Low Lofted Pass", "Faster lofted distribution (§9 CB)."],
-          ...(p.height >= 185 ? [["Aerial Superiority", `${p.height} cm — wins more aerial duels.`]] : []),
-          ...(["DMF", "CMF"].includes(pos) ? [["Track Back", "Tracks runners from midfield (§9 midfielder)."]] : []),
-          ["Acrobatic Clearance", "Clears awkward balls in the box."], ["Outside Curler", "Distribution with the outside of the foot (§9 CB)."]]
+        ? [["Interception", `Defensive coverage (${sec}).`], ["Blocker", `Defensive coverage (${sec}).`], ["Man Marking", `Defensive coverage (${sec}).`],
+          ["One-touch Pass", `Distribution once coverage is complete (${sec}).`], ["Weighted Pass", `Distribution (${sec}).`], ["Fighting Spirit", "Accuracy under pressure."],
+          ["Sliding Tackle", "Recovery tackles."], ["Low Lofted Pass", `Faster, more accurate lofted distribution (${sec}).`],
+          ...(setPiece && ["DMF", "CMF"].includes(pos) ? [["Knuckle Shot", setPieceWhy]] : []),
+          ...(p.height >= 185 ? [["Aerial Superiority", `${p.height} cm — wins more aerial duels.`], ["Heading", "Set-piece headers — more downward, accurate headers (§19)."]] : []),
+          ["Acrobatic Clearance", "Clears awkward balls in the box."], ["Outside Curler", `Distribution with the outside of the foot (${sec}).`]]
         : [["One-touch Pass", "Quick combinations (§9 attacking)."], ["Outside Curler", "Strong-foot trivela shots and passes (§9 attacking)."],
           ["Fighting Spirit", "Shooting accuracy under pressure (§9 attacking)."], ["Long-range Shooting", "+10% Finishing from outside the box (§9 attacking)."],
-          ...(pressing ? [["Track Back", "Front Line Pressure — pressing from the front line (§9 midfielder)."]] : []),
+          ...(pressing ? [["Track Back", "Front Line Pressure — presses the ball carrier from the front line (§9, §18)."]] : []),
           ...(["goalPoacher", "foxInTheBox", "targetMan", "holePlayer", "dummyRunner"].includes(key) && f.finishing >= 88
             ? [["Acrobatic Finishing", "Finisher — extra shot animations in the box (§9 attacking)."]] : []),
+          ...(setPiece ? [["Knuckle Shot", setPieceWhy]] : []),
           ["Chip Shot Control", "One-on-one finishing option over a rushing keeper."],
           ...(p.height <= 182 ? [["Double Touch", "Extra close-control move for a mobile attacker."], ["Sole Control", "Ball-roll control package (§8)."],
             ["Flip Flap", "Ball-roll control package (§8)."], ["Marseille Turn", "Turns out of pressure in tight spaces."]] : []),
-          ...(p.height >= 185 && f.heading >= 80 ? [["Heading", "More downward, accurate headers (§19)."], ["Aerial Superiority", `${p.height} cm — wins more aerial duels.`]] : []),
-          ["Weighted Pass", "Lofted through balls for runners (§9 attacking)."], ["Through Passing", "+20% passing stats on through balls (§19)."],
-          ["Dipping Shot", "Long-range shot that dips under the bar."], ["Knuckle Shot", "Unpredictable free-kick / long shot."]];
+          ...(p.height >= 185 && f.heading >= 80 ? [["Heading", "More downward, accurate headers (§19)."], ["Aerial Superiority", aerialWhy]] : []),
+          ["Dipping Shot", "Stunning shot that dips — the biggest scoring gain of the three stunning-shot skills (§19)."],
+          ...(wpOk ? [["Weighted Pass", "Lofted through balls for runners (§9 attacking)."]] : []),
+          ...(tpOk ? [["Through Passing", "+20% passing stats on through balls (§19)."]] : []),
+          ["Knuckle Shot", "Knuckleball long shot, usable at free kicks (§19)."]];
     FALLBACK.forEach(([n, why]) => push(n, why));
     // Always five (user rule): when the role-specific options run out, fill from the
     // rest of the addable pool, closest to the role first — never avoid-listed skills,
-    // and Super-sub / Heel Trick only as the very last resort.
-    const LAST = pos === "GK"
+    // and Super-sub / Heel Trick only as the very last resort. Track Back presses from the
+    // front line (§19), so behind the forwards it is the last of these; Aerial Superiority
+    // only for a frame that wins duels (§8).
+    const tallOnly = (n) => (n === "Aerial Superiority" && p.height < 185 ? [] : [n]);
+    const LAST = (pos === "GK"
       ? ["Outside Curler", "Acrobatic Clearance", "Pinpoint Crossing", "Through Passing"]
-      : ["CB", "LB", "RB", "DMF", "CMF"].includes(pos)
-        ? ["Track Back", "Aerial Superiority", "Acrobatic Clearance", "Heading", "Pinpoint Crossing", "Through Passing", "Long-range Shooting", "Gamesmanship", "Sole Control"]
-        : ["Cut Behind & Turn", "Scissors Feint", "Chop Turn", "Marseille Turn", "Sole Control", "Flip Flap", "Heading", "Aerial Superiority", "Gamesmanship", "Track Back", "Long-range Curler", "Pinpoint Crossing"];
-    LAST.forEach((n) => push(n, "Fills the fifth slot — smaller benefit for this role than the picks above."));
+      : pos === "CB" ? ["Acrobatic Clearance", "Heading", "Aerial Superiority", ...(tpOk ? ["Through Passing"] : []), "Track Back", "Sole Control", "Gamesmanship"]
+        : ["LB", "RB"].includes(pos) ? ["Acrobatic Clearance", "Pinpoint Crossing", ...(tpOk ? ["Through Passing"] : []), "Double Touch", "Heading", "Aerial Superiority", "Track Back", "Sole Control", "Gamesmanship"]
+          : ["DMF", "CMF"].includes(pos) ? [...(tpOk ? ["Through Passing"] : []), "Long-range Shooting", "Acrobatic Clearance", "Pinpoint Crossing", "Heading", "Aerial Superiority", "Track Back", "Sole Control", "Gamesmanship"]
+            // A big back-to-goal forward doesn't spin past markers (§8 Cut Behind & Turn, §5):
+            // aerial and shooting skills first, and Sole Control for turning away (§19).
+            : p.height >= 185 && ["foxInTheBox", "targetMan"].includes(key) ? ["Heading", "Aerial Superiority", "Long-range Curler", "Sole Control", "Marseille Turn", "Cut Behind & Turn", "Scissors Feint", "Chop Turn", "Flip Flap", "Gamesmanship", "Track Back", "Pinpoint Crossing"]
+              : ["Cut Behind & Turn", "Scissors Feint", "Chop Turn", "Marseille Turn", "Sole Control", "Flip Flap", "Heading", "Aerial Superiority", "Gamesmanship", "Track Back", "Long-range Curler", "Pinpoint Crossing"]
+    ).flatMap(tallOnly);
+    const lastWhy = (n) => (n === "Track Back" && !ATTACKERS.has(pos)
+      ? "Fills the fifth slot — it presses from the front line (§19), so little use behind the forwards; the useful skills for this role are already on the card."
+      : n === "Sole Control" && ATTACKERS.has(pos) && p.height >= 185 && ["foxInTheBox", "targetMan"].includes(key)
+        ? "Fills the fifth slot — sole feints and turns when he receives with his back to goal (§19)."
+        : "Fills the fifth slot — smaller benefit for this role than the picks above.");
+    LAST.forEach((n) => push(n, lastWhy(n)));
     const gkSkill = (n) => /^GK /.test(n);
     [...addable].filter((n) => !["Super-sub", "Heel Trick"].includes(n) && gkSkill(n) === (pos === "GK"))
       .forEach((n) => push(n, "Fills the fifth slot — smaller benefit for this role than the picks above."));
