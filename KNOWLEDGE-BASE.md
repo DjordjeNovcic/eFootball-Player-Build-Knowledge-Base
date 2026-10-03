@@ -2306,3 +2306,41 @@ manager card; do not record it as 0 proficiency.
   (Eto'o). **Deschamps (LBC 89)** has the same role/position Link-up pair as
   Alonso. Capello's LBC 89 Link-up specifically calls for an **Orchestrator
   DMF**; Vieira's Anchor Man at DMF would not satisfy it.
+
+---
+
+# 23. Team Playstyles and Match-ups (community guides, Oct 2026)
+
+What each team playstyle does, from community guides for eFootball 2026/2027 (v6.0.0) —
+**not official text and not measured**. The Build Lab's Lineup tab ("Match helper") reads
+this section through `data/knowledge.js`.
+
+| Playstyle | In attack | Out of possession | Wants |
+|---|---|---|---|
+| Possession | Short passing, patient build-up, few runs behind | High line, coordinated press | Technical midfield |
+| Quick Counter | Immediate vertical runs after winning the ball | High line, aggressive pressing | Pace up front, energetic midfield |
+| Long Ball Counter | Spreads out, long balls to runners breaking the line | Deep compact block protecting the box | Runners who finish, second-ball midfielders |
+| Out Wide | Width, overlaps, early crosses | Shape protects the channels, wingers drop | Quality wingers and overlapping full-backs |
+| Long Ball | Direct balls to a focal striker, runners on second balls | Slightly deeper line | A strong target striker |
+| Overload (new in v6.0.0) | Players crowd the ball side for short options | Compact, quick pressure, higher line | Players who receive in tight space |
+
+**Match-up triangle (community consensus):** Quick Counter beats Possession, Possession
+beats Long Ball Counter, Long Ball Counter beats Quick Counter.
+
+**Answers to the other three are our reasoning, not a sourced match-up:**
+
+- vs **Out Wide** — Long Ball Counter: their full-backs go high, so counter into the
+  space they leave; keep one full-back home (Defensive) and mark their best winger tightly.
+- vs **Long Ball** — Possession: keep the ball away from a direct side that sits deeper;
+  put your best aerial CB on their target striker (Tight Marking).
+- vs **Overload** — Long Ball Counter: they crowd one side and push the line up, so
+  switch play to the far side and run in behind.
+
+**Individual instructions (from the same guides):** Defensive on an Anchor/Destroyer DMF
+or on full-backs that otherwise overlap; Counter Target on a striker who should stay high;
+Tight Marking on the opponent's most dangerous attacker; Deep Line only against
+through-ball spam (it gives space for long shots).
+
+Sources: gamemarket.gg v6.0.0 Team Playstyle Guide; FIFPlay eFootball 2026 Team
+Playstyles; eFootball Edge "Rock, Paper, Scissors of Playstyles"; Skycoach Best eFootball
+Formations 2026; mejoress Individual Instructions guide.

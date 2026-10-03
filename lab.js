@@ -1386,6 +1386,7 @@
 
     renderManagerFit(l);
     renderPositionTraining(l);
+    renderMatchHelper(l);
     renderPicker(l, slots);
     renderSubs(l, layoutOf(l));
     $("#luNotes").value = l.notes || "";
@@ -1468,6 +1469,58 @@
         }).join("")}</ul><p class="mfit__note">Uses an Additional Position Proficiency slot and a Position Training token; high is the cap (§20). If you've already trained it, set it in the Trainer's positions.</p>`
       : `<p class="rec-muted">Everyone in this plan — starters, Fluid defence shape and planned subs — already has high proficiency where he plays.</p>`);
   }
+
+  // Match helper (KNOWLEDGE-BASE §23): pick the opponent's team playstyle → which one to
+  // switch to (checked against your manager's proficiency) and instructions naming your
+  // own players.
+  function renderMatchHelper(l) {
+    const sel = $("#luOpponent");
+    if (!sel) return;
+    sel.innerHTML = `<option value="">— pick their playstyle —</option>` + KB.TACTICS.map((t) => `<option>${t}</option>`).join("");
+    sel.value = l.opponent || "";
+    const box = $("#luMatch");
+    const mu = KB.MATCHUPS?.[l.opponent];
+    if (!mu) { box.innerHTML = ""; return; }
+    const m = managerObj(l.manager);
+    const prof = (t, mm = m) => mm?.prof[KB.TACTICS.indexOf(t)] ?? null;
+    const target = prof(mu.answer);
+    const others = profileManagers().filter((x) => x !== m && prof(mu.answer, x) >= 85).map((x) => `${x.name} (${prof(mu.answer, x)})`);
+    const switchLine = !m ? `Switch to <b>${esc(mu.answer)}</b>.`
+      : target >= PROF_MIN ? `Switch to <b>${esc(mu.answer)}</b> — ${esc(m.name)} has ${target} there${l.tactic === mu.answer ? " (you're already on it)" : "; set it as the sub-tactic or change it in the match"}.`
+      : `<b>${esc(mu.answer)}</b> is the answer, but ${esc(m.name)} has ${target ?? "N/A"} there — stay on ${esc(l.tactic)} and lean on the instructions${others.length ? `, or pick a manager strong in it: ${others.map(esc).join(", ")}` : ""}.`;
+    // Players the tips name, from the XI's builds.
+    const slots = layoutOf(l);
+    const xi = l.xi.map((id, i) => (byId[id] ? { p: byId[id], pos: slots[i][0], f: compute(byId[id], lineupBuild(byId[id]), l.manager, l.tactic).final } : null)).filter(Boolean);
+    // A player takes one defensive instruction (Defensive or Tight Marking) — the next
+    // tip goes to the next-best player.
+    const taken = new Set();
+    const pick = (filter, score) => {
+      const p = xi.filter((x) => filter(x) && !taken.has(x.p.id)).sort((a, b) => score(b) - score(a))[0]?.p;
+      if (p) taken.add(p.id);
+      return p;
+    };
+    const nm = (p, fallback) => (p ? `<b>${esc(p.name)}</b>` : fallback);
+    const isFwd = (x) => ["CF", "SS", "LWF", "RWF"].includes(x.pos);
+    const isMid = (x) => ["DMF", "CMF"].includes(x.pos);
+    const isFB = (x) => ["LB", "RB"].includes(x.pos);
+    const tackle = (x) => x.f.defensiveAwareness + x.f.ballWinning;
+    const TIPS = {
+      counterTarget: () => `Counter Target on ${nm(xi.filter(isFwd).sort((a, b) => b.f.speed + b.f.acceleration - a.f.speed - a.f.acceleration)[0]?.p, "your fastest striker")} — he stays high for the ball in behind.`,
+      deepLine: () => "Deep Line only if they keep playing through balls to quick forwards — it gives up space for long shots.",
+      defensiveDMF: () => `Defensive on ${nm(pick(isMid, tackle), "your holding midfielder")} — he holds the zone in front of the CBs.`,
+      defensiveFB: () => `Defensive on ${nm(pick(isFB, (x) => x.f.defensiveAwareness + x.f.speed), "one full-back")} — he stays home instead of overlapping.`,
+      tightCreator: () => `Tight Marking: ${nm(pick(isMid, tackle), "a defensive midfielder")} on their AMF / main creator.`,
+      tightWinger: () => `Tight Marking: ${nm(pick(isFB, (x) => x.f.speed + x.f.defensiveAwareness), "a full-back")} on their most dangerous winger.`,
+      tightTarget: () => `Tight Marking: ${nm(pick((x) => x.pos === "CB", (x) => x.f.jump + x.f.heading + x.f.physicalContact + x.p.height), "your best aerial CB")} on their target striker.`,
+      patience: () => "Be patient on the ball — don't force long balls into their block; one full-back stays home against their counter.",
+      switchPlay: () => "Switch play to the far side — they crowd the ball side; diagonal balls find space.",
+    };
+    box.innerHTML = `
+      <p class="match__line">${switchLine}</p>
+      <p class="rec-muted">${esc(mu.why)} ${mu.basis === "sourced" ? "(community match-up, §23)" : "(our reasoning, not a sourced match-up — §23)"}</p>
+      <ul class="match__tips">${mu.tips.map((t) => `<li>${TIPS[t]()}</li>`).join("")}</ul>`;
+  }
+  $("#luOpponent").addEventListener("change", (e) => { activeLineup().opponent = e.target.value; saveLineup(); renderLineup(); });
 
   $("#luManagers").addEventListener("click", (e) => {
     const b = e.target.closest("[data-mfit]");

@@ -335,5 +335,16 @@ window.KB = (() => {
         + "No second goalkeeper owned yet." },
   ];
 
-  return { CATEGORIES, STAT_LABELS, STAT_GROUPS, THRESHOLDS, SKILLS, ATT_STYLES, DEF_STYLES, AI_STYLES, STYLE_GUIDE, TACTICS, MANAGERS, CURRENT_MANAGER, SQUAD_NOTES, MATCH_PLANS };
+  /* ---- §23: team playstyle match-ups (community guides — "sourced" — or our reasoning) ---- */
+  // answer: the playstyle to switch to; tips resolve to your own players in lab.js.
+  const MATCHUPS = {
+    "Possession": { answer: "Quick Counter", basis: "sourced", why: "Quick Counter beats Possession — press their patient build-up and attack the moment you win it.", tips: ["defensiveDMF", "tightCreator"] },
+    "Quick Counter": { answer: "Long Ball Counter", basis: "sourced", why: "Long Ball Counter beats Quick Counter — sit in a deep block under their press and go long in behind their high line.", tips: ["counterTarget", "deepLine", "defensiveDMF"] },
+    "Long Ball Counter": { answer: "Possession", basis: "sourced", why: "Possession beats Long Ball Counter — keep the ball against their deep block instead of feeding their counters.", tips: ["patience", "defensiveFB", "defensiveDMF"] },
+    "Out Wide": { answer: "Long Ball Counter", basis: "reasoning", why: "Their full-backs push high for width — counter into the space they leave.", tips: ["tightWinger", "defensiveFB", "counterTarget"] },
+    "Long Ball": { answer: "Possession", basis: "reasoning", why: "A direct side that sits slightly deeper — keep the ball away from them and deal with the target striker.", tips: ["tightTarget", "defensiveDMF"] },
+    "Overload": { answer: "Long Ball Counter", basis: "reasoning", why: "They crowd the ball side and push the line up — switch play and run in behind.", tips: ["switchPlay", "counterTarget"] },
+  };
+
+  return { CATEGORIES, STAT_LABELS, STAT_GROUPS, THRESHOLDS, SKILLS, ATT_STYLES, DEF_STYLES, AI_STYLES, STYLE_GUIDE, TACTICS, MANAGERS, CURRENT_MANAGER, SQUAD_NOTES, MATCH_PLANS, MATCHUPS };
 })();

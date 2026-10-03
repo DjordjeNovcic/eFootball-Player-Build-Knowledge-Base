@@ -24,7 +24,8 @@ Two parts:
     (`recommend.js`): role from position + styles → §7 priorities and §3 thresholds →
     player-model and native-skill adjustments → every point spent → slot-2 booster last →
     5 additional skills → verdict, in the §15 format. Never optimised for OVR. Filter
-    by position group, or by **Starting XI** / **Bench** of the active lineup.
+    by position group, or by **Starting XI** / **Bench** of the active lineup. Each card
+    also shows the **spending order** — the build at every 5th level while he trains up.
   - **My Builds** — your builds next to the recommended ones (status, OVR delta); start
     from a recommendation and tweak it in the Trainer.
   - **Additional skills live on the player** (up to 5, as in the game): your picks (★ —
@@ -52,6 +53,10 @@ Two parts:
     show card images and ratings from the saved build (★) or the AI build; tapping a
     player opens his AI build next to yours (rating at that slot, booster, key stats with
     the differences, skills), with Replace player / Open in Trainer / Use AI build.
+    **Manager fit** compares the XI's average rating and Link-ups across your managers;
+    **Position training** lists who plays (or comes on) where his proficiency isn't
+    high; the **Match helper** takes the opponent's playstyle and suggests what to switch
+    to and which instructions to give whom (KNOWLEDGE-BASE §23).
   - **Skills**, **Managers**, **Playing Styles** — the knowledge base as searchable
     views, cross-linked to which of my cards have each skill/style/Link-up role.
 
