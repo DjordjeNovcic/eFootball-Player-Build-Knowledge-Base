@@ -1177,6 +1177,20 @@
       const seeded = store.lineups.find((l) => l.id === plan.id);
       const shape = () => ({ fluid: plan.fluid, defFormation: plan.defFormation, defLayout: plan.defLayout ? plan.defLayout.map((s) => [...s]) : null });
       if (seeded && seeded.fluid === undefined && plan.fluid !== undefined) { Object.assign(seeded, shape()); added = true; }
+      (plan.updates || []).forEach((u) => {
+        if (store.seededPlans.includes(u.id)) return;
+        store.seededPlans.push(u.id);
+        added = true;
+        if (!seeded) return; // a fresh copy already has it
+        Object.entries(u.replace || {}).forEach(([from, to]) => {
+          if (!byId[to] || seeded.xi.includes(to)) return;
+          const i = seeded.xi.indexOf(from);
+          if (i < 0) return;
+          seeded.xi[i] = to;
+          seeded.bench = seeded.bench.filter((id) => id !== to);
+          seeded.subs.forEach((s) => { if (s.out === from) s.out = to; });
+        });
+      });
       if (store.seededPlans.includes(plan.id)) return;
       store.seededPlans.push(plan.id);
       if (seeded) return;

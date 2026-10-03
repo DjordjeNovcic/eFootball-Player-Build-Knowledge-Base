@@ -146,8 +146,11 @@ re-check it against results.
   in the attacking shape.
 - **Sub-tactic:** **Possession Game** (Deschamps 89) — switch to it against Long Ball
   Counter or deep-block opponents (Possession beats LBC; LBC beats Quick Counter).
-- **Link-up active:** Breakthrough Pass A — Ronaldinho (Creative Playmaker, AMF) →
+- **Link-up active:** Breakthrough Pass A — Sneijder (Creative Playmaker, AMF) →
   Eto'o (Goal Poacher, CF).
+- **AMF sides (user decision):** Hazard left (LMF high, no RMF proficiency), Sneijder right
+  (LMF/RMF high, weak foot 3/3). Ronaldinho is right-footed with a weak left (weak foot
+  1/2), so he isn't used on the left and drops out of the XI.
 
 | Pos | Player | eFHUB ID | Build (Sh-Pa-Dr-Dx-LB-Ae-De[-GK1-GK2-GK3]) | Slot-2 booster |
 |---|---|---:|---|---|
@@ -158,7 +161,7 @@ re-check it against results.
 | RB | Thuram | `88039581948640` | 0-2-0-9-9-8-12 | Aerial Block +1 |
 | DMF | Vieira | `88044145348029` | 0-0-0-12-8-4-12 | Agility +1 |
 | DMF | Seedorf | `88041460859805` | 0-0-8-9-12-2-9 | Fantasista +1 |
-| AMF | Ronaldinho | `89138288266704` | 6-6-6-10-11-1-0 | Breakthrough +1 |
+| AMF | Sneijder | `88040387121974` | 4-4-10-11-9-2-0 | Fantasista +1 |
 | AMF | Hazard | `89137214427270` | 8-4-6-9-11-4-0 | Striker's Instinct +1 |
 | CF | Eto'o | `88040387118554` | 8-5-9-8-9-2-0 | Fantasista +1 |
 | CF | Ibrahimović (Willpower card) | `89136140651034` | 5-0-8-10-8-10-0 | Agility +1 |
@@ -170,7 +173,7 @@ Desailly on the opponent's most dangerous striker (per match).
 (`89138556700485`), Messi SS (`89138556575063`), Kaká (native Super-sub), Gullit, Neymar,
 Shevchenko. No second goalkeeper is owned yet.
 
-**Substitution plan:** ~60' Kaká for a tired Ronaldinho/Hazard; chasing — Messi SS for
+**Substitution plan:** ~60' Kaká for a tired Sneijder/Hazard; chasing — Messi SS for
 Ibrahimović (Deep-Lying Forward + Goal Poacher pairing, KNOWLEDGE-BASE §18), later
 Shevchenko for Eto'o; protecting a lead — Makélélé for Seedorf (Defensive), Stam for a
 tired CB.

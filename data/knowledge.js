@@ -306,25 +306,29 @@ window.KB = (() => {
       // Fluid Formation: defend in a 4-4-2 whose central pair stays at DMF (Vieira keeps
       // Anchor Man, Seedorf Box-to-Box); the AMFs drop to LMF/RMF. Aligned with xi.
       fluid: true, defFormation: "4-4-2",
+      // Changes after the plan was first added: applied once to the owner's copy, and only
+      // where it still has the old player.
+      updates: [{ id: "2026-10-03-sneijder", replace: { "89138288266704": "88040387121974" } }], // Ronaldinho → Sneijder
       defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
         ["DMF", 36, 41], ["DMF", 64, 41], ["LMF", 12, 55], ["RMF", 88, 55], ["CF", 37, 84], ["CF", 63, 84]],
       xi: ["88040387118039", // GK Buffon
         "88041460993474", "88039850289220", "89138288270047", "88039581948640", // Maldini, Varane, Desailly, Thuram
         "88044145348029", "88041460859805", // DMF Vieira, Seedorf
-        "89137214427270", "89138288266704", // AMF Hazard (left), Ronaldinho (right)
+        "89137214427270", "88040387121974", // AMF Hazard (left — LMF only), Sneijder (right)
         "89136140651034", "88040387118554"], // CF Ibrahimović (Willpower card), Eto'o
       bench: ["88045755964131", "88039581945329", "88044145348045", "88033139494357", // Stam, Baresi, Cafu, Zanetti
         "88045755964130", "88039581945312", "89138556700485", // Makélélé, Pirlo, Bellingham
         "89138556575063", "88044145217198", "88039045074410", "89133993205152", "88045755964138"], // Messi SS, Kaká, Gullit, Neymar, Shevchenko
       subs: [
-        { minute: 60, out: "89138288266704", in: "88044145217198", note: "Super-sub — or for a tired Hazard" },
+        { minute: 60, out: "88040387121974", in: "88044145217198", note: "Super-sub — or for a tired Hazard" },
         { minute: 65, out: "89136140651034", in: "89138556575063", note: "If losing: Messi (DLF) + Eto'o (Poacher)" },
         { minute: 75, out: "88041460859805", in: "88045755964130", note: "If leading: Defensive instruction" },
       ],
       notes: "Fluid Formation: don't send both full-backs high in the attacking shape.\n"
         + "Sub-tactic: Possession (Deschamps 89) vs Long Ball Counter / deep blocks.\n"
         + "Instructions: Counter Target — Eto'o; Defensive — Vieira; Tight Marking — Desailly on their most dangerous striker.\n"
-        + "Link-up: Breakthrough Pass A — Ronaldinho (Creative Playmaker AMF) → Eto'o (Goal Poacher CF).\n"
+        + "Link-up: Breakthrough Pass A — Sneijder (Creative Playmaker AMF) → Eto'o (Goal Poacher CF).\n"
+        + "Hazard left (LMF, no RMF); Sneijder right (weak foot 3/3). Ronaldinho is right-footed with a weak left — not on the left.\n"
         + "No second goalkeeper owned yet." },
   ];
 
