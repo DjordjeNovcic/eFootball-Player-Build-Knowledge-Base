@@ -715,7 +715,7 @@ a.btn{ text-decoration: none; display: inline-flex; align-items: center; }
 .mfit__num b{ font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; line-height: 1; }
 .mfit__num span{ font-family: var(--font-cond); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--paper-dim); text-align: center; }
 .mfit__note{ margin: 0.7rem 0 0; font-size: 0.74rem; color: var(--paper-dim); }
-.match-helper{ margin: 1rem 0 0.6rem; padding-top: 0.9rem; border-top: 1px solid var(--line-soft); display: grid; gap: 0.5rem; }
+.match-helper{ display: grid; gap: 0.5rem; }
 .match-helper .field{ max-width: 22rem; }
 .match__line{ margin: 0; font-size: 0.9rem; }
 .match__tips{ margin: 0.2rem 0 0; padding-left: 1.1rem; font-size: 0.84rem; display: grid; gap: 0.25rem; }

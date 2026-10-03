@@ -1480,7 +1480,7 @@
     sel.value = l.opponent || "";
     const box = $("#luMatch");
     const mu = KB.MATCHUPS?.[l.opponent];
-    if (!mu) { box.innerHTML = ""; return; }
+    if (!mu) { box.innerHTML = `<p class="empty-state">Pick the opponent's team playstyle.</p>`; return; }
     const m = managerObj(l.manager);
     const prof = (t, mm = m) => mm?.prof[KB.TACTICS.indexOf(t)] ?? null;
     const target = prof(mu.answer);
