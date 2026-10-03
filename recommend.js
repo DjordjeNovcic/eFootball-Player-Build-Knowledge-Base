@@ -22,7 +22,7 @@ window.Recommender = (deps) => {
     goalPoacher: { label: "Goal Poacher", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 91, 97], ["finishing", 8, 90, 94], ["speed", 7, 90, 94], ["ballControl", 6, 88], ["balance", 5, 88], ["kickingPower", 4, 90], ["dribbling", 2, 85], ["tightPossession", 2, 85], ["lowPass", 1, 75]] },
     foxInTheBox: { label: "Fox in the Box", stats: [["offensiveAwareness", 10, 90, 95], ["finishing", 9, 90, 94], ["physicalContact", 7, 85], ["ballControl", 6, 88], ["acceleration", 6, 88, 92], ["heading", 4, 89], ["jump", 3, 85], ["kickingPower", 4, 90], ["balance", 4, 85], ["speed", 4, 90, 93]] },
     targetMan: { label: "Target Man", stats: [["physicalContact", 9, 88], ["heading", 8, 89], ["jump", 7, 88], ["ballControl", 7, 88], ["offensiveAwareness", 6, 88], ["finishing", 6, 88], ["lowPass", 4, 80], ["kickingPower", 4, 88], ["acceleration", 3, 85], ["speed", 2, 86]] },
-    holePlayer: { label: "Hole Player", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 92, 97], ["balance", 8, 90], ["finishing", 7, 90, 94], ["ballControl", 6, 90], ["tightPossession", 5, 88], ["lowPass", 4, 82], ["speed", 4, 89, 94], ["kickingPower", 3, 88], ["dribbling", 3, 88]] },
+    holePlayer: { label: "Hole Player", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 92, 97], ["balance", 8, 90], ["finishing", 7, 90, 94], ["ballControl", 6, 90], ["tightPossession", 5, 88], ["lowPass", 4, 82], ["speed", 4, 90, 94], ["kickingPower", 3, 88], ["dribbling", 3, 88]] },
     creativePlaymaker: { label: "Creative Playmaker", stats: [["ballControl", 9, 90], ["dribbling", 8, 90], ["tightPossession", 8, 88], ["lowPass", 8, 87], ["balance", 7, 88], ["acceleration", 6, 88, 94], ["kickingPower", 5, 85], ["finishing", 4, 85], ["offensiveAwareness", 3, 85, 88], ["loftedPass", 3, 80], ["speed", 3, 89, 94]] },
     deepLyingForward: { label: "Deep-Lying Forward", stats: [["ballControl", 9, 90], ["tightPossession", 8, 88], ["dribbling", 7, 88], ["lowPass", 7, 85], ["finishing", 7, 90], ["offensiveAwareness", 6, 88], ["acceleration", 6, 90], ["balance", 6, 88], ["kickingPower", 3, 88], ["speed", 3, 90, 94]] },
     dummyRunner: { label: "Dummy Runner", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 92, 97], ["speed", 8, 90, 94], ["finishing", 7, 90], ["balance", 6, 88], ["ballControl", 5, 88]] },
@@ -173,7 +173,8 @@ window.Recommender = (deps) => {
     // are always chased in full.
     const zero = finalStats(p, {}, null);
     const coreW = [...stats].map((x) => x.w).sort((a, b) => b - a)[2] ?? 0;
-    stats.forEach((x) => { if (x.w < coreW && x.t - zero[x.k] > 8) x.soft = zero[x.k] + 8; });
+    // Speed is exempt: 80 → 90 is worth far more than anything above it (§3).
+    stats.forEach((x) => { if (x.w < coreW && x.k !== "speed" && x.t - zero[x.k] > 8) x.soft = zero[x.k] + 8; });
     const inTpl = new Set(stats.map((x) => x.k));
     const group = p.position === "GK" ? SECONDARY.GK : ["CB", "LB", "RB"].includes(p.position) ? SECONDARY.DEF
       : ["DMF", "CMF"].includes(p.position) ? SECONDARY.MID : SECONDARY.ATT;
@@ -464,7 +465,9 @@ window.Recommender = (deps) => {
       const striker = ["CF", "SS"].includes(pos);
       if (striker && !has("First-time Shot")) push("First-time Shot", "Reduces error on first-time finishes — core for a striker.");
       if (["goalPoacher", "dummyRunner", "holePlayer", "prolificWinger", "roamingFlank", "creativePlaymaker", "deepLyingForward", "classicNo10"].includes(key)) dtPackage();
-      if ((striker || key === "targetMan" || key === "foxInTheBox") && tall && f.heading >= 80) {
+      // §8: Bullet Header is built with a tall model, Heading and Aerial Superiority — for
+      // any attacker who has it, not only a striker.
+      if (((striker || key === "targetMan" || key === "foxInTheBox") || has("Bullet Header")) && tall && f.heading >= 80) {
         push("Heading", "More downward, accurate headers (§19).");
         push("Aerial Superiority", aerialWhy);
       }
@@ -515,7 +518,8 @@ window.Recommender = (deps) => {
           ...(wpOk ? [["Weighted Pass", "Lofted through balls for runners (§9 attacking)."]] : []),
           ...(tpOk ? [["Through Passing", "+20% passing stats on through balls (§19)."]] : []),
           ["Knuckle Shot", "Knuckleball long shot, usable at free kicks (§19)."]];
-    FALLBACK.forEach(([n, why]) => push(n, why));
+    // §20: Low Screamer stops a sub-50% Stunning Shot from becoming a Dipping Shot.
+    FALLBACK.filter(([n]) => !(n === "Dipping Shot" && has("Low Screamer"))).forEach(([n, why]) => push(n, why));
     // Always five (user rule): when the role-specific options run out, fill from the
     // rest of the addable pool, closest to the role first — never avoid-listed skills,
     // and Super-sub / Heel Trick only as the very last resort. Track Back presses from the
