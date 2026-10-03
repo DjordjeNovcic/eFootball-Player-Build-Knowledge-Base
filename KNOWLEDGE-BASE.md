@@ -338,6 +338,12 @@ Examples:
 
 Every extra point can still matter.
 
+**Stamina floor (user decision, 3 Oct 2026):** every outfield build aims for at least
+**Stamina 85** — Acceleration drops as stamina is lost during a match (section 2), and the
+user's Long Ball Counter needs runs in behind late in games. Roles with their own higher
+Stamina target (Box-to-Box, Orchestrator, Anchor Man, full-backs, …) keep it. A card whose
+base Stamina is far below (e.g. 70) isn't forced all the way (section 7's weak-base rule).
+
 ---
 
 # 5. Player Model and Physics

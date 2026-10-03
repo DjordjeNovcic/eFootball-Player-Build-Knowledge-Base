@@ -156,7 +156,7 @@ re-check it against results.
 |---|---|---:|---|---|
 | GK | Buffon | `88040387118039` | 0-0-0-0-0-1-0-8-11-12 | Saving +1 |
 | LB | Maldini | `88041460993474` | 0-0-0-14-8-6-8 | Agility +1 |
-| CB | Varane | `88039850289220` | 0-0-0-12-7-8-10 | Defending +1 |
+| CB | Varane | `88039850289220` | 0-0-0-12-7-8-10 | Hard Worker +1 |
 | CB | Desailly | `89138288270047` | 0-1-0-8-5-9-10 | Aerial Block +1 |
 | RB | Thuram | `88039581948640` | 0-2-0-9-9-8-12 | Aerial Block +1 |
 | DMF | Vieira | `88044145348029` | 0-0-0-12-8-4-12 | Agility +1 |
@@ -164,7 +164,7 @@ re-check it against results.
 | AMF | Sneijder | `88040387121974` | 4-4-10-11-9-2-0 | Fantasista +1 |
 | AMF | Hazard | `89137214427270` | 8-4-6-9-11-4-0 | Striker's Instinct +1 |
 | CF | Eto'o | `88040387118554` | 8-5-9-8-9-2-0 | Fantasista +1 |
-| CF | Ibrahimović (Willpower card) | `89136140651034` | 5-0-8-10-8-10-0 | Agility +1 |
+| CF | Ibrahimović (Willpower card) | `89136140651034` | 5-0-8-10-10-8-0 | Agility +1 |
 
 **Individual instructions:** Counter Target — Eto'o; Defensive — Vieira; Tight Marking —
 Desailly on the opponent's most dangerous striker (per match).

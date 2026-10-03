@@ -177,6 +177,9 @@ window.Recommender = (deps) => {
     const coreW = [...stats].map((x) => x.w).sort((a, b) => b - a)[2] ?? 0;
     // Speed is exempt: 80 → 90 is worth far more than anything above it (§3).
     stats.forEach((x) => { if (x.w < coreW && x.k !== "speed" && x.t - zero[x.k] > 8) x.soft = zero[x.k] + 8; });
+    // Stamina floor for every outfield role (user decision, KNOWLEDGE-BASE §4): Acceleration
+    // drops as stamina runs out (§2), and Long Ball Counter asks for late runs in behind.
+    if (p.position !== "GK" && !get("stamina")) stats.push({ k: "stamina", w: 3, t: 85, ...shape("stamina", 85) });
     const inTpl = new Set(stats.map((x) => x.k));
     const group = p.position === "GK" ? SECONDARY.GK : ["CB", "LB", "RB"].includes(p.position) ? SECONDARY.DEF
       : ["DMF", "CMF"].includes(p.position) ? SECONDARY.MID : SECONDARY.ATT;
