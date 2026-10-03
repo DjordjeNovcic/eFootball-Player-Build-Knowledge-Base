@@ -71,13 +71,18 @@ window.Recommender = (deps) => {
     const native = new Set(p.skills.map((k) => norm(skillLabel(k))));
     const has = (n) => native.has(norm(n));
     const notes = [];
-    // §4: Kicking Power, Jump and Stamina have no useful hard threshold — they keep
-    // paying (at a reduced rate) all the way to 99.
+    // §4: Kicking Power, Jump and Stamina have no useful hard threshold — past the role's
+    // target they keep paying all the way to 99, at the same reduced rate as any other stat
+    // (a higher rate let Stamina 97–99 outbid ball skills a midfielder still lacked).
+    // Goalkeeping stats are the keeper's whole job and have no known threshold either:
+    // they keep half their value past the target, beyond 99 (boosters).
     const LINEAR = new Set(["kickingPower", "jump", "stamina"]);
-    const stats = tpl.stats.map(([k, w, t, cap]) => ({ k, w, t, cap: LINEAR.has(k) ? 99 : cap ?? t + 6, slope: LINEAR.has(k) ? 0.35 : 0.25 }));
+    const GK_STATS = new Set(["gkAwareness", "gkReflexes", "gkReach", "gkClearing", "gkCatching"]);
+    const shape = (k, t, cap) => (GK_STATS.has(k) ? { cap: 105, slope: 0.5 } : LINEAR.has(k) ? { cap: 99, slope: 0.25 } : { cap: cap ?? t + 6, slope: 0.25 });
+    const stats = tpl.stats.map(([k, w, t, cap]) => ({ k, w, t, ...shape(k, t, cap) }));
     const get = (k) => stats.find((s) => s.k === k);
     const scale = (k, f) => { const s = get(k); if (s) s.w *= f; };
-    const ensure = (k, w, t) => get(k) || stats.push({ k, w, t, cap: LINEAR.has(k) ? 99 : t + 6, slope: LINEAR.has(k) ? 0.35 : 0.25 });
+    const ensure = (k, w, t) => get(k) || stats.push({ k, w, t, ...shape(k, t) });
 
     if (ATTACKERS.has(p.position) && p.height >= 188) {
       scale("dribbling", 0.4); scale("tightPossession", 0.5);
@@ -132,6 +137,26 @@ window.Recommender = (deps) => {
       notes.push("Momentum Dribbling — feed it Dribbling, Tight Possession and Balance (§8).");
     }
     if (has("Magnetic Feet")) { const s = get("ballControl"); if (s) s.cap = s.t + 2; }
+    // §7 Box-to-Box: "do NOT force every Box-to-Box player into a scorer" — Lampard can
+    // justify more Shooting, Seedorf is a transition player / carrier / passer / defender
+    // "rather than forcing high Finishing from a weak base". The card's native skills say
+    // which one he is: a shooting skill set makes him the goal threat from midfield.
+    if (tpl.key === "boxToBox") {
+      const SHOOTER = ["Long-range Curler", "Long-range Shooting", "Knuckle Shot", "Dipping Shot", "First-time Shot",
+        "Low Screamer", "Acrobatic Finishing", "Phenomenal Finishing", "Willpower", "Blitz Curler"];
+      if (SHOOTER.filter(has).length >= 3 && p.stats.offensiveAwareness >= 78) {
+        Object.assign(get("finishing"), { w: 6, t: 88, cap: 93 });
+        ensure("offensiveAwareness", 5, 88);
+        Object.assign(get("kickingPower"), { w: 5, t: 88 });
+        ["defensiveAwareness", "ballWinning", "defensiveEngagement"].forEach((k) => { const s = get(k); if (s) Object.assign(s, { w: s.w * 0.6, t: 80, cap: 84 }); });
+        notes.push("Box-to-Box with a shooter's skill set — the goal threat from midfield: Finishing, Attacking Awareness and Kicking Power over a full defensive build (§7).");
+      } else {
+        ensure("dribbling", 5, 88); ensure("tightPossession", 5, 88);
+        Object.assign(get("ballControl"), { w: 7, t: 90 });
+        scale("finishing", 0.5);
+        notes.push("Box-to-Box carrier — Ball Control, Dribbling and Tight Possession to carry the ball through midfield, not a forced scorer (§7).");
+      }
+    }
     // Physical Contact = holding off opponents and keeping balance under pressure (§20);
     // Aerial Strength is the least wasteful place for spare points because of it (§12).
     // Every attacker/midfielder gets a modest PC target so they don't get brushed off —
@@ -141,6 +166,14 @@ window.Recommender = (deps) => {
       stats.push({ k: "physicalContact", w: 3, t, cap: t + 2, slope: 0.15 });
       if (p.weight < 73) notes.push(`${p.weight} kg — light frame; a modest Physical Contact target (${t}) so he isn't brushed off, without chasing a tank build (§5, §20).`);
     }
+    // §7 "rather than forcing high Finishing from a weak base", §12 "what do I lose to gain
+    // this +1?": a supporting stat (outside the role's top three weights, ties included) that
+    // starts far below its target is lifted about 8 points at full value; the rest of the
+    // gap counts half, so it doesn't swallow a third of the budget. The role's core stats
+    // are always chased in full.
+    const zero = finalStats(p, {}, null);
+    const coreW = [...stats].map((x) => x.w).sort((a, b) => b - a)[2] ?? 0;
+    stats.forEach((x) => { if (x.w < coreW && x.t - zero[x.k] > 8) x.soft = zero[x.k] + 8; });
     const inTpl = new Set(stats.map((x) => x.k));
     const group = p.position === "GK" ? SECONDARY.GK : ["CB", "LB", "RB"].includes(p.position) ? SECONDARY.DEF
       : ["DMF", "CMF"].includes(p.position) ? SECONDARY.MID : SECONDARY.ATT;
@@ -209,8 +242,15 @@ window.Recommender = (deps) => {
     let v = 0;
     for (const s of profile.stats) {
       const x = effective(s.k, f[s.k]);
-      if (s.k === "acceleration") { v += s.w * (accelCurve(x, s.cap) + (x >= s.t ? 2 : 0)); continue; }
-      v += s.w * (Math.min(x, s.t) + (s.slope ?? 0.25) * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0));
+      // Points between the soft limit and the target (see profileFor) count half.
+      const half = s.soft ? Math.max(0, Math.min(x, s.t) - s.soft) : 0;
+      if (s.k === "acceleration") {
+        const curve = (y) => accelCurve(y, s.cap);
+        const slack = s.soft ? curve(Math.min(x, s.t)) - curve(Math.min(x, s.soft)) : 0;
+        v += s.w * (curve(x) - 0.5 * slack + (x >= s.t ? 2 : 0));
+        continue;
+      }
+      v += s.w * (Math.min(x, s.t) - 0.5 * half + (s.slope ?? 0.25) * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0));
     }
     // Secondary stats: once the role's priorities are met, every extra point in a stat the
     // role still uses beats parking it somewhere useless (§4: KP/Jump/Stamina stay linear).
@@ -271,35 +311,36 @@ window.Recommender = (deps) => {
     return levels;
   }
 
-  // §12 hard rule: spend every point. Leftovers go to Aerial Strength, else Defending,
-  // else the cheapest useful level; if the remainder can't be matched exactly, trade one
-  // level back and refill.
+  // §12 hard rule: spend every point. The last points go wherever they are worth the most
+  // for the role (ties to Aerial Strength, then Defending — §12's usual parking spots).
+  // When they can't be matched exactly, or trading one level back buys something better,
+  // one level is traded back and the points refilled.
   function spendRemainder(p, profile, booster2, levels, cats, budget) {
-    const order = ["aerial", "defending", ...cats.map((c) => c.key)];
-    const fill = () => {
-      let left = budget - pointsOf(levels);
-      let guard = 60;
-      while (left > 0 && guard--) {
-        const k = order.find((key) => key in levels && levels[key] < MAX_LEVEL && levelCost(levels[key] + 1) <= left);
-        if (!k) break;
-        levels[k] += 1;
-        left = budget - pointsOf(levels);
+    const pref = (k) => ({ aerial: 0.02, defending: 0.01, passing: 0.005 }[k] || 0);
+    const fill = (lv) => {
+      let left = budget - pointsOf(lv);
+      while (left > 0) {
+        let best = null;
+        for (const c of cats) {
+          if (lv[c.key] >= MAX_LEVEL || levelCost(lv[c.key] + 1) > left) continue;
+          const v = value(profile, finalStats(p, { ...lv, [c.key]: lv[c.key] + 1 }, booster2)) + pref(c.key);
+          if (!best || v > best.v) best = { key: c.key, v };
+        }
+        if (!best) break;
+        lv[best.key] += 1;
+        left = budget - pointsOf(lv);
       }
       return left;
     };
-    if (fill() === 0) return;
-    const base = { ...levels };
+    const options = [{ ...levels }, ...cats.filter((c) => levels[c.key] > 0).map((c) => ({ ...levels, [c.key]: levels[c.key] - 1 }))];
     let bestLv = null;
     let bestVal = -Infinity;
-    for (const c of cats) {
-      if (!base[c.key]) continue;
-      Object.assign(levels, base, { [c.key]: base[c.key] - 1 });
-      if (fill() === 0) {
-        const v = value(profile, finalStats(p, levels, booster2));
-        if (v > bestVal) { bestVal = v; bestLv = { ...levels }; }
-      }
+    for (const lv of options) {
+      if (fill(lv) !== 0) continue;
+      const v = value(profile, finalStats(p, lv, booster2));
+      if (v > bestVal) { bestVal = v; bestLv = lv; }
     }
-    Object.assign(levels, bestLv || base);
+    Object.assign(levels, bestLv || options[0]);
   }
 
   function chooseBooster(p, profile, levels) {
@@ -308,14 +349,19 @@ window.Recommender = (deps) => {
     const pool = deps.boosterPool.filter((b) => gk ? /Goalkeeping|Saving/.test(b.name) : !/Goalkeeping|Saving/.test(b.name));
     const slot1 = new Set(Object.keys(p.booster1?.stats || {}));
     const before = finalStats(p, levels, null);
+    // §11: pick by the exact four stats — a booster with two stats the role never uses
+    // (Striker's Instinct on a defensive midfielder) is half wasted, whatever it adds.
+    const used = (k) => profile.stats.some((st) => st.k === k) || profile.secondary.includes(k);
+    const fits = pool.filter((b) => Object.keys(b.stats).filter((k) => !used(k)).length < 2);
     let best = null;
-    for (const b of pool) {
+    for (const b of fits.length ? fits : pool) {
       const overlap = Object.keys(b.stats).filter((k) => slot1.has(k)).length;
       // §11: don't boost stats that are already ~97+ — those points are mostly wasted.
       const saturated = Object.keys(b.stats).filter((k) => before[k] >= 97).length;
       // §11: pick by the exact stats — only role stats still below target count.
       const weak = Object.keys(b.stats).filter((k) => profile.stats.some((st) => st.k === k && before[k] < st.t)).length;
-      const v = value(profile, finalStats(p, levels, b)) - overlap * 0.5 - saturated * 3 + weak * 1.5;
+      const dead = Object.keys(b.stats).filter((k) => !used(k)).length;
+      const v = value(profile, finalStats(p, levels, b)) - overlap * 0.5 - saturated * 3 + weak * 1.5 - dead * 1.5;
       if (!best || v > best.v) best = { booster: b, v, overlap };
     }
     return { booster: best.booster, fixed: false, overlap: best.overlap };
@@ -476,11 +522,13 @@ window.Recommender = (deps) => {
     const f = finalStats(p, levels, b.fixed ? null : b.booster);
     const rating = OVR.rating(p.position, p.height, p.weakFootAccuracy, f);
     const targets = [...profile.stats].sort((x, y) => y.w - x.w).slice(0, 8)
-      .map((s) => ({ stat: s.k, value: f[s.k], target: s.t, hit: f[s.k] >= s.t, weight: s.w }));
+      .map((s) => ({ stat: s.k, value: f[s.k], target: s.t, hit: f[s.k] >= s.t, weight: s.w, soft: !!s.soft }));
+    const short = profile.stats.filter((s) => s.soft && f[s.k] < s.t).map((s) => `${KB.STAT_LABELS[s.k] || s.k} ${f[s.k]}`);
+    const notes = short.length ? [...profile.notes, `Not forced from a weak base (§7, §12): ${short.join(", ")} — the points do more elsewhere.`] : profile.notes;
     const { skills, why } = chooseSkills(p, profile, f);
     const ai = chooseSkills(p, profile, f, true);
     return { aiSkills: ai.skills, aiWhy: ai.why, id: p.id, template: profile.tpl.key, roleLabel: profile.tpl.label, levels, booster2: b.fixed ? null : b.booster.id,
-      booster: b.booster, boosterFixed: b.fixed, boosterOverlap: b.overlap || 0, final: f, rating, targets, skills, skillWhy: why, notes: profile.notes };
+      booster: b.booster, boosterFixed: b.fixed, boosterOverlap: b.overlap || 0, final: f, rating, targets, skills, skillWhy: why, notes };
   }
 
   const recs = Object.fromEntries(players.map((p) => [p.id, recommend(p)]));
@@ -497,7 +545,8 @@ window.Recommender = (deps) => {
   players.forEach((p) => {
     const r = recs[p.id];
     const key = r.targets.filter((t) => t.weight >= 7);
-    const missed = key.filter((t) => !t.hit);
+    // A supporting stat deliberately not forced from a weak base isn't a miss (see notes).
+    const missed = key.filter((t) => !t.hit && !t.soft);
     const alt = OVR.POSITIONS.filter((pos) => pos !== p.position && profAt(p, pos) !== "none")
       .map((pos) => ({ pos, r: OVR.rating(pos, p.height, p.weakFootAccuracy, r.final) }))
       .sort((a, b) => b.r - a.r)[0];
