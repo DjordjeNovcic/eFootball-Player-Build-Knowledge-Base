@@ -502,9 +502,17 @@ A typical ideal profile:
 
 - OA 90+
 - Acceleration 92+
+- Speed ~92 (user decision, 3 Oct 2026 — see below)
 - Finishing 88-93+
 - Balance 90+
 - good Ball Control
+
+Speed is not optional for this role: the Hole Player's runs from deep into the space
+behind the line go past the 16-18 m acceleration stage (section 2), and with Long Ball
+Counter those runs are long. The user judged Speed 88-90 on a Hole Player (Gullit) too
+slow, so the build target is ~92 (inside section 3's SS 90-96 range), still never
+trained into the 97-99 dead zone. For a tall Bullet Header Hole Player, keep Heading at
+the 89 threshold while chasing it.
 
 ---
 
