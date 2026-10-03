@@ -169,9 +169,11 @@ re-check it against results.
 **Individual instructions:** Counter Target — Eto'o; Defensive — Vieira; Tight Marking —
 Desailly on the opponent's most dangerous striker (per match).
 
-**Bench (12):** Stam, Baresi, Cafu, Zanetti, Makélélé, Pirlo, Bellingham
-(`89138556700485`), Messi SS (`89138556575063`), Kaká (native Super-sub), Gullit, Neymar,
-Shevchenko. No second goalkeeper is owned yet.
+**Bench (12):** Stam, Cafu, Zanetti, Makélélé, Pirlo, Bellingham (`89138556700485`),
+Ronaldinho (`89138288266704`, cover for Sneijder on the right), Messi SS
+(`89138556575063`), Kaká (native Super-sub), Gullit, Neymar, Shevchenko. Baresi left out
+(user decision) — Stam (Destroyer) is the only CB cover, so a CB change pairs two
+Destroyers. No second goalkeeper is owned yet.
 
 **Substitution plan:** ~60' Kaká for a tired Sneijder/Hazard; chasing — Messi SS for
 Ibrahimović (Deep-Lying Forward + Goal Poacher pairing, KNOWLEDGE-BASE §18), later

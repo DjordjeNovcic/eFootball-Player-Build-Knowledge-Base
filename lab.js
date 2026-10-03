@@ -1185,10 +1185,15 @@
         Object.entries(u.replace || {}).forEach(([from, to]) => {
           if (!byId[to] || seeded.xi.includes(to)) return;
           const i = seeded.xi.indexOf(from);
-          if (i < 0) return;
-          seeded.xi[i] = to;
-          seeded.bench = seeded.bench.filter((id) => id !== to);
-          seeded.subs.forEach((s) => { if (s.out === from) s.out = to; });
+          if (i >= 0) {
+            seeded.xi[i] = to;
+            seeded.bench = seeded.bench.filter((id) => id !== to);
+          } else {
+            const j = seeded.bench.indexOf(from);
+            if (j < 0 || seeded.bench.includes(to)) return;
+            seeded.bench[j] = to;
+          }
+          seeded.subs.forEach((s) => { if (s.out === from) s.out = to; if (s.in === from) s.in = to; });
         });
       });
       if (store.seededPlans.includes(plan.id)) return;

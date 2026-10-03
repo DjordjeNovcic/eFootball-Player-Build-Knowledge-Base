@@ -308,7 +308,10 @@ window.KB = (() => {
       fluid: true, defFormation: "4-4-2",
       // Changes after the plan was first added: applied once to the owner's copy, and only
       // where it still has the old player.
-      updates: [{ id: "2026-10-03-sneijder", replace: { "89138288266704": "88040387121974" } }], // Ronaldinho → Sneijder
+      updates: [
+        { id: "2026-10-03-sneijder", replace: { "89138288266704": "88040387121974" } }, // XI: Ronaldinho → Sneijder
+        { id: "2026-10-03-bench-ronaldinho", replace: { "88039581945329": "89138288266704" } }, // bench: Baresi → Ronaldinho
+      ],
       defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
         ["DMF", 36, 41], ["DMF", 64, 41], ["LMF", 12, 55], ["RMF", 88, 55], ["CF", 37, 84], ["CF", 63, 84]],
       xi: ["88040387118039", // GK Buffon
@@ -316,8 +319,8 @@ window.KB = (() => {
         "88044145348029", "88041460859805", // DMF Vieira, Seedorf
         "89137214427270", "88040387121974", // AMF Hazard (left — LMF only), Sneijder (right)
         "89136140651034", "88040387118554"], // CF Ibrahimović (Willpower card), Eto'o
-      bench: ["88045755964131", "88039581945329", "88044145348045", "88033139494357", // Stam, Baresi, Cafu, Zanetti
-        "88045755964130", "88039581945312", "89138556700485", // Makélélé, Pirlo, Bellingham
+      bench: ["88045755964131", "88044145348045", "88033139494357", // Stam, Cafu, Zanetti
+        "88045755964130", "88039581945312", "89138556700485", "89138288266704", // Makélélé, Pirlo, Bellingham, Ronaldinho
         "89138556575063", "88044145217198", "88039045074410", "89133993205152", "88045755964138"], // Messi SS, Kaká, Gullit, Neymar, Shevchenko
       subs: [
         { minute: 60, out: "88040387121974", in: "88044145217198", note: "Super-sub — or for a tired Hazard" },
