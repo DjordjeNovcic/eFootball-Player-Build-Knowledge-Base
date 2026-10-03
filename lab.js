@@ -1385,6 +1385,7 @@
     $("#luWarnings").hidden = !warns.length;
 
     renderManagerFit(l);
+    renderPositionTraining(l);
     renderPicker(l, slots);
     renderSubs(l, layoutOf(l));
     $("#luNotes").value = l.notes || "";
@@ -1433,6 +1434,41 @@
       </div>`).join("")}</div>
       <p class="mfit__note">Ratings include each manager's +1/+1 booster and playstyle multiplier (§17). Link-up needs both roles in the XI at their positions (§22) — its strength isn't measured.</p>`;
   }
+  // Position Training (§20): every spot this lineup asks a player to fill — attacking
+  // shape, Fluid defence shape, and the slot a planned substitute takes over — where his
+  // proficiency isn't high. Proficiency is separate from style compatibility (§20).
+  function renderPositionTraining(l) {
+    const box = $("#luTraining");
+    if (!box) return;
+    const att = layoutOf(l);
+    const def = l.fluid ? defLayoutOf(l) : null;
+    const uses = []; // { id, pos, how }
+    l.xi.forEach((id, i) => {
+      if (!byId[id]) return;
+      uses.push({ id, pos: att[i][0], how: l.fluid ? "attack" : "starter" });
+      if (def && def[i][0] !== att[i][0]) uses.push({ id, pos: def[i][0], how: "defence shape" });
+    });
+    l.subs.forEach((s) => {
+      const i = l.xi.indexOf(s.out);
+      if (!byId[s.in] || i < 0) return;
+      uses.push({ id: s.in, pos: att[i][0], how: `sub for ${shortName(byId[s.out])}${s.minute ? ` (${s.minute}')` : ""}` });
+      if (def && def[i][0] !== att[i][0]) uses.push({ id: s.in, pos: def[i][0], how: `sub for ${shortName(byId[s.out])}, defence shape` });
+    });
+    const RANK = { none: 0, mid: 1 };
+    const seen = new Set();
+    const todo = uses.map((u) => ({ ...u, prof: proficiency(byId[u.id], u.pos) }))
+      .filter((u) => u.pos !== "GK" && RANK[u.prof] != null && !seen.has(u.id + u.pos) && seen.add(u.id + u.pos))
+      .sort((a, b) => RANK[a.prof] - RANK[b.prof]);
+    box.innerHTML = `<h3 class="group__title group__title--spaced">Position training</h3>` + (todo.length
+      ? `<ul class="ptrain">${todo.map((u) => {
+          const p = byId[u.id];
+          const style = styleFit(p, u.pos).filter((f) => !f.ok).map((f) => f.name);
+          return `<li><b>${esc(p.name)}</b> → <span class="pp pp--${u.prof}">${u.pos}</span>
+            <em>${u.prof === "none" ? "no proficiency" : "intermediate"} → train to high · ${esc(u.how)}${style.length ? ` · ${esc(style.join(", "))} stays inactive there (§20)` : ""}</em></li>`;
+        }).join("")}</ul><p class="mfit__note">Uses an Additional Position Proficiency slot and a Position Training token; high is the cap (§20). If you've already trained it, set it in the Trainer's positions.</p>`
+      : `<p class="rec-muted">Everyone in this plan — starters, Fluid defence shape and planned subs — already has high proficiency where he plays.</p>`);
+  }
+
   $("#luManagers").addEventListener("click", (e) => {
     const b = e.target.closest("[data-mfit]");
     if (!b) return;

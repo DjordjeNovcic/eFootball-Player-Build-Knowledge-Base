@@ -715,6 +715,9 @@ a.btn{ text-decoration: none; display: inline-flex; align-items: center; }
 .mfit__num b{ font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; line-height: 1; }
 .mfit__num span{ font-family: var(--font-cond); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--paper-dim); text-align: center; }
 .mfit__note{ margin: 0.7rem 0 0; font-size: 0.74rem; color: var(--paper-dim); }
+.ptrain{ list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; font-size: 0.82rem; }
+.ptrain li{ display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.35rem; }
+.ptrain em{ flex-basis: 100%; font-style: normal; font-size: 0.74rem; color: var(--paper-dim); }
 .mfit__ph{ width: 30px; height: 30px; }
 .mfit__ph .mgr-photo{ width: 30px; height: 30px; }
 @media (max-width: 560px){
@@ -813,6 +816,7 @@ textarea:focus{ outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px 
 .pp--primary{ background: var(--lime); color: var(--ink); border-color: var(--lime); }
 .pp--high{ color: var(--prof-high); border-color: rgba(95,227,154,0.55); }
 .pp--mid{ color: #8fcfae; border-color: rgba(63,143,104,0.6); border-style: dashed; }
+.pp--none{ color: var(--ember); border-color: var(--ember); }
 .pp-edited{ font-size: 0.7rem; color: var(--amber); }
 
 .slot--high{ border-color: var(--prof-high); }
