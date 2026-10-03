@@ -217,6 +217,7 @@ window.Recommender = (deps) => {
   function wasteOf(f) {
     const out = {};
     Object.entries(WASTE).forEach(([k, lim]) => {
+      if (k === "speed" && f.speed >= 100) return; // 100+ is a step again (§3)
       const over = Math.min(f.$gain?.[k] || 0, f[k] - lim);
       if (over > 0) out[k] = over;
     });
@@ -231,13 +232,21 @@ window.Recommender = (deps) => {
 
   // Community tests (Amadeusz, via KNOWLEDGE-BASE §3): 96 Speed is already top speed and
   // 97–99 adds nothing, while 100+ gives a new step. Value Speed as capped at 96 unless it
-  // reaches 100.
+  // reaches 100, which earns a small step bonus (one target-point's worth: enough when a
+  // booster makes 100 cheap, not enough to sell core stats for it).
+  const SPEED_STEP = 1;
   const effective = (k, x) => (k === "speed" && x < 100 ? Math.min(x, 96) : x);
   // Acceleration pays roughly 3 : 2 : 1 per point below 88 : 88–91 : above 91 (§3,
   // community testing), so each point past 91 is worth a third of one below 88 — and
   // nothing past the role's cap.
   const accelCurve = (x, cap) => Math.min(x, 88) + (2 / 3) * Math.max(0, Math.min(x, 91) - 88)
     + (1 / 3) * Math.max(0, Math.min(x, cap) - 91);
+  // §3: "thresholds are NOT hard caps" — past the role's cap a stat the role uses keeps a
+  // little value up to where §14 calls it waste (WASTE below), so leftover points sharpen
+  // the role's own stats (a poacher's Finishing 92→95) instead of drifting into categories
+  // the role barely uses (a poacher's Low Pass).
+  const TAIL = 0.1;
+  const tail = (s, x) => TAIL * Math.max(0, Math.min(x, WASTE[s.k] ?? 99) - s.cap);
   function value(profile, f) {
     let v = 0;
     for (const s of profile.stats) {
@@ -247,10 +256,13 @@ window.Recommender = (deps) => {
       if (s.k === "acceleration") {
         const curve = (y) => accelCurve(y, s.cap);
         const slack = s.soft ? curve(Math.min(x, s.t)) - curve(Math.min(x, s.soft)) : 0;
-        v += s.w * (curve(x) - 0.5 * slack + (x >= s.t ? 2 : 0));
+        v += s.w * (curve(x) - 0.5 * slack + (x >= s.t ? 2 : 0) + tail(s, x));
         continue;
       }
-      v += s.w * (Math.min(x, s.t) - 0.5 * half + (s.slope ?? 0.25) * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0));
+      v += s.w * (Math.min(x, s.t) - 0.5 * half + (s.slope ?? 0.25) * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0)
+        + tail(s, x)
+        // §3: 100+ Speed is a noticeable step again — worth it when boosters make it cheap.
+        + (s.k === "speed" && x >= 100 ? SPEED_STEP : 0));
     }
     // Secondary stats: once the role's priorities are met, every extra point in a stat the
     // role still uses beats parking it somewhere useless (§4: KP/Jump/Stamina stay linear).
@@ -353,18 +365,17 @@ window.Recommender = (deps) => {
     // (Striker's Instinct on a defensive midfielder) is half wasted, whatever it adds.
     const used = (k) => profile.stats.some((st) => st.k === k) || profile.secondary.includes(k);
     const fits = pool.filter((b) => Object.keys(b.stats).filter((k) => !used(k)).length < 2);
-    let best = null;
-    for (const b of fits.length ? fits : pool) {
+    const ranked = (fits.length ? fits : pool).map((b) => {
       const overlap = Object.keys(b.stats).filter((k) => slot1.has(k)).length;
       // §11: don't boost stats that are already ~97+ — those points are mostly wasted.
       const saturated = Object.keys(b.stats).filter((k) => before[k] >= 97).length;
       // §11: pick by the exact stats — only role stats still below target count.
       const weak = Object.keys(b.stats).filter((k) => profile.stats.some((st) => st.k === k && before[k] < st.t)).length;
       const dead = Object.keys(b.stats).filter((k) => !used(k)).length;
-      const v = value(profile, finalStats(p, levels, b)) - overlap * 0.5 - saturated * 3 + weak * 1.5 - dead * 1.5;
-      if (!best || v > best.v) best = { booster: b, v, overlap };
-    }
-    return { booster: best.booster, fixed: false, overlap: best.overlap };
+      const adj = -overlap * 0.5 - saturated * 3 + weak * 1.5 - dead * 1.5;
+      return { booster: b, overlap, adj, v: value(profile, finalStats(p, levels, b)) + adj };
+    }).sort((x, y) => y.v - x.v);
+    return { booster: ranked[0].booster, fixed: false, overlap: ranked[0].overlap, shortlist: ranked.slice(0, 3) };
   }
 
   /* ---------- additional skills (§9, USER-SQUAD §5) ---------- */
@@ -542,8 +553,15 @@ window.Recommender = (deps) => {
     let levels = optimise(p, profile, null);
     let b = chooseBooster(p, profile, levels);
     if (!b.fixed) {
-      levels = optimise(p, profile, b.booster);
-      b = chooseBooster(p, profile, levels);
+      // §14 step 6: the booster comes last, on the finished build — but the levels then
+      // shift around whichever stats it covers, so each of the few best candidates gets
+      // its own re-optimised build and the best build + booster pair is kept.
+      const pick = b.shortlist.map((c) => {
+        const lv = optimise(p, profile, c.booster);
+        return { ...c, levels: lv, v: value(profile, finalStats(p, lv, c.booster)) + c.adj };
+      }).reduce((x, y) => (y.v > x.v ? y : x));
+      levels = pick.levels;
+      b = { booster: pick.booster, fixed: false, overlap: pick.overlap };
     }
     const f = finalStats(p, levels, b.fixed ? null : b.booster);
     const rating = OVR.rating(p.position, p.height, p.weakFootAccuracy, f);
