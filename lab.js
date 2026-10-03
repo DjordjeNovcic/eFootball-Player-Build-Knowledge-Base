@@ -326,7 +326,7 @@
      Tabs / routing
   --------------------------------------------------------- */
 
-  const TABS = ["squad", "pro", "recommended", "mybuilds", "train", "lineup", "skills", "managers", "styles", "sandbox"];
+  const TABS = ["squad", "pro", "recommended", "mybuilds", "train", "lineup", "skills", "managers", "styles"];
   const view = { playerId: null, draft: null, position: null };
 
   function route() {

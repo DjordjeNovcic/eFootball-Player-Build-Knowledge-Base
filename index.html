@@ -39,7 +39,6 @@
   <a href="#skills" class="tabs__link" role="tab" data-tab-link="skills">Skills</a>
   <a href="#managers" class="tabs__link" role="tab" data-tab-link="managers">Managers</a>
   <a href="#styles" class="tabs__link" role="tab" data-tab-link="styles">Playing Styles</a>
-  <a href="#sandbox" class="tabs__link" role="tab" data-tab-link="sandbox">Sandbox</a>
 </nav>
 
 <!-- ============ MY SQUAD ============ -->
@@ -470,88 +469,6 @@
   </div>
 </section>
 
-<!-- ============ SANDBOX (original free-form builder) ============ -->
-<section class="tab-panel" data-tab="sandbox" aria-label="Sandbox">
-<main class="layout">
-
-  <section class="panel" aria-labelledby="builder-heading">
-    <div class="panel__head">
-      <h2 id="builder-heading">01 — BUILD</h2>
-      <button type="button" id="randomizeBtn" class="btn btn--ghost">Randomize</button>
-    </div>
-
-    <form id="buildForm" autocomplete="off">
-
-      <div class="field-row">
-        <label class="field">
-          <span class="field__label">Build name</span>
-          <input type="text" id="buildName" placeholder="e.g. Bergkamp-esque SS" maxlength="40" required>
-        </label>
-
-        <label class="field field--tight">
-          <span class="field__label">Position</span>
-          <select id="position"></select>
-        </label>
-      </div>
-
-      <label class="field">
-        <span class="field__label">Playing style</span>
-        <select id="playstyle"></select>
-      </label>
-
-      <div class="group" id="statGroups"></div>
-
-      <fieldset class="group group--skills">
-        <legend class="group__title">Skills <span class="group__hint">— pick up to <span id="skillCap">6</span></span></legend>
-        <div class="chips" id="skillChips"></div>
-      </fieldset>
-
-      <div class="submit-row">
-        <div class="overall-preview">
-          <span class="overall-preview__num" id="livePreviewOverall">—</span>
-          <span class="overall-preview__label">OVR</span>
-        </div>
-        <button type="submit" class="btn btn--primary">Save build</button>
-      </div>
-    </form>
-  </section>
-
-  <section class="panel panel--card" aria-labelledby="card-heading">
-    <div class="panel__head">
-      <h2 id="card-heading">02 — CARD</h2>
-    </div>
-    <div class="card-stage">
-      <article class="player-card" id="playerCard" data-tier="bronze">
-        <div class="player-card__sheen" aria-hidden="true"></div>
-        <div class="player-card__top">
-          <div class="player-card__ovr" id="cardOvr">60</div>
-          <div class="player-card__pos" id="cardPos">CF</div>
-        </div>
-        <h3 class="player-card__name" id="cardName">New build</h3>
-        <p class="player-card__style" id="cardStyle">—</p>
-        <div class="radar" id="radar"></div>
-        <div class="player-card__skills" id="cardSkills"></div>
-      </article>
-    </div>
-  </section>
-
-  <section class="panel panel--wide" aria-labelledby="saved-heading">
-    <div class="panel__head">
-      <h2 id="saved-heading">03 — SAVED BUILDS</h2>
-      <div class="panel__actions">
-        <button type="button" id="importBtn" class="btn btn--ghost">Import</button>
-        <input type="file" id="importFile" accept="application/json" hidden>
-        <button type="button" id="clearAllBtn" class="btn btn--ghost btn--danger">Clear all</button>
-      </div>
-    </div>
-    <div class="saved-grid" id="savedGrid">
-      <p class="empty-state" id="emptyState">No builds saved yet — configure one above and hit <em>Save build</em>.</p>
-    </div>
-  </section>
-
-</main>
-</section>
-
 <dialog class="auth-dialog" id="authDialog" aria-labelledby="authTitle">
   <form method="dialog" class="auth-dialog__close"><button type="submit" class="btn btn--icon" aria-label="Close">✕</button></form>
   <h2 id="authTitle">SIGN IN</h2>
@@ -599,7 +516,6 @@
 <script src="data/ovr.js"></script>
 <script src="recommend.js"></script>
 <script src="lab.js"></script>
-<script src="app.js"></script>
 <script type="module" src="cloud.js"></script>
 </body>
 </html>

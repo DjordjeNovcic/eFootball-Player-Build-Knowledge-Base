@@ -53,7 +53,6 @@ Two parts:
     the differences, skills), with Replace player / Open in Trainer / Use AI build.
   - **Skills**, **Managers**, **Playing Styles** — the knowledge base as searchable
     views, cross-linked to which of my cards have each skill/style/Link-up role.
-  - **Sandbox** — the original free-form stat-slider card builder (`app.js`).
 
 **Accounts & cloud sync:** *Sign in* (Google, or email + password with sign-up and
 password reset) gives every person their own squad — cards, managers, builds, lineups —
