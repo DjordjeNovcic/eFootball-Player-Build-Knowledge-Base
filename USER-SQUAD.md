@@ -87,8 +87,6 @@ They may represent cards added later, older variants, or cards that were not par
 | Player | Exact eFHUB ID | Note |
 |---|---:|---|
 | Gianluigi Buffon | `88040387118039` | Explicitly confirmed and used as the squad GK. |
-| Alessandro Nesta | `88045755942057` | Explicit user-confirmed mapping. |
-| Fabio Cannavaro | `88045755964133` | Explicit user-confirmed mapping. |
 | Jurriën Timber | `106769665885243` | Explicit user-confirmed mapping. |
 | Luka Modrić | `106788187833650` | Explicit user-confirmed mapping. |
 | Jude Bellingham | `56166629640005` | Older exact card URL previously supplied; do not confuse with `89138556700485`. |
