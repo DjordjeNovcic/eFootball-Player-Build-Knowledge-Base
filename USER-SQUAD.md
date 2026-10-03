@@ -132,6 +132,50 @@ Recent saved context (Sep 2026):
 - Fluid Formation and sub-tactics have been tested. Do not assume an older static XI is the
   current one if a new formation screenshot is supplied.
 
+## Match plan — agreed 3 Oct 2026
+
+A recommendation the user accepted, not a screenshot of the in-game setup. Builds are the
+Build Lab "Recommended by AI" builds for these exact cards at Deschamps / Long Ball Counter.
+Fluid Formation and sub-tactic advice is based on community guides, not measured, so
+re-check it against results.
+
+- **Manager / style:** D. Deschamps, **Long Ball Counter** (89).
+- **Fluid Formation ON:** attack **4-2-2-2**, defence **4-4-2** (the two AMFs drop to
+  LMF/RMF). Don't send both full-backs high in the attacking shape.
+- **Sub-tactic:** **Possession Game** (Deschamps 89) — switch to it against Long Ball
+  Counter or deep-block opponents (Possession beats LBC; LBC beats Quick Counter).
+- **Link-up active:** Breakthrough Pass A — Ronaldinho (Creative Playmaker, AMF) →
+  Eto'o (Goal Poacher, CF).
+
+| Pos | Player | eFHUB ID | Build (Sh-Pa-Dr-Dx-LB-Ae-De[-GK1-GK2-GK3]) | Slot-2 booster |
+|---|---|---:|---|---|
+| GK | Buffon | `88040387118039` | 0-0-0-0-0-1-0-8-11-12 | Saving +1 |
+| LB | Maldini | `88041460993474` | 0-0-0-14-8-6-8 | Agility +1 |
+| CB | Varane | `88039850289220` | 0-0-0-12-7-8-10 | Defending +1 |
+| CB | Desailly | `89138288270047` | 0-1-0-8-5-9-10 | Aerial Block +1 |
+| RB | Thuram | `88039581948640` | 0-2-0-9-9-8-12 | Aerial Block +1 |
+| DMF | Vieira | `88044145348029` | 0-0-0-12-8-4-12 | Agility +1 |
+| DMF | Seedorf | `88041460859805` | 0-0-8-9-12-2-9 | Fantasista +1 |
+| AMF | Ronaldinho | `89138288266704` | 6-6-6-10-11-1-0 | Breakthrough +1 |
+| AMF | Hazard | `89137214427270` | 8-4-6-9-11-4-0 | Striker's Instinct +1 |
+| CF | Eto'o | `88040387118554` | 8-5-9-8-9-2-0 | Fantasista +1 |
+| CF | Ibrahimović (Willpower card) | `89136140651034` | 5-0-8-10-8-10-0 | Agility +1 |
+
+**Individual instructions:** Counter Target — Eto'o; Defensive — Vieira; Tight Marking —
+Desailly on the opponent's most dangerous striker (per match).
+
+**Bench (12):** Stam, Baresi, Cafu, Zanetti, Makélélé, Pirlo, Bellingham
+(`89138556700485`), Messi SS (`89138556575063`), Kaká (native Super-sub), Gullit, Neymar,
+Shevchenko. No second goalkeeper is owned yet.
+
+**Substitution plan:** ~60' Kaká for a tired Ronaldinho/Hazard; chasing — Messi SS for
+Ibrahimović (Deep-Lying Forward + Goal Poacher pairing, KNOWLEDGE-BASE §18), later
+Shevchenko for Eto'o; protecting a lead — Makélélé for Seedorf (Defensive), Stam for a
+tired CB.
+
+**Alternative to test:** Capello, Long Ball Counter, 4-2-1-3 with Pirlo + Vieira at DMF —
+Over-the-Top Pass A link-up Pirlo (Orchestrator, DMF) → Eto'o (Goal Poacher, CF).
+
 ---
 
 # 4. Dated Build Snapshots
