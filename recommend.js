@@ -431,13 +431,17 @@ window.Recommender = (deps) => {
       if (out.length >= 5 || out.includes(n) || has(n)) return;
       out.push(n);
       why[n] = "Your choice for this card."
-        + (n === "Through Passing" && f.lowPass < 82 ? ` Low Pass is ${f.lowPass}, below the 82 it needs (§3).` : "")
+        + (n === "Through Passing" && f.lowPass < 82 ? ` Low Pass ${f.lowPass} — the skill's ~+20% on through balls lifts it to ≈${Math.round(f.lowPass * 1.2)} (§19).` : "")
         + (n === "Double Touch" && p.height >= 188 ? " Less valuable on a tall target man (§8)." : "")
         + (n === "Heel Trick" ? " No measured effect yet (§19)." : "");
     });
     // A set-piece specialist: Knuckle Shot is usable at free kicks (§19).
     const setPiece = f.setPieceTaking >= 88;
     const setPieceWhy = `Set-piece taker (Set Piece Taking ${f.setPieceTaking}) — knuckleball free kicks and long shots (§19).`;
+    // §9 / §19 (user decision): Through Passing adds ~20% to both passing stats on low AND
+    // lofted through balls — the long ball in behind that Long Ball Counter lives on — and
+    // it lifts a weak passer the most. Low Lofted Pass doesn't fire on lofted through balls.
+    const tpWhy = `Through balls are Long Ball Counter's main weapon: ~+20% to Low Pass ${f.lowPass} and Lofted Pass ${f.loftedPass} on low and lofted through balls (≈${Math.round(f.lowPass * 1.2)} / ${Math.round(f.loftedPass * 1.2)}) (§19).`;
     const aerialWhy = `${p.height} cm with ${f.heading} Heading — wins more aerial duels on long balls and flick-ons; headers won through it aren't more accurate (§19).`;
     const dtPackage = () => {
       // Double Touch + Flip Flap + Sole Control ball roll (§8) — only for smaller technical players.
@@ -458,12 +462,14 @@ window.Recommender = (deps) => {
       if (tall) push("Aerial Superiority", `${p.height} cm — wins more aerial duels at similar jump height.`);
       push("Man Marking", "Tight marking on the striker.");
       push("Sliding Tackle", "Better sliding tackles as a last resort.");
-      push("Low Lofted Pass", "Faster, more accurate lofted distribution (§9 CB).");
+      push("Through Passing", tpWhy);
+      push("Low Lofted Pass", "Faster, more accurate lofted distribution — not on lofted through balls (§19).");
       if (key === "buildUp") { push("One-touch Pass", "Build Up CB — safer first-time distribution (§9 CB)."); push("Low Lofted Pass", "Faster, more accurate lofted distribution (§9 CB)."); }
       push("One-touch Pass", "Distribution once defensive coverage is complete (§9 CB).");
       push("Weighted Pass", "Long Ball Counter distribution (§9 CB).");
     } else if (["LB", "RB"].includes(pos)) {
       push("Interception", "Reads passes into the channel.");
+      push("Through Passing", tpWhy);
       if (key === "offensiveFullBack") { push("Pinpoint Crossing", "+10% passing stats on crosses — Offensive Wingback identity (§19)."); push("One-touch Pass", "Quick combinations on the overlap."); }
       push("Blocker", "Blocks crosses and shots.");
       push("Man Marking", "Tight marking on the winger.");
@@ -478,11 +484,12 @@ window.Recommender = (deps) => {
         push("Blocker", "Screens shots in front of the CBs (§9 midfielder).");
         push("Man Marking", "Tracks the opposing AMF.");
         if (tall) push("Aerial Superiority", `${p.height} cm defensive midfielder — wins second-ball headers.`);
+        push("Through Passing", tpWhy);
         push("One-touch Pass", "Safe quick release after winning the ball (§9 midfielder).");
         push("Weighted Pass", "Long Ball Counter outlet pass (§9 midfielder).");
       } else {
+        push("Through Passing", tpWhy);
         push("One-touch Pass", "Tempo passing (§9 midfielder).");
-        if (!has("Through Passing")) push("Through Passing", "+20% passing stats on through balls — key for Long Ball Counter.");
         push("Weighted Pass", "Accurate lofted balls forward (§9 midfielder).");
         push("Interception", "Adds defensive value to the midfield (§9 midfielder).");
         push("Blocker", "Screens shots (§9 midfielder).");
@@ -502,9 +509,8 @@ window.Recommender = (deps) => {
         push("Heading", "More downward, accurate headers (§19).");
         push("Aerial Superiority", aerialWhy);
       }
+      push("Through Passing", tpWhy);
       push("One-touch Pass", "Quick combinations (§9 attacking).");
-      if (["creativePlaymaker", "classicNo10", "deepLyingForward"].includes(key)) push("Through Passing", "Creator — +20% passing stats on through balls (§19).");
-      if (striker && f.lowPass >= 78) push("Through Passing", `Long Ball Counter lay-offs and through balls — +20% passing stats (§19); Low Pass ${f.lowPass}${f.lowPass < 82 ? ", a bit under the 82 it wants (§3)" : ""}.`);
       if (["prolificWinger", "roamingFlank", "holePlayer", "creativePlaymaker", "dummyRunner"].includes(key) || (key === "goalPoacher" && p.height <= 182))
         push("Cut Behind & Turn", "Beats a tight marker 1v1 and spins in behind (§8).");
       if (key === "crossSpecialist") push("Pinpoint Crossing", "+10% passing stats on crosses.");
@@ -523,9 +529,7 @@ window.Recommender = (deps) => {
     // skills that fit the role and the player model, never avoid-listed ones.
     const pressing = /frontlinepressure/.test(norm(p.playingStyleDefensive));
     const sec = pos === "CB" ? "§9 CB" : ["DMF", "CMF"].includes(pos) ? "§9 midfielder" : "§9";
-    // §3: Through Passing wants Low Pass 82 (78 tolerated); a pure striker's lofted
-    // passing rarely justifies Weighted Pass.
-    const tpOk = f.lowPass >= 78;
+    // A pure striker's lofted passing rarely justifies Weighted Pass.
     const wpOk = f.loftedPass >= 78 || !["goalPoacher", "foxInTheBox", "targetMan", "dummyRunner"].includes(key);
     const FALLBACK = pos === "GK" ? [["Low Lofted Pass", "Faster, more accurate long distribution."], ["Weighted Pass", "Accurate lofted outlets."], ["Fighting Spirit", "Accuracy under pressure."]]
       : ["CB", "LB", "RB", "DMF", "CMF"].includes(pos)
@@ -547,7 +551,7 @@ window.Recommender = (deps) => {
           ...(p.height >= 185 && f.heading >= 80 ? [["Heading", "More downward, accurate headers (§19)."], ["Aerial Superiority", aerialWhy]] : []),
           ["Dipping Shot", "Stunning shot that dips — the biggest scoring gain of the three stunning-shot skills (§19)."],
           ...(wpOk ? [["Weighted Pass", "Lofted through balls for runners (§9 attacking)."]] : []),
-          ...(tpOk ? [["Through Passing", "+20% passing stats on through balls (§19)."]] : []),
+          ["Through Passing", tpWhy],
           ["Knuckle Shot", "Knuckleball long shot, usable at free kicks (§19)."]];
     // §20: Low Screamer stops a sub-50% Stunning Shot from becoming a Dipping Shot.
     FALLBACK.filter(([n]) => !(n === "Dipping Shot" && has("Low Screamer"))).forEach(([n, why]) => push(n, why));
@@ -559,9 +563,9 @@ window.Recommender = (deps) => {
     const tallOnly = (n) => (n === "Aerial Superiority" && p.height < 185 ? [] : [n]);
     const LAST = (pos === "GK"
       ? ["Outside Curler", "Acrobatic Clearance", "Pinpoint Crossing", "Through Passing"]
-      : pos === "CB" ? ["Acrobatic Clearance", "Heading", "Aerial Superiority", ...(tpOk ? ["Through Passing"] : []), "Track Back", "Sole Control", "Gamesmanship"]
-        : ["LB", "RB"].includes(pos) ? ["Acrobatic Clearance", "Pinpoint Crossing", ...(tpOk ? ["Through Passing"] : []), "Double Touch", "Heading", "Aerial Superiority", "Track Back", "Sole Control", "Gamesmanship"]
-          : ["DMF", "CMF"].includes(pos) ? [...(tpOk ? ["Through Passing"] : []), "Long-range Shooting", "Acrobatic Clearance", "Pinpoint Crossing", "Heading", "Aerial Superiority", "Track Back", "Sole Control", "Gamesmanship"]
+      : pos === "CB" ? ["Acrobatic Clearance", "Heading", "Aerial Superiority", "Through Passing", "Track Back", "Sole Control", "Gamesmanship"]
+        : ["LB", "RB"].includes(pos) ? ["Acrobatic Clearance", "Pinpoint Crossing", "Through Passing", "Double Touch", "Heading", "Aerial Superiority", "Track Back", "Sole Control", "Gamesmanship"]
+          : ["DMF", "CMF"].includes(pos) ? ["Through Passing", "Long-range Shooting", "Acrobatic Clearance", "Pinpoint Crossing", "Heading", "Aerial Superiority", "Track Back", "Sole Control", "Gamesmanship"]
             // A big back-to-goal forward doesn't spin past markers (§8 Cut Behind & Turn, §5):
             // aerial and shooting skills first, and Sole Control for turning away (§19).
             : p.height >= 185 && ["foxInTheBox", "targetMan"].includes(key) ? ["Heading", "Aerial Superiority", "Long-range Curler", "Sole Control", "Marseille Turn", "Cut Behind & Turn", "Scissors Feint", "Chop Turn", "Flip Flap", "Gamesmanship", "Track Back", "Pinpoint Crossing"]

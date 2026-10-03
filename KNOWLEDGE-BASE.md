@@ -959,6 +959,16 @@ Do not force unnecessary attacking skills. In particular, Sole Control needs a r
 
 ---
 
+## Through Passing — a priority addition for every outfield player (user decision, 3 Oct 2026)
+
+Through Passing adds roughly **+20% to both passing stats on low *and lofted* through
+balls** (section 19) — the ball in behind that the user's Long Ball Counter is built on.
+It lifts a weak passer the most (a CB with Low Pass 72 plays through balls at ≈86), so it
+is not reserved for creators or for Low Pass 82+ (section 3's 82 is where a Through
+Passing holder's raw passing is already functional, not a gate for the skill). Low Lofted
+Pass does **not** fire on lofted through balls, so Through Passing comes first among
+distribution skills, including for centre-backs once their defensive coverage is complete.
+
 ## Additional Skill slot limit
 
 A player can have a maximum of **5 Additional Skills** added via the Skill Training
