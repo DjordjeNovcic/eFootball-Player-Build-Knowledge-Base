@@ -1183,6 +1183,9 @@
         store.seededPlans.push(u.id);
         added = true;
         if (!seeded) return; // a fresh copy already has it
+        // A whole new bench / substitution plan (starters stay off the bench).
+        if (u.bench) seeded.bench = u.bench.filter((id) => byId[id] && !seeded.xi.includes(id)).slice(0, BENCH_MAX);
+        if (u.subs) seeded.subs = u.subs.map((s) => ({ ...s }));
         Object.entries(u.replace || {}).forEach(([from, to]) => {
           if (!byId[to] || seeded.xi.includes(to)) return;
           const i = seeded.xi.indexOf(from);

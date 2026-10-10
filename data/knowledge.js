@@ -340,6 +340,17 @@ window.KB = (() => {
       fluid: true, defFormation: "4-4-2",
       updates: [
         { id: "2026-10-10-bench-dembele", replace: { "88045755964138": "106773692395554" } }, // bench: Shevchenko → Dembélé
+        // 11 Oct: Puskás (Deep-Lying Forward, Plan B), Bale and Calafiori in; Kaká, Neymar,
+        // Ronaldinho out — bench and substitutions set as a whole.
+        { id: "2026-10-11-bench-planb", bench: ["88044145348029", "88045755964131", "88044145348045", "88033139494357", // Vieira, Stam, Cafu, Zanetti
+          "88039581945312", "88040387121974", "89138556700485", "88039045074410", // Pirlo, Sneijder, Bellingham, Gullit
+          "106773692395554", "88040387120260", "88045755861672", "106788993239598"],
+          subs: [
+          { minute: 60, out: "89137214427270", in: "89138556700485", note: "Hole Player stays active, LMF high in defence — or Sneijder for a tired Messi (keeps the Link-up)" },
+          { minute: 65, out: "89136140651034", in: "88040387120260", note: "Plan B: Possession sub-tactic + Deep-Lying Forward next to Eto'o (Gullit instead when you need headers)" },
+          { minute: 72, out: "88040387118554", in: "106773692395554", note: "Fresh pace in behind — Goal Poacher CF, the Link-up stays on" },
+          { minute: 75, out: "88041460859805", in: "88044145348029", note: "If leading: Anchor Man + Defensive instruction" },
+        ] },
       ],
       defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
         ["DMF", 36, 41], ["DMF", 64, 41], ["LMF", 12, 55], ["RMF", 88, 55], ["CF", 37, 84], ["CF", 63, 84]],
@@ -349,11 +360,11 @@ window.KB = (() => {
         "89137214427270", "89136409091415", // AMF Hazard (left), Messi — Creative Playmaker card (right)
         "89136140651034", "88040387118554"], // CF Ibrahimović (Willpower card), Eto'o
       bench: ["88044145348029", "88045755964131", "88044145348045", "88033139494357", // Vieira, Stam, Cafu, Zanetti
-        "88039581945312", "88040387121974", "89138288266704", "88044145217198", // Pirlo, Sneijder, Ronaldinho, Kaká
-        "89138556700485", "88039045074410", "89133993205152", "106773692395554"], // Bellingham, Gullit, Neymar, Dembélé
+        "88039581945312", "88040387121974", "89138556700485", "88039045074410", // Pirlo, Sneijder, Bellingham, Gullit
+        "106773692395554", "88040387120260", "88045755861672", "106788993239598"], // Dembélé, Puskás, Bale, Calafiori
       subs: [
-        { minute: 60, out: "89137214427270", in: "88044145217198", note: "Super-sub — or Sneijder for a tired Messi (keeps the Link-up)" },
-        { minute: 68, out: "89136140651034", in: "88039045074410", note: "If chasing: fresh aerial target, Bullet Header" },
+        { minute: 60, out: "89137214427270", in: "89138556700485", note: "Hole Player stays active, LMF high in defence — or Sneijder for a tired Messi (keeps the Link-up)" },
+        { minute: 65, out: "89136140651034", in: "88040387120260", note: "Plan B: Possession sub-tactic + Deep-Lying Forward next to Eto'o (Gullit instead when you need headers)" },
         { minute: 72, out: "88040387118554", in: "106773692395554", note: "Fresh pace in behind — Goal Poacher CF, the Link-up stays on" },
         { minute: 75, out: "88041460859805", in: "88044145348029", note: "If leading: Anchor Man + Defensive instruction" },
       ],
@@ -361,6 +372,7 @@ window.KB = (() => {
         + "Link-up: Breakthrough Pass A — Messi (Creative Playmaker AMF) → Eto'o (Goal Poacher CF).\n"
         + "Sub-tactic: Possession (Deschamps 89) vs Long Ball Counter / deep blocks — Pirlo for Makélélé.\n"
         + "Stam only for Desailly (Destroyer for Destroyer), never next to him.\n"
+        + "Plan B (it isn't working): Possession sub-tactic, Puskás for Ibrahimović, Pirlo for Makélélé.\n"
         + "Full game plan: Game Plan tab." },
   ];
 
@@ -377,6 +389,7 @@ window.KB = (() => {
       { text: "Messi (Creative Playmaker card) in for Sneijder at right AMF — Speed 100 vs 89, Momentum Dribbling and Blitz Curler, left foot cutting in from the right, and still the Link-up's Center Piece (Creative Playmaker, AMF).", basis: "reasoning" },
       { text: "Makélélé in for Vieira at DMF — the best DMF in the squad (Speed 96, Defensive Awareness 96, Tackling 98, Stamina 99; DMF rating 106 vs 104) and he gets the Defensive instruction. Vieira is the first sub to protect a lead.", basis: "reasoning" },
       { text: "Messi's other card (Deep-Lying Forward SS) can't sit on the same team sheet, so Sneijder takes his bench place and covers right AMF without losing the Link-up.", basis: "reasoning" },
+      { text: "Bench (11 Oct): Puskás in as the Deep-Lying Forward for Plan B, Bellingham is the first attacking sub (AMF 105, LMF high) instead of Kaká, Bale is the late Attack Outlet, Calafiori covers left-back. Kaká, Neymar and Ronaldinho drop out — none has a slot this shape uses better.", basis: "reasoning" },
     ],
     instructions: [
       { who: "Eto'o", what: "Counter Target", why: "stays on the last defender for the ball in behind (Speed 100)." },
@@ -414,9 +427,17 @@ window.KB = (() => {
       { id: "manage", title: "Game management", items: [
         { head: "0–15′ · read them", text: "Find their team playstyle and set the answer in the Lineup tab's Match helper (Possession beats Long Ball Counter, Long Ball Counter beats Quick Counter, Quick Counter beats Possession).", basis: "guides" },
         { head: "Leading at half-time", text: "Stay on Long Ball Counter. Thuram's Fortress improves his defending in the second half while you're ahead.", basis: "official" },
-        { head: "~60′ · fresh legs", text: "Kaká (native Super-sub: +5% Finishing, +1% Speed/Acceleration) for Hazard. A tired Messi → Sneijder, so the Link-up stays on.", basis: "measured" },
+        { head: "~60′ · fresh legs", text: "Bellingham for Hazard — Hole Player stays active at AMF and he's high at LMF in the defence shape (Kaká is only intermediate there). A tired Messi → Sneijder, so the Link-up stays on.", basis: "reasoning" },
         { head: "Chasing · from ~65′", text: "Gullit for Ibrahimović (fresh aerial target, Bullet Header), Dembélé for Eto'o (Goal Poacher, Speed 100 / Acceleration 98 against tired legs — Link-up stays on). Against a deep block switch to Possession with Pirlo for Makélélé.", basis: "reasoning" },
         { head: "Protecting · from ~75′", text: "Vieira for Seedorf with the Defensive instruction — two holding midfielders. A tired Desailly → Stam (Destroyer for Destroyer); never Stam next to Desailly.", basis: "reasoning" },
+        { head: "Late lead · outlet", text: "Bale for a tired striker: his Attack Outlet style barely tracks back and stays high, ready for the counter — Speed 96 and Low Screamer on the break.", basis: "official" },
+      ] },
+      { id: "planb", title: "Plan B — when it isn't working", items: [
+        { head: "When", text: "They sit deep and compact, your long balls get cleared, and by ~55′ you've had few real chances — Long Ball Counter is feeding their block.", basis: "reasoning" },
+        { head: "Switch to Possession", text: "Sub-tactic Possession (Deschamps 89) — Possession beats Long Ball Counter and deep blocks.", basis: "guides" },
+        { head: "Puskás for Ibrahimović", text: "Deep-Lying Forward drops between the lines, receives, combines and attacks again, while Eto'o runs at the line — the DLF + Goal Poacher pair. Puskás shoots too: Finishing 95, Blitz Curler and Low Screamer.", basis: "official" },
+        { head: "Pirlo for Makélélé", text: "Orchestrator at DMF drops deep for the ball and organises the build-up; Seedorf does the running next to him.", basis: "official" },
+        { head: "How to play it", text: "Circulate, draw them out, and only play the through ball when Eto'o's run is on. Keep one full-back home — their counter is all they have left.", basis: "reasoning" },
       ] },
       { id: "donts", title: "Don'ts", items: [
         { head: "No Messi or Ronaldinho on the left", text: "Both are wrong-footed there (Ronaldinho's weak foot 1/2) — and only one Messi fits on the team sheet.", basis: "reasoning" },

@@ -218,14 +218,23 @@ Lab's **Game Plan** tab shows it with live builds; the general template is
 
 **Instructions:** Counter Target — Eto'o; Defensive — Makélélé; Tight Marking — Desailly.
 
-**Bench (12):** Vieira, Stam, Cafu, Zanetti, Pirlo, Sneijder, Ronaldinho, Kaká,
-Bellingham (`89138556700485`), Gullit, Neymar, Dembélé (`106773692395554`) — replaced
-Shevchenko on 10 Oct (user: too few useful skills).
+**Bench (12, updated 11 Oct):** Vieira, Stam, Cafu, Zanetti, Pirlo, Sneijder, Bellingham
+(`89138556700485`), Gullit, Dembélé (`106773692395554`), Puskás (`88040387120260`),
+Bale (`88045755861672`), Calafiori (`106788993239598`). Dembélé replaced Shevchenko on
+10 Oct (user: too few useful skills). On 11 Oct Kaká, Neymar and Ronaldinho dropped out:
+Bellingham does Kaká's job better in this shape (AMF 105 vs 104, high at LMF vs
+intermediate), Neymar has no slot here, Sneijder covers right AMF.
 
-**Substitutions:** ~60' Kaká (Super-sub) for Hazard, or Sneijder for a tired Messi;
+**Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
 the Link-up; Speed 100 / Acceleration 98, Acceleration Burst, Phenomenal Finishing), Possession sub-tactic with Pirlo for Makélélé against a deep block;
 protecting — Vieira for Seedorf (~75'), Stam only for Desailly (Destroyer for Destroyer).
+
+**Plan B — when Long Ball Counter isn't working** (they sit deep, long balls get cleared,
+few chances by ~55'): Possession sub-tactic (Deschamps 89), Puskás (Deep-Lying Forward,
+CF 105) for Ibrahimović next to Eto'o — the DLF + Goal Poacher pair — and Pirlo
+(Orchestrator) for Makélélé. Late with a lead: Bale (Attack Outlet) up front as the
+counter outlet.
 
 **Set pieces:** penalties Hazard (Finishing 94); free kicks Hazard (left) / Messi (right);
 corners Hazard; aerial targets Ibrahimović, Desailly, Varane.
