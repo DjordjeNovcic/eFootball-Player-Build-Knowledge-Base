@@ -1660,5 +1660,21 @@ window.EF_MANAGERS = [
   "photo": "https://amine250.github.io/efootball-managers/data/photos/nophoto.png",
   "released": null,
   "linkUps": []
+ },
+ {
+  "id": "17610171323785",
+  "name": "Cristian Chivu",
+  "boost": [
+   "lowPass",
+   "loftedPass"
+  ],
+  "prof": [
+   51,
+   55,
+   70,
+   90,
+   90,
+   56
+  ]
  }
 ];

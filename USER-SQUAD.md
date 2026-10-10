@@ -90,6 +90,8 @@ They may represent cards added later, older variants, or cards that were not par
 | Jurriën Timber | `106769665885243` | Explicit user-confirmed mapping. |
 | Luka Modrić | `106788187833650` | Explicit user-confirmed mapping. |
 | Jude Bellingham | `56166629640005` | Older exact card URL previously supplied; do not confuse with `89138556700485`. |
+| Gareth Bale | `88045755861672` | Added via tools/fetch_players.py --add (10 Oct 2026). |
+| Riccardo Calafiori | `106788993239598` | Added via tools/fetch_players.py --add (10 Oct 2026). |
 
 ---
 
