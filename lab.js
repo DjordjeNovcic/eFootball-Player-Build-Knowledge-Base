@@ -1236,6 +1236,10 @@
   function slotRating(p, pos, l) {
     return compute(p, lineupBuild(p), l.manager, l.tactic).ratings[pos];
   }
+  // What the lineup shows (user decision, 11 Oct 2026): the build's rating — at the card's
+  // main position, as in the Trainer — wherever the player stands. The picker still ranks
+  // candidates by their rating at the slot.
+  const buildRating = (p, l) => slotRating(p, p.position, l);
 
   function placePlayer(l, id) {
     const { area, i } = lu.sel;
@@ -1344,12 +1348,13 @@
           return `<button type="button" class="slot slot--empty ${sel ? "is-selected" : ""}" style="left:${x}%;bottom:${slotBottom(y)}" data-slot="${i}" aria-label="Pick ${pos}">
             <span class="slot__ovr">+</span><span class="slot__pos">${pos}</span></button>`;
         }
-        const r = slotRating(p, pos, l);
+        const r = buildRating(p, l);
+        const atSlot = slotRating(p, pos, l);
         ratings.push(r);
         const prof = proficiency(p, pos);
         const bad = styleFit(p, pos).some((f) => !f.ok);
         return `<button type="button" class="slot slot--${prof} ${sel ? "is-selected" : ""} ${bad ? "slot--style" : ""}" style="left:${x}%;bottom:${slotBottom(y)}" data-slot="${i}"
-            title="${esc(p.name)} — ${pos} ${r} (${buildTag(p)})">
+            title="${esc(p.name)} — ${p.position} ${r} (${buildTag(p)})${atSlot !== r ? ` · at ${pos}: ${atSlot}` : ""}">
           ${cardImg(p, "slot__img")}
           <span class="slot__ovr">${r}${store.builds[p.id] ? "<sup>★</sup>" : ""}</span>
           <span class="slot__name">${esc(shortName(p))}</span>
@@ -1380,7 +1385,7 @@
     const links = linkUpStatus(l);
     $("#luSummary").innerHTML = `
       <div class="lu-kpis">
-        <div><b>${avg}</b><span>avg XI rating${l.fluid ? (inDefence(l) ? " · defence" : " · attack") : ""}</span></div>
+        <div><b>${avg}</b><span>avg XI rating</span></div>
         <div><b>${ratings.length}/11</b><span>starters</span></div>
         <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${esc(l.tactic)} proficiency${prof != null ? ` · +${((skillMultiplier(prof) - 1) * 100).toFixed(1)}%` : ""}</span></div>
       </div>
@@ -1410,7 +1415,7 @@
   // and at the manager's own best one, plus which Link-up plays this XI switches on.
   function xiAverage(l, managerKey, tactic) {
     const slots = layoutOf(l);
-    const r = l.xi.map((id, i) => (byId[id] ? compute(byId[id], lineupBuild(byId[id]), managerKey, tactic).ratings[slots[i][0]] : null)).filter((x) => x != null);
+    const r = l.xi.map((id, i) => (byId[id] ? compute(byId[id], lineupBuild(byId[id]), managerKey, tactic).ratings[byId[id].position] : null)).filter((x) => x != null);
     return r.length ? r.reduce((a, b) => a + b, 0) / r.length : null;
   }
   function renderManagerFit(l) {
@@ -1574,13 +1579,13 @@
         return `<tr>
           <td class="pos-list">${esc(pos)}${dpos !== pos ? `<small> → ${esc(dpos)}</small>` : ""}</td>
           <td><a href="#train/${esc(id)}" data-open-player="${esc(id)}"><b>${esc(p.name)}</b></a>${store.builds[id] ? " ★" : ""}<br><small class="rec-muted">${styles}</small></td>
-          <td class="num hot">${c.ratings[pos] ?? "—"}</td>
+          <td class="num hot" title="${c.ratings[pos] !== c.ratings[p.position] ? `at ${esc(pos)}: ${c.ratings[pos]}` : ""}">${c.ratings[p.position] ?? "—"}</td>
           <td class="gp-lv">${lv}<br><small class="rec-muted">${b2 ? esc(b2.name) : "no slot-2 booster"}</small></td>
           <td class="gp-keys">${keys}</td>
           <td class="gp-skills">${skillsOf(id).map(esc).join(", ") || "—"}</td>
         </tr>`;
       }).join("");
-      const ratings = l.xi.map((id, i) => compute(byId[id], lineupBuild(byId[id]), l.manager, l.tactic).ratings[att[i][0]]);
+      const ratings = l.xi.map((id) => buildRating(byId[id], l));
       const avg = (ratings.reduce((a, x) => a + x, 0) / ratings.length).toFixed(1);
       const links = linkUpStatus(l);
       const prof = m?.prof[KB.TACTICS.indexOf(l.tactic)] ?? null;
@@ -1592,7 +1597,7 @@
             <p class="panel__meta">${own ? "your lineup copy" : "the plan"} · ★ your saved build, otherwise the AI build</p>
           </div>
           <div class="lu-kpis">
-            <div><b>${avg}</b><span>avg XI rating · attack</span></div>
+            <div><b>${avg}</b><span>avg XI rating</span></div>
             <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${esc(m?.name || "no manager")} · ${esc(l.tactic)}</span></div>
             <div><b class="${links.some((x) => x.cp.length && x.km.length) ? "is-hot" : ""}">${links.some((x) => x.cp.length && x.km.length) ? "ON" : "OFF"}</b><span>Link-up${links[0] ? ` · ${esc(links[0].link.name)}` : ""}</span></div>
           </div>
@@ -1915,7 +1920,7 @@
     const def = l.fluid ? defLayoutOf(l) : null;
     const text = [
       `${l.name} — ${l.fluid ? `Fluid: attack ${l.formation} / defence ${l.defFormation || DEFAULT_DEF_FORMATION}` : l.formation} · ${l.tactic}${l.manager ? ` · ${l.manager}` : ""}`,
-      ...l.xi.map((id, i) => `${(def ? `${slots[i][0]}/${def[i][0]}` : slots[i][0]).padEnd(def ? 9 : 4)} ${byId[id] ? `${byId[id].name} (${slotRating(byId[id], slots[i][0], l)})` : "—"}`),
+      ...l.xi.map((id, i) => `${(def ? `${slots[i][0]}/${def[i][0]}` : slots[i][0]).padEnd(def ? 9 : 4)} ${byId[id] ? `${byId[id].name} (${buildRating(byId[id], l)})` : "—"}`),
       `Bench: ${l.bench.map((id) => byId[id]?.name).filter(Boolean).join(", ") || "—"}`,
       ...l.subs.map((s) => `${s.minute ?? "?"}' ${byId[s.out]?.name || "?"} → ${byId[s.in]?.name || "?"}${s.note ? ` (${s.note})` : ""}`),
     ].join("\n");
