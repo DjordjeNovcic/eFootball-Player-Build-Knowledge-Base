@@ -178,6 +178,11 @@ directly reviewed here — treat as strong working knowledge, re-check after pat
 Practical rule: aim for ~90; above that stop at **96**, or go to **100+** only when it's
 cheap (boosters). Never train into 97–99.
 
+**Conflicting relay (11 Oct 2026, section 25):** a second repost of the same kind of test
+says 96 → 99 gives a very small but non-zero gain (still far less than 99 → 102) and that
+eFootball 2027 changed the speed thresholds again. Not confirmed either way — keep the
+rule above until a v6 test is available.
+
 ### Build targets actually used (user decision, 3 Oct 2026)
 
 The user judged builds sitting at the bottom of the ranges above (CB 88, winger 90)
@@ -2334,8 +2339,10 @@ this section through `data/knowledge.js`.
 | Long Ball | Direct balls to a focal striker, runners on second balls | Slightly deeper line | A strong target striker |
 | Overload (new in v6.0.0) | Players crowd the ball side for short options | Compact, quick pressure, higher line | Players who receive in tight space |
 
-**Match-up triangle (community consensus):** Quick Counter beats Possession, Possession
-beats Long Ball Counter, Long Ball Counter beats Quick Counter.
+**Match-up triangle (community rule of thumb — not tested):** Quick Counter beats
+Possession, Possession beats Long Ball Counter, Long Ball Counter beats Quick Counter.
+The 11 Oct 2026 web check (section 25) found no test or official source confirming it —
+use it as a starting guess and judge by how the match goes.
 
 **Answers to the other three are our reasoning, not a sourced match-up:**
 
@@ -2348,8 +2355,11 @@ beats Long Ball Counter, Long Ball Counter beats Quick Counter.
 
 **Individual instructions (from the same guides):** Defensive on an Anchor/Destroyer DMF
 or on full-backs that otherwise overlap; Counter Target on a striker who should stay high;
-Tight Marking on the opponent's most dangerous attacker; Deep Line only against
-through-ball spam (it gives space for long shots).
+Tight Marking on the opponent's most dangerous attacker. **v6.0.0 removed the Attacking
+and Deep Line instructions** (official patch notes). Two instructions per group:
+Defensive / Anchoring (offensive group); Counter Target / Tight Marking / Man Marking
+(defensive group), Man Marking only during a match (mejoress guide, pre-v6 — re-check in
+game).
 
 Sources: gamemarket.gg v6.0.0 Team Playstyle Guide; FIFPlay eFootball 2026 Team
 Playstyles; eFootball Edge "Rock, Paper, Scissors of Playstyles"; Skycoach Best eFootball
@@ -2420,9 +2430,91 @@ the target striker, in behind for the Goal Poacher, or into the AMFs between the
 
 - First 15 minutes: identify the opponent's playstyle and answer it (section 23 triangle;
   Build Lab Match helper). [guides]
+- v6.0.0 made Long Ball Counter's counters cost normal stamina (section 25) — first
+  attacking sub around 55–60'. [official]
 - ~60': Super-sub (+5% Finishing, +1% Speed/Acceleration) for a tired attacker. [tested]
 - Chasing: fresh target striker and a fresh Goal Poacher (keeps the Link-up); against a deep
   block switch to Possession with an Orchestrator. [reasoning]
 - Protecting: a second holding midfielder with the Defensive instruction; replace a
   Destroyer CB only with a Destroyer, never pair two. [reasoning]
+
+---
+
+# 25. Web research cross-check (11 Oct 2026)
+
+A web sweep of official KONAMI notes, skill databases and community guides. Reddit and the
+original Amadeusz videos couldn't be opened, so tests attributed to him are second-hand.
+Labels: **[official]**, **[skill DB]** = efootbase.com (fan database, numbers read like
+in-game help, source not stated), **[guide]** = community opinion.
+
+## v6.0.0 changes that matter for Long Ball Counter [official]
+
+Source: https://www.konami.com/efootball/en/page/v6/versioninfo_v6-00 (v6.0.0, Aug 2026).
+
+- Long Ball Counter used less Stamina than other playstyles on counters; the consumption
+  level was revised — its counters now cost normal stamina. Plan the first attacking sub
+  earlier (~55–60').
+- Attackers no longer sprint flat-out right after a regain; runners shake off their marker
+  before running in behind and avoid offside better; wide players run diagonally in behind.
+- Defenders tracking a runner no longer drop too far — through balls and crosses from deep
+  are easier to land with the right timing.
+- Match-up keeps the defender moving instead of pausing; the reaction speed of defenders you
+  don't control depends on Defensive Awareness; AI teammates press less early on a pass;
+  some tackle motions that won the ball too easily were reduced; position adjustment depends
+  on Defensive Engagement and the Interception skill.
+- The Attacking and Deep Line individual instructions were removed.
+- Fluid Formation: separate attacking and defensive formations in the Game Plan, also
+  settable inside the Sub-Tactic.
+- v5.2.0 (early 2026): through balls were weakened, Defensive Awareness affects a defender's
+  acceleration while marking, and Acceleration drops less as stamina falls.
+- v6.1.0 (~Oct 2026): no gameplay changes.
+
+## Link-up Play [official + guide]
+
+KONAMI: the Center Piece and Key Man "combine in special ways and receive a boost to their
+abilities at specific moments" — no magnitude published. Guides (gamingonphone, Jan 2026):
+Breakthrough Pass triggers when the Creative Playmaker AMF receives in the attacking half;
+the Goal Poacher then hunts space behind and through/chipped balls into him are more
+accurate. Re-check the activation indicator in both Fluid Formation shapes.
+
+## Formation meta [guide]
+
+No post-v6 source ranks formations with data. 4-2-2-2 stays in the top LBC group; 4-2-1-3
+is the most named alternative (efootballlab suggests it for Deschamps' Creative Playmaker
+AMF → Goal Poacher CF Link-up). Guides advise keeping the attack and defence shapes of
+Fluid Formation close, so transitions don't leave gaps.
+
+## Condition and form [official + guide]
+
+- Condition is set weekly from the Live Update Rating published the week before
+  (KONAMI news 5179, May 2026). [official]
+- Legend, Epic and Big Time cards are fixed at condition B; Form (Inconsistent / Standard /
+  Unwavering) matters for cards whose condition moves. [guide, gamingonphone Sep 2026]
+- No published stat value per arrow. Guides: arrows break ties, they don't rebuild the XI;
+  swap only like-for-like. [guide]
+
+## Skill values from the skill database [skill DB — unverified]
+
+Confirms section 19: Through Passing +20% Low and Lofted Pass on through balls; Super-sub
++5% Finishing, +1% Speed/Acceleration (subbed on at or after half-time); Willpower up to
++8 Finishing and +8 Kicking Power with shots, feet only — the "+1 per shot" step is not
+stated anywhere; Penalty Specialist +10 Finishing/Place Kicking (flat). New values:
+
+- Attacking Surge: ≈ +8% Acceleration and Attacking Awareness in the attacking half while a
+  teammate has the ball, on AI-controlled runs (second-hand Amadeusz: one of the strongest).
+- Fortress: +5% Defensive Awareness and Tackling when leading in the second half.
+- Magnetic Feet: +8 Dribbling, Tight Possession and Physical Contact while heavily marked.
+- Momentum Dribbling: +6 Dribbling, Tight Possession and Speed on the ball in the final third.
+- Game-changing Pass: +6/+6 passing when losing at half-time.
+
+No numbers found for Long-reach Tackle, Aerial Fort, Interception, Blocker, Man Marking,
+Captaincy, Fighting Spirit, Acceleration Burst, Low Screamer's speed gain, or for the
+Acceleration 88/91 and Offensive Awareness 90 thresholds.
+
+## Defending practice [guide]
+
+Position, contain, then tackle; Call for Pressure only in ~1 s bursts; don't press with a
+centre-back; Shoulder Charge only level with the dribbler; switch player before the pass
+arrives. Button mappings differ between guides — use the in-game Command List
+(footymeta Oct 2026, FIFPlay 2027 controls, gamemarket Sep 2026).
 

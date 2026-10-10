@@ -1524,7 +1524,6 @@
     const tackle = (x) => x.f.defensiveAwareness + x.f.ballWinning;
     const TIPS = {
       counterTarget: () => `Counter Target on ${nm(xi.filter(isFwd).sort((a, b) => b.f.speed + b.f.acceleration - a.f.speed - a.f.acceleration)[0]?.p, "your fastest striker")} — he stays high for the ball in behind.`,
-      deepLine: () => "Deep Line only if they keep playing through balls to quick forwards — it gives up space for long shots.",
       defensiveDMF: () => `Defensive on ${nm(pick(isMid, tackle), "your holding midfielder")} — he holds the zone in front of the CBs.`,
       defensiveFB: () => `Defensive on ${nm(pick(isFB, (x) => x.f.defensiveAwareness + x.f.speed), "one full-back")} — he stays home instead of overlapping.`,
       tightCreator: () => `Tight Marking: ${nm(pick(isMid, tackle), "a defensive midfielder")} on their AMF / main creator.`,
@@ -1535,7 +1534,7 @@
     };
     box.innerHTML = `
       <p class="match__line">${switchLine}</p>
-      <p class="rec-muted">${esc(mu.why)} ${mu.basis === "sourced" ? "(community match-up, §23)" : "(our reasoning, not a sourced match-up — §23)"}</p>
+      <p class="rec-muted">${esc(mu.why)} ${mu.basis === "sourced" ? "(community rule of thumb, not tested — §23)" : "(our reasoning, not a sourced match-up — §23)"}</p>
       <ul class="match__tips">${mu.tips.map((t) => `<li>${TIPS[t]()}</li>`).join("")}</ul>`;
   }
   $("#luOpponent").addEventListener("change", (e) => { activeLineup().opponent = e.target.value; saveLineup(); renderLineup(); });

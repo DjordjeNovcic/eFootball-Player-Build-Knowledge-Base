@@ -235,12 +235,13 @@ chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poac
 the Link-up; Speed 100 / Acceleration 98, Acceleration Burst, Phenomenal Finishing), Possession sub-tactic with Pirlo for Makélélé against a deep block;
 protecting — Vieira for Seedorf (~75'), Stam only for Desailly (Destroyer for Destroyer).
 
-**Form before the match (reasoning, not measured):** a starter on a bad arrow with his
-like-for-like sub on a good one → swap; both normal → keep the plan. Pairs: Eto'o ↔
-Dembélé / C. Ronaldo, Messi ↔ Sneijder (both keep the Link-up), Hazard ↔ Bellingham,
-Ibrahimović ↔ Gullit / Bale, Makélélé ↔ Vieira, Desailly ↔ Stam, Maldini / Thuram ↔
-Zanetti. Never two Destroyers, Messi on the left or a Link-up switched off for an arrow.
-Unsteady form on eFHUB: Bale, Dembélé, C. Ronaldo, Varane — check them every match.
+**Form before the match:** condition is set weekly from the Live Update Rating, and
+Legend / Epic / Big Time cards are fixed at B according to the guides (KNOWLEDGE-BASE §25) —
+nearly the whole squad. Arrows matter for current-season cards (e.g. Dembélé, Calafiori).
+Arrows break ties, they don't pick the XI: swap only like-for-like — Eto'o ↔ Dembélé /
+C. Ronaldo, Messi ↔ Sneijder (both keep the Link-up), Hazard ↔ Bellingham, Ibrahimović ↔
+Gullit / Bale, Makélélé ↔ Vieira, Desailly ↔ Stam, Maldini / Thuram ↔ Zanetti. Never two
+Destroyers, Messi on the left or a Link-up switched off for an arrow.
 
 **Plan B — when Long Ball Counter isn't working** (they sit deep, long balls get cleared,
 few chances by ~55'): Possession sub-tactic (Deschamps 89), Puskás (Deep-Lying Forward,
