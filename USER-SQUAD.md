@@ -295,6 +295,18 @@ snapshots**, not permanent locks. A newer screenshot always overrides them.
 
 ---
 
+## Gareth Bale (`88045755861672`) — 11 Oct 2026
+
+- Role: **CF — striker off the bench** (user decision; the card is RWF Prolific Winger /
+  Attack Outlet — at CF only Attack Outlet stays active).
+- Build (Deschamps, LBC): `8 - 1 - 5 - 12 - 12 - 1 - 0` (68/68), slot 2 fixed Kicking Power +6.
+  Speed 100, Acceleration 97, Balance 93, Finishing 91, OA 90, Ball Control 91, Dribbling 94,
+  Kicking Power 103, Physical Contact 89 — CF rating 108.
+- Additional skills: **Super-sub** (user already added), Through Passing, One-touch Pass,
+  Fighting Spirit, Chip Shot Control.
+
+---
+
 # 5. Additional-Skill Preference Rules Specific to This User
 
 These preferences came from repeated Build Lab discussions and should be applied alongside
