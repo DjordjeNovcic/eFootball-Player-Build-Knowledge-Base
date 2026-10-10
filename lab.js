@@ -1190,6 +1190,7 @@
         // A whole new bench / substitution plan (starters stay off the bench).
         if (u.bench) seeded.bench = u.bench.filter((id) => byId[id] && !seeded.xi.includes(id)).slice(0, BENCH_MAX);
         if (u.subs) seeded.subs = u.subs.map((s) => ({ ...s }));
+        if (u.defLayout) { seeded.defFormation = u.defFormation || seeded.defFormation; seeded.defLayout = u.defLayout.map((x) => [...x]); }
         // Add these to the bench if they're missing and there's room.
         (u.fill || []).forEach((id) => {
           if (!seeded.xi.includes(id) && !seeded.bench.includes(id) && seeded.bench.length < BENCH_MAX) seeded.bench.push(id);

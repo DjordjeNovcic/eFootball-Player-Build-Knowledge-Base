@@ -2402,8 +2402,9 @@ the target striker, in behind for the Goal Poacher, or into the AMFs between the
 
 ## Without the ball
 
-- Fluid Formation drops the AMFs to LMF/RMF: a 4-4-2 block in front of the box. Don't
-  press with two players. [guides]
+- Fluid Formation gives a separate defence shape — usually the AMFs drop to LMF/RMF for a
+  4-4-2 block; an AMF with no wide proficiency stays central and a Box-to-Box DMF takes
+  his flank instead. Don't press with two players. [guides]
 - Defend with the DMF in front of the box and let the AI centre-backs hold the line;
   pulling a CB out by hand opens the through ball. [reasoning]
 - Long-reach Tackle works while the defender is still or moving slowly — jockey, don't

@@ -198,8 +198,10 @@ Lab's **Game Plan** tab shows it with live builds; the general template is
 - **Messi — Creative Playmaker card (`89136409091415`) for Sneijder at right AMF.**
   AMF is a high-proficiency position on that card (rating 106 vs Sneijder 105), Speed 100
   vs 89, Momentum Dribbling + Blitz Curler, left foot cutting in from the right, and he is
-  still the Link-up Center Piece (Creative Playmaker, AMF) → Eto'o. Defends at RMF
-  (intermediate proficiency — a Position Training candidate).
+  still the Link-up Center Piece (Creative Playmaker, AMF) → Eto'o. **He can't play RMF**
+  (user, 11 Oct 2026 — eFHUB lists RMF as intermediate, the game doesn't), so the defence
+  shape is a 4-3-1-2: Makélélé alone at DMF, Hazard LMF, Seedorf RMF (high, Box-to-Box
+  active), Messi stays at AMF.
 - **Makélélé for Vieira at DMF.** DMF rating 106 vs 104; Speed 96, DA 96, Tackling 98,
   Stamina 99. He takes the Defensive instruction; Vieira is the first sub to protect a lead.
 - Messi's Deep-Lying Forward SS card can't be on the same team sheet, so **Sneijder** takes
@@ -210,9 +212,9 @@ Lab's **Game Plan** tab shows it with live builds; the general template is
 | GK | Buffon | `88040387118039` |
 | LB / CB / CB / RB | Maldini, Varane, Desailly, Thuram | unchanged |
 | DMF | Makélélé | `88045755964130` |
-| DMF | Seedorf | `88041460859805` |
+| DMF (defends at RMF) | Seedorf | `88041460859805` |
 | AMF (L → LMF) | Hazard | `89137214427270` |
-| AMF (R → RMF) | Messi (Creative Playmaker card) | `89136409091415` |
+| AMF (R, defends at AMF) | Messi (Creative Playmaker card) | `89136409091415` |
 | CF | Ibrahimović (Willpower card) | `89136140651034` |
 | CF | Eto'o | `88040387118554` |
 

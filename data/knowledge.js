@@ -337,7 +337,9 @@ window.KB = (() => {
     // Messi (Creative Playmaker card) for Sneijder at right AMF keeps the Link-up's Center
     // Piece, Makélélé for Vieira at DMF. Added as its own lineup; the 3 Oct plan stays.
     { id: "plan-2026-10-10", name: "Game Plan — Deschamps LBC 4-2-2-2 (10 Oct)", formation: "4-2-2-2", manager: "D. Deschamps", tactic: "Long Ball Counter",
-      fluid: true, defFormation: "4-4-2",
+      // Defence: Makélélé holds alone at DMF, Seedorf goes wide right (RMF high, Box-to-Box
+      // active), Hazard LMF, Messi stays central at AMF — he has no RMF on this card.
+      fluid: true, defFormation: "4-3-1-2",
       updates: [
         { id: "2026-10-10-bench-dembele", replace: { "88045755964138": "106773692395554" } }, // bench: Shevchenko → Dembélé
         // 11 Oct: Puskás (Deep-Lying Forward, Plan B), Bale and Calafiori in; Kaká, Neymar,
@@ -353,9 +355,12 @@ window.KB = (() => {
         ] },
         // A device that applied the bench above before Bale/Calafiori loaded kept only 10.
         { id: "2026-10-11-bench-fill", fill: ["88045755861672", "106788993239598"] },
+        // 11 Oct: Messi has no RMF — defend with him at AMF and Seedorf at RMF.
+        { id: "2026-10-11-def-shape", defFormation: "4-3-1-2", defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
+          ["DMF", 50, 40], ["RMF", 88, 55], ["LMF", 12, 55], ["AMF", 50, 62], ["CF", 37, 84], ["CF", 63, 84]] },
       ],
       defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
-        ["DMF", 36, 41], ["DMF", 64, 41], ["LMF", 12, 55], ["RMF", 88, 55], ["CF", 37, 84], ["CF", 63, 84]],
+        ["DMF", 50, 40], ["RMF", 88, 55], ["LMF", 12, 55], ["AMF", 50, 62], ["CF", 37, 84], ["CF", 63, 84]],
       xi: ["88040387118039", // GK Buffon
         "88041460993474", "88039850289220", "89138288270047", "88039581948640", // Maldini, Varane, Desailly, Thuram
         "88045755964130", "88041460859805", // DMF Makélélé, Seedorf
@@ -388,7 +393,7 @@ window.KB = (() => {
     title: "Deschamps · Long Ball Counter · 4-2-2-2 → defends 4-4-2",
     summary: "Sit in a compact 4-4-2, win the ball, and go forward in three passes or fewer: long to Ibrahimović, in behind for Eto'o, or into Hazard and Messi between the lines. Possession is the plan B when the opponent sits deep.",
     changes: [
-      { text: "Messi (Creative Playmaker card) in for Sneijder at right AMF — Speed 100 vs 89, Momentum Dribbling and Blitz Curler, left foot cutting in from the right, and still the Link-up's Center Piece (Creative Playmaker, AMF).", basis: "reasoning" },
+      { text: "Messi (Creative Playmaker card) in for Sneijder at right AMF — Speed 100 vs 89, Momentum Dribbling and Blitz Curler, left foot cutting in from the right, and still the Link-up's Center Piece (Creative Playmaker, AMF). He has no RMF, so he defends at AMF and Seedorf takes the right side.", basis: "reasoning" },
       { text: "Makélélé in for Vieira at DMF — the best DMF in the squad (Speed 96, Defensive Awareness 96, Tackling 98, Stamina 99; DMF rating 106 vs 104) and he gets the Defensive instruction. Vieira is the first sub to protect a lead.", basis: "reasoning" },
       { text: "Messi's other card (Deep-Lying Forward SS) can't sit on the same team sheet, so Sneijder takes his bench place and covers right AMF without losing the Link-up.", basis: "reasoning" },
       { text: "Bench (11 Oct): Puskás in as the Deep-Lying Forward for Plan B, Bellingham is the first attacking sub (AMF 105, LMF high) instead of Kaká, Bale is the late Attack Outlet, Calafiori covers left-back. Kaká, Neymar and Ronaldinho drop out — none has a slot this shape uses better.", basis: "reasoning" },
@@ -419,7 +424,7 @@ window.KB = (() => {
         { head: "Set pieces", text: "Penalties: Hazard (Finishing 94). Free kicks: Hazard from the left, Messi from the right. Corners and wide free kicks: Hazard. Targets: Ibrahimović, Desailly, Varane (all Aerial Superiority).", basis: "reasoning" },
       ] },
       { id: "defend", title: "Without the ball", items: [
-        { head: "Shape first", text: "Fluid Formation drops Hazard and Messi to LMF/RMF: a 4-4-2 block that protects the box. Long Ball Counter defends deep and compact — don't break it by pressing with two players.", basis: "guides" },
+        { head: "Shape first", text: "Fluid Formation defence: Makélélé alone at DMF in front of the CBs, Hazard drops to LMF, Seedorf goes wide to RMF (Box-to-Box stays active there), Messi stays central at AMF — this card has no RMF, and from there he starts the counter to Eto'o at once. Long Ball Counter defends deep and compact — don't press with two players.", basis: "reasoning" },
         { head: "Control the DMF, not the CB", text: "Defend with Makélélé or Seedorf in front of the box and let the AI centre-backs hold the line. Pulling Varane out by hand is how through balls get in.", basis: "reasoning" },
         { head: "Stand, don't sprint, into tackles", text: "Long-reach Tackle (Maldini, Varane, Thuram, Makélélé, Seedorf) works on distant opponents while the defender is still or moving slowly — jockey and let them come.", basis: "official" },
         { head: "Press only on a trigger", text: "Back pass, a heavy touch, or a full-back trapped on the touchline. Otherwise hold the shape and keep Makélélé in the passing lane.", basis: "reasoning" },
