@@ -220,12 +220,15 @@ Lab's **Game Plan** tab shows it with live builds; the general template is
 
 **Instructions:** Counter Target — Eto'o; Defensive — Makélélé; Tight Marking — Desailly.
 
-**Bench (12, updated 11 Oct):** Vieira, Stam, Cafu, Zanetti, Pirlo, Sneijder, Bellingham
+**Bench (12, updated 11 Oct):** Vieira, Stam, Zanetti, Pirlo, Sneijder, Bellingham
 (`89138556700485`), Gullit, Dembélé (`106773692395554`), Puskás (`88040387120260`),
-Bale (`88045755861672`), Calafiori (`106788993239598`). Dembélé replaced Shevchenko on
-10 Oct (user: too few useful skills). On 11 Oct Kaká, Neymar and Ronaldinho dropped out:
-Bellingham does Kaká's job better in this shape (AMF 105 vs 104, high at LMF vs
-intermediate), Neymar has no slot here, Sneijder covers right AMF.
+Bale (`88045755861672`), Kaká (`88044145217198`), C. Ronaldo (`89135066911146`).
+Dembélé replaced Shevchenko on 10 Oct (user: too few useful skills). On 11 Oct Neymar
+and Ronaldinho dropped out (no slot in this shape; Sneijder covers right AMF), and the
+user asked for one full-back instead of three: Zanetti stays (LB and RB high), Cafu and
+Calafiori make room for Kaká (Super-sub) and C. Ronaldo (Goal Poacher CF, Bullet Header —
+keeps the Link-up when chasing). Bellingham is the 60' sub for Hazard (AMF 105 vs Kaká
+104, high at LMF vs intermediate).
 
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
@@ -242,7 +245,7 @@ counter outlet.
 corners Hazard; aerial targets Ibrahimović, Desailly, Varane.
 
 **Alternatives:** Xabi Alonso Quick Counter with the same 4-2-2-2 and the same Link-up pair
-(vs Possession sides); Thuram to CB (108) + Cafu RB when chasing (+2 overall, but Cafu
+(vs Possession sides); Thuram to CB (108) + Zanetti RB when chasing (+1 overall, but he
 goes high); Capello 4-2-1-3 with Pirlo — test only.
 
 ---

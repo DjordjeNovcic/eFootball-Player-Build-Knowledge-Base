@@ -355,6 +355,9 @@ window.KB = (() => {
         ] },
         // A device that applied the bench above before Bale/Calafiori loaded kept only 10.
         { id: "2026-10-11-bench-fill", fill: ["88045755861672", "106788993239598"] },
+        // 11 Oct: one full-back on the bench is enough (Zanetti covers both sides) —
+        // Cafu → Kaká, Calafiori → C. Ronaldo.
+        { id: "2026-10-11-bench-one-fullback", replace: { "88044145348045": "88044145217198", "106788993239598": "89135066911146" } },
         // 11 Oct: Messi has no RMF — defend with him at AMF and Seedorf at RMF.
         { id: "2026-10-11-def-shape", defFormation: "4-3-1-2", defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
           ["DMF", 50, 40], ["RMF", 88, 55], ["LMF", 12, 55], ["AMF", 50, 62], ["CF", 37, 84], ["CF", 63, 84]] },
@@ -366,9 +369,9 @@ window.KB = (() => {
         "88045755964130", "88041460859805", // DMF Makélélé, Seedorf
         "89137214427270", "89136409091415", // AMF Hazard (left), Messi — Creative Playmaker card (right)
         "89136140651034", "88040387118554"], // CF Ibrahimović (Willpower card), Eto'o
-      bench: ["88044145348029", "88045755964131", "88044145348045", "88033139494357", // Vieira, Stam, Cafu, Zanetti
-        "88039581945312", "88040387121974", "89138556700485", "88039045074410", // Pirlo, Sneijder, Bellingham, Gullit
-        "106773692395554", "88040387120260", "88045755861672", "106788993239598"], // Dembélé, Puskás, Bale, Calafiori
+      bench: ["88044145348029", "88045755964131", "88033139494357", "88039581945312", // Vieira, Stam, Zanetti, Pirlo
+        "88040387121974", "89138556700485", "88039045074410", "106773692395554", // Sneijder, Bellingham, Gullit, Dembélé
+        "88040387120260", "88045755861672", "88044145217198", "89135066911146"], // Puskás, Bale, Kaká, C. Ronaldo
       subs: [
         { minute: 60, out: "89137214427270", in: "89138556700485", note: "Hole Player stays active, LMF high in defence — or Sneijder for a tired Messi (keeps the Link-up)" },
         { minute: 65, out: "89136140651034", in: "88040387120260", note: "Plan B: Possession sub-tactic + Deep-Lying Forward next to Eto'o (Gullit instead when you need headers)" },
@@ -396,7 +399,7 @@ window.KB = (() => {
       { text: "Messi (Creative Playmaker card) in for Sneijder at right AMF — Speed 100 vs 89, Momentum Dribbling and Blitz Curler, left foot cutting in from the right, and still the Link-up's Center Piece (Creative Playmaker, AMF). He has no RMF, so he defends at AMF and Seedorf takes the right side.", basis: "reasoning" },
       { text: "Makélélé in for Vieira at DMF — the best DMF in the squad (Speed 96, Defensive Awareness 96, Tackling 98, Stamina 99; DMF rating 106 vs 104) and he gets the Defensive instruction. Vieira is the first sub to protect a lead.", basis: "reasoning" },
       { text: "Messi's other card (Deep-Lying Forward SS) can't sit on the same team sheet, so Sneijder takes his bench place and covers right AMF without losing the Link-up.", basis: "reasoning" },
-      { text: "Bench (11 Oct): Puskás in as the Deep-Lying Forward for Plan B, Bellingham is the first attacking sub (AMF 105, LMF high) instead of Kaká, Bale is the late Attack Outlet, Calafiori covers left-back. Kaká, Neymar and Ronaldinho drop out — none has a slot this shape uses better.", basis: "reasoning" },
+      { text: "Bench (11 Oct): Puskás in as the Deep-Lying Forward for Plan B, Bellingham is the first attacking sub (AMF 105, LMF high), Bale is the late Attack Outlet. One full-back on the bench — Zanetti covers both sides — so Cafu and Calafiori make room for Kaká (Super-sub) and C. Ronaldo (Goal Poacher CF with Bullet Header: keeps the Link-up and wins headers when chasing).", basis: "reasoning" },
     ],
     instructions: [
       { who: "Eto'o", what: "Counter Target", why: "stays on the last defender for the ball in behind (Speed 100)." },
@@ -455,7 +458,7 @@ window.KB = (() => {
     ],
     alternatives: [
       { name: "Xabi Alonso · Quick Counter · same 4-2-2-2", when: "Against Possession sides when you'd rather press than sit. Same Link-up pair (Creative Playmaker AMF → Goal Poacher CF), Quick Counter 89; Ball Control +1 / Finishing +1 instead of Speed +1." },
-      { name: "Thuram to CB, Cafu at RB", when: "Thuram is 108 at CB (Varane 105), Cafu 104 at RB — +2 overall, but Cafu is an Offensive Wingback (Defensive Awareness 86) who goes high. Use it when chasing, not as the base." },
+      { name: "Thuram to CB, Zanetti at RB", when: "Thuram is 108 at CB (Varane 105), Zanetti 103 at RB — +1 overall, but Zanetti is an Offensive Wingback who goes high. Use it when chasing, not as the base." },
       { name: "Capello · LBC · 4-2-1-3 with Pirlo at DMF", when: "Over-the-Top Pass A Pirlo → Eto'o. Test only — it gives up Deschamps' Speed +1 and needs wingers the squad uses better elsewhere." },
     ],
   };
