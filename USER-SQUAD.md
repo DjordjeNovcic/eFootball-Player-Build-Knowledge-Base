@@ -217,11 +217,12 @@ Lab's **Game Plan** tab shows it with live builds; the general template is
 **Instructions:** Counter Target — Eto'o; Defensive — Makélélé; Tight Marking — Desailly.
 
 **Bench (12):** Vieira, Stam, Cafu, Zanetti, Pirlo, Sneijder, Ronaldinho, Kaká,
-Bellingham (`89138556700485`), Gullit, Neymar, Shevchenko.
+Bellingham (`89138556700485`), Gullit, Neymar, Dembélé (`106773692395554`) — replaced
+Shevchenko on 10 Oct (user: too few useful skills).
 
 **Substitutions:** ~60' Kaká (Super-sub) for Hazard, or Sneijder for a tired Messi;
-chasing — Gullit for Ibrahimović (~68'), Shevchenko for Eto'o (~72', Goal Poacher CF keeps
-the Link-up), Possession sub-tactic with Pirlo for Makélélé against a deep block;
+chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
+the Link-up; Speed 100 / Acceleration 98, Acceleration Burst, Phenomenal Finishing), Possession sub-tactic with Pirlo for Makélélé against a deep block;
 protecting — Vieira for Seedorf (~75'), Stam only for Desailly (Destroyer for Destroyer).
 
 **Set pieces:** penalties Hazard (Finishing 94); free kicks Hazard (left) / Messi (right);

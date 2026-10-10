@@ -338,6 +338,9 @@ window.KB = (() => {
     // Piece, Makélélé for Vieira at DMF. Added as its own lineup; the 3 Oct plan stays.
     { id: "plan-2026-10-10", name: "Game Plan — Deschamps LBC 4-2-2-2 (10 Oct)", formation: "4-2-2-2", manager: "D. Deschamps", tactic: "Long Ball Counter",
       fluid: true, defFormation: "4-4-2",
+      updates: [
+        { id: "2026-10-10-bench-dembele", replace: { "88045755964138": "106773692395554" } }, // bench: Shevchenko → Dembélé
+      ],
       defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
         ["DMF", 36, 41], ["DMF", 64, 41], ["LMF", 12, 55], ["RMF", 88, 55], ["CF", 37, 84], ["CF", 63, 84]],
       xi: ["88040387118039", // GK Buffon
@@ -347,11 +350,11 @@ window.KB = (() => {
         "89136140651034", "88040387118554"], // CF Ibrahimović (Willpower card), Eto'o
       bench: ["88044145348029", "88045755964131", "88044145348045", "88033139494357", // Vieira, Stam, Cafu, Zanetti
         "88039581945312", "88040387121974", "89138288266704", "88044145217198", // Pirlo, Sneijder, Ronaldinho, Kaká
-        "89138556700485", "88039045074410", "89133993205152", "88045755964138"], // Bellingham, Gullit, Neymar, Shevchenko
+        "89138556700485", "88039045074410", "89133993205152", "106773692395554"], // Bellingham, Gullit, Neymar, Dembélé
       subs: [
         { minute: 60, out: "89137214427270", in: "88044145217198", note: "Super-sub — or Sneijder for a tired Messi (keeps the Link-up)" },
         { minute: 68, out: "89136140651034", in: "88039045074410", note: "If chasing: fresh aerial target, Bullet Header" },
-        { minute: 72, out: "88040387118554", in: "88045755964138", note: "Goal Poacher CF — the Link-up stays on" },
+        { minute: 72, out: "88040387118554", in: "106773692395554", note: "Fresh pace in behind — Goal Poacher CF, the Link-up stays on" },
         { minute: 75, out: "88041460859805", in: "88044145348029", note: "If leading: Anchor Man + Defensive instruction" },
       ],
       notes: "Instructions: Counter Target — Eto'o; Defensive — Makélélé; Tight Marking — Desailly on their most dangerous striker.\n"
@@ -412,7 +415,7 @@ window.KB = (() => {
         { head: "0–15′ · read them", text: "Find their team playstyle and set the answer in the Lineup tab's Match helper (Possession beats Long Ball Counter, Long Ball Counter beats Quick Counter, Quick Counter beats Possession).", basis: "guides" },
         { head: "Leading at half-time", text: "Stay on Long Ball Counter. Thuram's Fortress improves his defending in the second half while you're ahead.", basis: "official" },
         { head: "~60′ · fresh legs", text: "Kaká (native Super-sub: +5% Finishing, +1% Speed/Acceleration) for Hazard. A tired Messi → Sneijder, so the Link-up stays on.", basis: "measured" },
-        { head: "Chasing · from ~65′", text: "Gullit for Ibrahimović (fresh aerial target, Bullet Header), Shevchenko for Eto'o (Goal Poacher — Link-up stays on). Against a deep block switch to Possession with Pirlo for Makélélé.", basis: "reasoning" },
+        { head: "Chasing · from ~65′", text: "Gullit for Ibrahimović (fresh aerial target, Bullet Header), Dembélé for Eto'o (Goal Poacher, Speed 100 / Acceleration 98 against tired legs — Link-up stays on). Against a deep block switch to Possession with Pirlo for Makélélé.", basis: "reasoning" },
         { head: "Protecting · from ~75′", text: "Vieira for Seedorf with the Defensive instruction — two holding midfielders. A tired Desailly → Stam (Destroyer for Destroyer); never Stam next to Desailly.", basis: "reasoning" },
       ] },
       { id: "donts", title: "Don'ts", items: [
