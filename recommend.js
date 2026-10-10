@@ -38,7 +38,7 @@ window.Recommender = (deps) => {
     destroyer: { label: "Destroyer", stats: [["acceleration", 10, 91, 95], ["defensiveAwareness", 9, 90, 96], ["ballWinning", 8, 88], ["speed", 8, 91, 95], ["physicalContact", 7, 85], ["defensiveEngagement", 6, 88], ["aggression", 5, 88], ["jump", 4, 85], ["heading", 2, 82]] },
     coveringRole: { label: "Covering Role", stats: [["defensiveAwareness", 10, 90, 96], ["speed", 9, 92, 96], ["acceleration", 8, 90], ["ballWinning", 7, 88], ["defensiveEngagement", 6, 88], ["physicalContact", 6, 85], ["jump", 3, 85]] },
     defensiveFullBack: { label: "Defensive Full-back", stats: [["defensiveAwareness", 10, 90, 96], ["ballWinning", 8, 88], ["speed", 8, 92, 96], ["acceleration", 8, 90], ["physicalContact", 6, 85], ["stamina", 6, 88], ["defensiveEngagement", 5, 85], ["loftedPass", 2, 78]] },
-    offensiveFullBack: { label: "Offensive Wingback", stats: [["speed", 9, 92, 96], ["acceleration", 9, 92, 97], ["stamina", 7, 90], ["loftedPass", 7, 90, 92], ["ballControl", 5, 85], ["defensiveAwareness", 7, 86], ["ballWinning", 6, 84], ["defensiveEngagement", 4, 83], ["balance", 4, 85], ["dribbling", 4, 85], ["lowPass", 4, 82], ["curl", 3, 80]] },
+    offensiveFullBack: { label: "Offensive Wingback", stats: [["speed", 9, 92, 96], ["acceleration", 9, 92, 97], ["stamina", 7, 90], ["loftedPass", 7, 90, 92], ["ballControl", 5, 85], ["defensiveAwareness", 7, 86], ["ballWinning", 6, 84], ["defensiveEngagement", 4, 83], ["balance", 4, 85], ["dribbling", 4, 85], ["lowPass", 4, 82]] },
     goalkeeper: { label: "Goalkeeper", stats: [["gkAwareness", 10, 90], ["gkReflexes", 9, 90], ["gkReach", 8, 90], ["gkClearing", 7, 88], ["gkCatching", 7, 88], ["jump", 4, 85]] },
   };
   const STYLE_TEMPLATE = {
