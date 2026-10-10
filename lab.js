@@ -1798,6 +1798,13 @@
     const dlg = $("#buildDialog");
     if (!dlg.open) dlg.showModal();
   }
+  // A click outside the dialog box (on the backdrop) closes any dialog — the backdrop's
+  // clicks land on the <dialog> element itself, outside its content rectangle.
+  document.querySelectorAll("dialog").forEach((dlg) => dlg.addEventListener("click", (e) => {
+    if (e.target !== dlg) return;
+    const r = dlg.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dlg.close();
+  }));
   $("#bdBody").addEventListener("click", (e) => {
     const act = e.target.closest("[data-bd]")?.dataset.bd;
     if (!act) return;
