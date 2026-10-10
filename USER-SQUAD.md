@@ -183,6 +183,54 @@ tired CB.
 **Alternative to test:** Capello, Long Ball Counter, 4-2-1-3 with Pirlo + Vieira at DMF —
 Over-the-Top Pass A link-up Pirlo (Orchestrator, DMF) → Eto'o (Goal Poacher, CF).
 
+## Game plan — 10 Oct 2026 (proposed, supersedes the 3 Oct XI)
+
+A recommendation, not a screenshot of the in-game setup. Same manager, style and shape as
+the 3 Oct plan (Deschamps, Long Ball Counter 89, Fluid Formation 4-2-2-2 / 4-4-2,
+Possession sub-tactic); builds stay the Build Lab "Recommended by AI" builds. The Build
+Lab's **Game Plan** tab shows it with live builds; the general template is
+`KNOWLEDGE-BASE.md` §24.
+
+**XI changes (two):**
+
+- **Messi — Creative Playmaker card (`89136409091415`) for Sneijder at right AMF.**
+  AMF is a high-proficiency position on that card (rating 106 vs Sneijder 105), Speed 100
+  vs 89, Momentum Dribbling + Blitz Curler, left foot cutting in from the right, and he is
+  still the Link-up Center Piece (Creative Playmaker, AMF) → Eto'o. Defends at RMF
+  (intermediate proficiency — a Position Training candidate).
+- **Makélélé for Vieira at DMF.** DMF rating 106 vs 104; Speed 96, DA 96, Tackling 98,
+  Stamina 99. He takes the Defensive instruction; Vieira is the first sub to protect a lead.
+- Messi's Deep-Lying Forward SS card can't be on the same team sheet, so **Sneijder** takes
+  his bench place (Creative Playmaker — subbing him for Messi keeps the Link-up on).
+
+| Pos | Player | eFHUB ID |
+|---|---|---:|
+| GK | Buffon | `88040387118039` |
+| LB / CB / CB / RB | Maldini, Varane, Desailly, Thuram | unchanged |
+| DMF | Makélélé | `88045755964130` |
+| DMF | Seedorf | `88041460859805` |
+| AMF (L → LMF) | Hazard | `89137214427270` |
+| AMF (R → RMF) | Messi (Creative Playmaker card) | `89136409091415` |
+| CF | Ibrahimović (Willpower card) | `89136140651034` |
+| CF | Eto'o | `88040387118554` |
+
+**Instructions:** Counter Target — Eto'o; Defensive — Makélélé; Tight Marking — Desailly.
+
+**Bench (12):** Vieira, Stam, Cafu, Zanetti, Pirlo, Sneijder, Ronaldinho, Kaká,
+Bellingham (`89138556700485`), Gullit, Neymar, Shevchenko.
+
+**Substitutions:** ~60' Kaká (Super-sub) for Hazard, or Sneijder for a tired Messi;
+chasing — Gullit for Ibrahimović (~68'), Shevchenko for Eto'o (~72', Goal Poacher CF keeps
+the Link-up), Possession sub-tactic with Pirlo for Makélélé against a deep block;
+protecting — Vieira for Seedorf (~75'), Stam only for Desailly (Destroyer for Destroyer).
+
+**Set pieces:** penalties Hazard (Finishing 94); free kicks Hazard (left) / Messi (right);
+corners Hazard; aerial targets Ibrahimović, Desailly, Varane.
+
+**Alternatives:** Xabi Alonso Quick Counter with the same 4-2-2-2 and the same Link-up pair
+(vs Possession sides); Thuram to CB (108) + Cafu RB when chasing (+2 overall, but Cafu
+goes high); Capello 4-2-1-3 with Pirlo — test only.
+
 ---
 
 # 4. Dated Build Snapshots

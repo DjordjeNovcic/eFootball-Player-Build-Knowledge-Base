@@ -57,6 +57,11 @@ Two parts:
     **Position training** lists who plays (or comes on) where his proficiency isn't
     high; the **Match helper** takes the opponent's playstyle and suggests what to switch
     to and which instructions to give whom (KNOWLEDGE-BASE §23).
+  - **Game Plan** — the agreed setup as a playbook: shape, instructions, the XI with each
+    starter's live build, slot-2 booster and skills, then how to play it — build-up, five
+    attack patterns, who shoots what, defending, game management, don'ts and alternatives,
+    each line tagged tested / in-game text / community guides / our reasoning
+    (`GAME_PLAN` in `data/knowledge.js`, KNOWLEDGE-BASE §24).
   - **Skills**, **Managers**, **Playing Styles** — the knowledge base as searchable
     views, cross-linked to which of my cards have each skill/style/Link-up role.
 

@@ -333,7 +333,101 @@ window.KB = (() => {
         + "Link-up: Breakthrough Pass A — Sneijder (Creative Playmaker AMF) → Eto'o (Goal Poacher CF).\n"
         + "Hazard left (LMF, no RMF); Sneijder right (weak foot 3/3). Ronaldinho is right-footed with a weak left — not on the left.\n"
         + "No second goalkeeper owned yet." },
+    // USER-SQUAD §3 "Game plan — 10 Oct 2026": the same shape with the strongest XI —
+    // Messi (Creative Playmaker card) for Sneijder at right AMF keeps the Link-up's Center
+    // Piece, Makélélé for Vieira at DMF. Added as its own lineup; the 3 Oct plan stays.
+    { id: "plan-2026-10-10", name: "Game Plan — Deschamps LBC 4-2-2-2 (10 Oct)", formation: "4-2-2-2", manager: "D. Deschamps", tactic: "Long Ball Counter",
+      fluid: true, defFormation: "4-4-2",
+      defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
+        ["DMF", 36, 41], ["DMF", 64, 41], ["LMF", 12, 55], ["RMF", 88, 55], ["CF", 37, 84], ["CF", 63, 84]],
+      xi: ["88040387118039", // GK Buffon
+        "88041460993474", "88039850289220", "89138288270047", "88039581948640", // Maldini, Varane, Desailly, Thuram
+        "88045755964130", "88041460859805", // DMF Makélélé, Seedorf
+        "89137214427270", "89136409091415", // AMF Hazard (left), Messi — Creative Playmaker card (right)
+        "89136140651034", "88040387118554"], // CF Ibrahimović (Willpower card), Eto'o
+      bench: ["88044145348029", "88045755964131", "88044145348045", "88033139494357", // Vieira, Stam, Cafu, Zanetti
+        "88039581945312", "88040387121974", "89138288266704", "88044145217198", // Pirlo, Sneijder, Ronaldinho, Kaká
+        "89138556700485", "88039045074410", "89133993205152", "88045755964138"], // Bellingham, Gullit, Neymar, Shevchenko
+      subs: [
+        { minute: 60, out: "89137214427270", in: "88044145217198", note: "Super-sub — or Sneijder for a tired Messi (keeps the Link-up)" },
+        { minute: 68, out: "89136140651034", in: "88039045074410", note: "If chasing: fresh aerial target, Bullet Header" },
+        { minute: 72, out: "88040387118554", in: "88045755964138", note: "Goal Poacher CF — the Link-up stays on" },
+        { minute: 75, out: "88041460859805", in: "88044145348029", note: "If leading: Anchor Man + Defensive instruction" },
+      ],
+      notes: "Instructions: Counter Target — Eto'o; Defensive — Makélélé; Tight Marking — Desailly on their most dangerous striker.\n"
+        + "Link-up: Breakthrough Pass A — Messi (Creative Playmaker AMF) → Eto'o (Goal Poacher CF).\n"
+        + "Sub-tactic: Possession (Deschamps 89) vs Long Ball Counter / deep blocks — Pirlo for Makélélé.\n"
+        + "Stam only for Desailly (Destroyer for Destroyer), never next to him.\n"
+        + "Full game plan: Game Plan tab." },
   ];
+
+  /* ---- USER-SQUAD §3 "Game plan — 10 Oct 2026" + KNOWLEDGE-BASE §24: the Game Plan tab ---- */
+  // Text only; the XI, builds, ratings and skills on the tab come live from the plan
+  // above and recommend.js. basis: "measured" = §19 tests, "official" = in-game text,
+  // "guides" = community guides (§23), "reasoning" = ours — shown on every item.
+  const GAME_PLAN = {
+    planId: "plan-2026-10-10",
+    date: "10 Oct 2026",
+    title: "Deschamps · Long Ball Counter · 4-2-2-2 → defends 4-4-2",
+    summary: "Sit in a compact 4-4-2, win the ball, and go forward in three passes or fewer: long to Ibrahimović, in behind for Eto'o, or into Hazard and Messi between the lines. Possession is the plan B when the opponent sits deep.",
+    changes: [
+      { text: "Messi (Creative Playmaker card) in for Sneijder at right AMF — Speed 100 vs 89, Momentum Dribbling and Blitz Curler, left foot cutting in from the right, and still the Link-up's Center Piece (Creative Playmaker, AMF).", basis: "reasoning" },
+      { text: "Makélélé in for Vieira at DMF — the best DMF in the squad (Speed 96, Defensive Awareness 96, Tackling 98, Stamina 99; DMF rating 106 vs 104) and he gets the Defensive instruction. Vieira is the first sub to protect a lead.", basis: "reasoning" },
+      { text: "Messi's other card (Deep-Lying Forward SS) can't sit on the same team sheet, so Sneijder takes his bench place and covers right AMF without losing the Link-up.", basis: "reasoning" },
+    ],
+    instructions: [
+      { who: "Eto'o", what: "Counter Target", why: "stays on the last defender for the ball in behind (Speed 100)." },
+      { who: "Makélélé", what: "Defensive", why: "holds the zone in front of the CBs while Seedorf shuttles." },
+      { who: "Desailly", what: "Tight Marking", why: "on their most dangerous striker — the Destroyer steps out to him anyway." },
+    ],
+    sections: [
+      { id: "build", title: "Build-up — first 30 metres", items: [
+        { head: "Goal kicks", text: "Short to Makélélé only if he's free. Under a press, Buffon's GK High Punt to Ibrahimović — longer, faster punts are useful with a tall striker to flick on.", basis: "measured" },
+        { head: "Three passes, then forward", text: "No more than three passes in your own half. When the press comes, the ball goes long — that's the playstyle, not a panic clearance.", basis: "guides" },
+        { head: "CBs don't carry", text: "Varane and Desailly pass or go long — never dribble out. Their Through Passing (AI pick) adds ~20% to both passing stats on low and lofted through balls.", basis: "measured" },
+        { head: "First pass after a regain", text: "Makélélé and Seedorf have Phenomenal Pass — the pass out of a tackle works even from an awkward body position. Play it forward at once.", basis: "measured" },
+      ] },
+      { id: "attack", title: "Attack — five plays", items: [
+        { head: "1 · Long ball to Ibra", text: "Lofted ball to Ibrahimović (195 cm, Physical Contact 99, Jump 93, Aerial Superiority). He holds or flicks on; Eto'o runs past him; Hazard and Messi attack the second ball.", basis: "reasoning" },
+        { head: "2 · Link-up through ball", text: "Messi receives in the right half-space and plays the low through ball into Eto'o's run on the last defender's shoulder — the Breakthrough Pass A pair (Center Piece → Key Man).", basis: "reasoning" },
+        { head: "3 · Hazard carry", text: "Hazard picks it up in the left half-space and carries inside — Momentum Dribbling (attacking third) and Magnetic Feet (holds the ball with up to four opponents within 5 m). Then: curler to the far corner, slip Ibra, or switch to Messi.", basis: "official" },
+        { head: "4 · Messi cut-in", text: "Messi on the right, onto his left foot: a controlled curl shot at 50%+ power fires Blitz Curler — the high dipping curve to the top corner. Kicking Power matters most for it, then Curl.", basis: "measured" },
+        { head: "5 · Cutback to the Fox", text: "When a wide player reaches the byline, cut it back low to Ibrahimović around the penalty spot — Fox in the Box lives on cutbacks, rebounds and low crosses.", basis: "official" },
+      ] },
+      { id: "finish", title: "Finishing — who shoots what", items: [
+        { head: "Ibrahimović — shoot early", text: "Willpower adds +1 Finishing and +1 Kicking Power for every shot he takes, up to +8 (headers don't count). Phenomenal Finishing covers awkward body shapes.", basis: "measured" },
+        { head: "Eto'o — low and fast", text: "Low Screamer: a stunning shot under 50% power gets extra speed, and it never turns into a Dipping Shot — so don't try to dip with him.", basis: "measured" },
+        { head: "Hazard & Messi — curl", text: "Long-range Curler works on any curl shot, not just long ones — about +10% Finishing and Kicking Power, and it can make up for the weak foot.", basis: "measured" },
+        { head: "Set pieces", text: "Penalties: Hazard (Finishing 94). Free kicks: Hazard from the left, Messi from the right. Corners and wide free kicks: Hazard. Targets: Ibrahimović, Desailly, Varane (all Aerial Superiority).", basis: "reasoning" },
+      ] },
+      { id: "defend", title: "Without the ball", items: [
+        { head: "Shape first", text: "Fluid Formation drops Hazard and Messi to LMF/RMF: a 4-4-2 block that protects the box. Long Ball Counter defends deep and compact — don't break it by pressing with two players.", basis: "guides" },
+        { head: "Control the DMF, not the CB", text: "Defend with Makélélé or Seedorf in front of the box and let the AI centre-backs hold the line. Pulling Varane out by hand is how through balls get in.", basis: "reasoning" },
+        { head: "Stand, don't sprint, into tackles", text: "Long-reach Tackle (Maldini, Varane, Thuram, Makélélé, Seedorf) works on distant opponents while the defender is still or moving slowly — jockey and let them come.", basis: "official" },
+        { head: "Press only on a trigger", text: "Back pass, a heavy touch, or a full-back trapped on the touchline. Otherwise hold the shape and keep Makélélé in the passing lane.", basis: "reasoning" },
+        { head: "Balls in behind", text: "Shadow Hunt (Maldini, Desailly, Makélélé) speeds up recovery when a pass goes in behind a DMF/LB/RB/CB; Varane and Desailly have Aerial Fort for duels inside your own box.", basis: "official" },
+        { head: "Full-backs stay home", text: "Maldini and Thuram are Defensive Full-backs — width comes from the AMFs. Never send both full-backs forward.", basis: "reasoning" },
+      ] },
+      { id: "manage", title: "Game management", items: [
+        { head: "0–15′ · read them", text: "Find their team playstyle and set the answer in the Lineup tab's Match helper (Possession beats Long Ball Counter, Long Ball Counter beats Quick Counter, Quick Counter beats Possession).", basis: "guides" },
+        { head: "Leading at half-time", text: "Stay on Long Ball Counter. Thuram's Fortress improves his defending in the second half while you're ahead.", basis: "official" },
+        { head: "~60′ · fresh legs", text: "Kaká (native Super-sub: +5% Finishing, +1% Speed/Acceleration) for Hazard. A tired Messi → Sneijder, so the Link-up stays on.", basis: "measured" },
+        { head: "Chasing · from ~65′", text: "Gullit for Ibrahimović (fresh aerial target, Bullet Header), Shevchenko for Eto'o (Goal Poacher — Link-up stays on). Against a deep block switch to Possession with Pirlo for Makélélé.", basis: "reasoning" },
+        { head: "Protecting · from ~75′", text: "Vieira for Seedorf with the Defensive instruction — two holding midfielders. A tired Desailly → Stam (Destroyer for Destroyer); never Stam next to Desailly.", basis: "reasoning" },
+      ] },
+      { id: "donts", title: "Don'ts", items: [
+        { head: "No Messi or Ronaldinho on the left", text: "Both are wrong-footed there (Ronaldinho's weak foot 1/2) — and only one Messi fits on the team sheet.", basis: "reasoning" },
+        { head: "No two Destroyers", text: "Desailly + Stam can step out of the line together and leave nobody covering.", basis: "reasoning" },
+        { head: "No Dipping Shot with Eto'o or Gullit", text: "Low Screamer suppresses it.", basis: "official" },
+        { head: "No Deep Line by default", text: "Only against through-ball spam — it gives up space for long shots.", basis: "guides" },
+      ] },
+    ],
+    alternatives: [
+      { name: "Xabi Alonso · Quick Counter · same 4-2-2-2", when: "Against Possession sides when you'd rather press than sit. Same Link-up pair (Creative Playmaker AMF → Goal Poacher CF), Quick Counter 89; Ball Control +1 / Finishing +1 instead of Speed +1." },
+      { name: "Thuram to CB, Cafu at RB", when: "Thuram is 108 at CB (Varane 105), Cafu 104 at RB — +2 overall, but Cafu is an Offensive Wingback (Defensive Awareness 86) who goes high. Use it when chasing, not as the base." },
+      { name: "Capello · LBC · 4-2-1-3 with Pirlo at DMF", when: "Over-the-Top Pass A Pirlo → Eto'o. Test only — it gives up Deschamps' Speed +1 and needs wingers the squad uses better elsewhere." },
+    ],
+  };
 
   /* ---- §23: team playstyle match-ups (community guides — "sourced" — or our reasoning) ---- */
   // answer: the playstyle to switch to; tips resolve to your own players in lab.js.
@@ -346,5 +440,5 @@ window.KB = (() => {
     "Overload": { answer: "Long Ball Counter", basis: "reasoning", why: "They crowd the ball side and push the line up — switch play and run in behind.", tips: ["switchPlay", "counterTarget"] },
   };
 
-  return { CATEGORIES, STAT_LABELS, STAT_GROUPS, THRESHOLDS, SKILLS, ATT_STYLES, DEF_STYLES, AI_STYLES, STYLE_GUIDE, TACTICS, MANAGERS, CURRENT_MANAGER, SQUAD_NOTES, MATCH_PLANS, MATCHUPS };
+  return { CATEGORIES, STAT_LABELS, STAT_GROUPS, THRESHOLDS, SKILLS, ATT_STYLES, DEF_STYLES, AI_STYLES, STYLE_GUIDE, TACTICS, MANAGERS, CURRENT_MANAGER, SQUAD_NOTES, MATCH_PLANS, GAME_PLAN, MATCHUPS };
 })();

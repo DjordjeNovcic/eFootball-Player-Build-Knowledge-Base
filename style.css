@@ -1247,3 +1247,31 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .ai-skills__list li.is-on b{ color: var(--paper-dim); }
 .ai-mark{ font-style: normal; font-family: var(--font-cond); font-size: 0.6rem; letter-spacing: 0.06em; color: var(--violet); border: 1px solid rgba(182,156,255,0.5); border-radius: 2px; padding: 0 0.2rem; }
 .ai-skills__list .badge, .ai-skills__list .btn{ flex: none; white-space: nowrap; }
+
+/* ---------- Game Plan tab ---------- */
+.gp-title{ font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.1rem); line-height: 1.05; letter-spacing: 0.03em; margin: 0 0 0.5rem; color: var(--paper); }
+.gp-summary{ margin: 0; max-width: 62rem; color: var(--paper-dim); }
+.gp-instr{ list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; font-size: 0.88rem; }
+.gp-instr .badge{ color: var(--lime); border-color: rgba(212,255,63,0.4); }
+.gp-items{ list-style: none; margin: 0; padding: 0; display: grid; gap: 0.85rem; }
+.gp-items li{ border-left: 2px solid var(--line); padding-left: 0.8rem; }
+.gp-items b{ font-size: 0.92rem; }
+.gp-items p{ margin: 0.2rem 0 0; font-size: 0.86rem; color: var(--paper-dim); }
+.gp-basis{ font-family: var(--font-cond); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; margin-left: 0.35rem; padding: 0 0.35rem; border: 1px solid var(--line); border-radius: 2px; color: var(--paper-dim); white-space: nowrap; }
+.gp-basis--measured{ color: var(--lime); border-color: rgba(212,255,63,0.4); }
+.gp-basis--official{ color: var(--violet); border-color: rgba(182,156,255,0.45); }
+.gp-basis--guides{ color: var(--amber); border-color: rgba(255,194,74,0.45); }
+.gp-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: 1.25rem; }
+.gp-xi{ min-width: 860px; }
+.gp-xi a{ color: var(--paper); text-decoration: none; }
+.gp-xi a:hover{ color: var(--lime); }
+.gp-xi small{ font-size: 0.72rem; }
+.gp-xi .gp-off{ text-decoration: line-through; opacity: 0.7; }
+.gp-lv{ font-family: var(--font-cond); font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; }
+.gp-keys{ font-size: 0.78rem; color: var(--paper-dim); }
+.gp-keys b{ color: var(--paper); }
+.gp-skills{ font-size: 0.78rem; color: var(--paper-dim); max-width: 16rem; }
+.gp-bench{ font-size: 0.84rem; margin: 1rem 0; }
+.gp-bench a{ color: var(--paper-dim); }
+.gp-bench .field__label{ margin-right: 0.4rem; }
+@media (max-width: 560px){ .panel.gp-section, .panel.gp-hero{ padding: 1.1rem; } }

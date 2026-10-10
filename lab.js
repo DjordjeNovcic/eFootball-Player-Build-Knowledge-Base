@@ -326,7 +326,7 @@
      Tabs / routing
   --------------------------------------------------------- */
 
-  const TABS = ["squad", "pro", "recommended", "mybuilds", "train", "lineup", "skills", "managers", "styles"];
+  const TABS = ["squad", "pro", "recommended", "mybuilds", "train", "lineup", "plan", "skills", "managers", "styles"];
   const view = { playerId: null, draft: null, position: null };
 
   function route() {
@@ -344,6 +344,7 @@
       if (players.length) openTrainer(arg && byId[arg] ? arg : byId[view.playerId] ? view.playerId : defaultPlayerId());
     }
     if (active === "lineup") renderLineup();
+    if (active === "plan") renderGamePlan();
     if (active === "recommended") renderRecommended();
     if (active === "mybuilds") renderMyBuilds();
     if (active === "pro") renderPro();
@@ -1521,6 +1522,107 @@
       <ul class="match__tips">${mu.tips.map((t) => `<li>${TIPS[t]()}</li>`).join("")}</ul>`;
   }
   $("#luOpponent").addEventListener("change", (e) => { activeLineup().opponent = e.target.value; saveLineup(); renderLineup(); });
+
+  /* ---------------------------------------------------------
+     Game Plan tab (KB.GAME_PLAN — USER-SQUAD §3, KNOWLEDGE-BASE §24): the plan's XI with
+     each starter's build, booster and skills live from the Trainer / recommend.js, then
+     the written game template. Uses the owner's lineup copy once it's been edited.
+  --------------------------------------------------------- */
+
+  const BASIS_LABEL = { measured: "tested (§19)", official: "in-game text", guides: "community guides", reasoning: "our reasoning" };
+  function renderGamePlan() {
+    const box = $("#gamePlan");
+    const gp = KB.GAME_PLAN;
+    if (!box || !gp) return;
+    const plan = (KB.MATCH_PLANS || []).find((x) => x.id === gp.planId);
+    const own = ownsRepo() ? store.lineups.find((x) => x.id === gp.planId) : null;
+    // A detached copy, so layoutOf()/defLayoutOf() can fill in shapes without touching the plan.
+    const l = own || (plan ? JSON.parse(JSON.stringify({ ...plan, layout: null })) : null);
+    const fielded = l && l.xi.every((id) => byId[id]);
+    const basis = (b) => `<span class="gp-basis gp-basis--${esc(b)}">${esc(BASIS_LABEL[b] || b)}</span>`;
+    let xiHtml = "";
+    if (fielded) {
+      const att = layoutOf(l);
+      const def = l.fluid ? defLayoutOf(l) : att;
+      const m = managerObj(l.manager);
+      const rows = l.xi.map((id, i) => {
+        const p = byId[id];
+        const b = lineupBuild(p);
+        const c = compute(p, b, l.manager, l.tactic);
+        const pos = att[i][0];
+        const dpos = def[i][0];
+        const styles = stylesOf(p).map((st) => {
+          const on = styleActiveAt(st, pos);
+          return `<span class="${on === false ? "gp-off" : ""}" title="${on === false ? `inactive at ${pos}` : ""}">${esc(st.name)}</span>`;
+        }).join(" · ") || "—";
+        const rec = REC.recs[id];
+        const keys = (rec?.targets || []).slice(0, 4).map((t) => `${esc(statLabel(t.stat))} <b>${c.final[t.stat]}</b>`).join(" · ");
+        const b2 = booster2Of(p, b);
+        const lv = categoriesFor(p).map((cat) => b.levels[cat.key] || 0).join("-");
+        return `<tr>
+          <td class="pos-list">${esc(pos)}${dpos !== pos ? `<small> → ${esc(dpos)}</small>` : ""}</td>
+          <td><a href="#train/${esc(id)}" data-open-player="${esc(id)}"><b>${esc(p.name)}</b></a>${store.builds[id] ? " ★" : ""}<br><small class="rec-muted">${styles}</small></td>
+          <td class="num hot">${c.ratings[pos] ?? "—"}</td>
+          <td class="gp-lv">${lv}<br><small class="rec-muted">${b2 ? esc(b2.name) : "no slot-2 booster"}</small></td>
+          <td class="gp-keys">${keys}</td>
+          <td class="gp-skills">${skillsOf(id).map(esc).join(", ") || "—"}</td>
+        </tr>`;
+      }).join("");
+      const ratings = l.xi.map((id, i) => compute(byId[id], lineupBuild(byId[id]), l.manager, l.tactic).ratings[att[i][0]]);
+      const avg = (ratings.reduce((a, x) => a + x, 0) / ratings.length).toFixed(1);
+      const links = linkUpStatus(l);
+      const prof = m?.prof[KB.TACTICS.indexOf(l.tactic)] ?? null;
+      const bench = l.bench.filter((id) => byId[id]).map((id) => `<a href="#train/${esc(id)}" data-open-player="${esc(id)}">${esc(byId[id].name)}</a>`).join(", ");
+      xiHtml = `
+        <div class="panel">
+          <div class="panel__head">
+            <h2>STARTING XI &amp; BUILDS</h2>
+            <p class="panel__meta">${own ? "your lineup copy" : "the plan"} · ★ your saved build, otherwise the AI build</p>
+          </div>
+          <div class="lu-kpis">
+            <div><b>${avg}</b><span>avg XI rating · attack</span></div>
+            <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${esc(m?.name || "no manager")} · ${esc(l.tactic)}</span></div>
+            <div><b class="${links.some((x) => x.cp.length && x.km.length) ? "is-hot" : ""}">${links.some((x) => x.cp.length && x.km.length) ? "ON" : "OFF"}</b><span>Link-up${links[0] ? ` · ${esc(links[0].link.name)}` : ""}</span></div>
+          </div>
+          <div class="table-wrap">
+            <table class="kb-table gp-xi">
+              <thead><tr><th>Pos</th><th>Player · styles</th><th class="num">Rating</th><th>Build (Sh-Pa-Dr-Dx-LB-Ae-De) · booster</th><th>Key stats</th><th>Additional skills</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <p class="gp-bench"><span class="field__label">Bench</span> ${bench || "—"}</p>
+          <div class="panel__actions">
+            ${own ? `<button type="button" class="btn btn--primary" id="gpOpenLineup">Open in Lineup</button>` : ""}
+          </div>
+        </div>`;
+    }
+    const sections = gp.sections.map((s) => `
+      <div class="panel gp-section">
+        <div class="panel__head"><h2>${esc(s.title.toUpperCase())}</h2></div>
+        <ul class="gp-items">${s.items.map((it) => `<li><b>${esc(it.head)}</b> ${basis(it.basis)}<p>${esc(it.text)}</p></li>`).join("")}</ul>
+      </div>`).join("");
+    box.innerHTML = `
+      <div class="panel gp-hero">
+        <div class="panel__head">
+          <h2>GAME PLAN</h2>
+          <p class="panel__meta">${esc(gp.date)} · not measured — check it against your results</p>
+        </div>
+        <p class="gp-title">${esc(gp.title)}</p>
+        <p class="gp-summary">${esc(gp.summary)}</p>
+        ${fielded ? "" : `<p class="empty-state">Written for the site owner's squad — the XI isn't in yours, but the principles below still apply.</p>`}
+        <h3 class="group__title group__title--spaced">Instructions</h3>
+        <ul class="gp-instr">${gp.instructions.map((x) => `<li><span class="badge">${esc(x.what)}</span> <b>${esc(x.who)}</b> — ${esc(x.why)}</li>`).join("")}</ul>
+        <h3 class="group__title group__title--spaced">What changed since 3 Oct</h3>
+        <ul class="gp-items">${gp.changes.map((x) => `<li><p>${esc(x.text)}</p></li>`).join("")}</ul>
+      </div>
+      ${xiHtml}
+      <div class="gp-grid">${sections}</div>
+      <div class="panel">
+        <div class="panel__head"><h2>ALTERNATIVES</h2><p class="panel__meta">when the base plan isn't the answer</p></div>
+        <ul class="gp-items">${gp.alternatives.map((a) => `<li><b>${esc(a.name)}</b><p>${esc(a.when)}</p></li>`).join("")}</ul>
+      </div>`;
+    $("#gpOpenLineup")?.addEventListener("click", () => { store.activeLineup = gp.planId; saveStore(); go("lineup"); });
+  }
 
   $("#luManagers").addEventListener("click", (e) => {
     const b = e.target.closest("[data-mfit]");

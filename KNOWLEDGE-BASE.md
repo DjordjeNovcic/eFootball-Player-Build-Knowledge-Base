@@ -2354,3 +2354,74 @@ through-ball spam (it gives space for long shots).
 Sources: gamemarket.gg v6.0.0 Team Playstyle Guide; FIFPlay eFootball 2026 Team
 Playstyles; eFootball Edge "Rock, Paper, Scissors of Playstyles"; Skycoach Best eFootball
 Formations 2026; mejoress Individual Instructions guide.
+
+---
+
+# 24. Long Ball Counter 4-2-2-2 — game template (Oct 2026)
+
+How to play the user's base setup (Long Ball Counter, 4-2-2-2 attacking / 4-4-2 defending
+via Fluid Formation). Mixed evidence — each line says where it comes from: **[tested]** =
+section 19, **[official]** = in-game text (sections 18/20), **[guides]** = community guides
+(section 23), **[reasoning]** = ours, not measured. The squad-specific version (names, subs,
+set-piece takers) is `USER-SQUAD.md` §3 "Game plan — 10 Oct 2026" and the Build Lab's
+Game Plan tab (`data/knowledge.js` → `GAME_PLAN`).
+
+**Principle:** defend deep and compact, then go forward in three passes or fewer — long to
+the target striker, in behind for the Goal Poacher, or into the AMFs between the lines.
+[guides]
+
+## Build-up
+
+- No more than three passes in your own half; when pressed, the long ball is the plan, not
+  a panic clearance. [guides]
+- Centre-backs pass or go long, never carry. Through Passing (+20% to both passing stats on
+  low and lofted through balls) makes their balls in behind work. [tested]
+- GK High Punt: longer, faster punts — useful with a tall striker to flick on. [tested]
+- Phenomenal Pass on a ball-winning midfielder makes the first pass after a regain work
+  from an awkward body position — play it forward at once. [tested]
+
+## Attack patterns
+
+1. Long ball to the tall Fox in the Box / Target striker; the Goal Poacher runs past him;
+   the AMFs attack the second ball. [reasoning]
+2. Link-up through ball: Center Piece (Creative Playmaker AMF) → Key Man (Goal Poacher CF)
+   on the last defender's shoulder. The Link-up's measured effect is unknown. [reasoning]
+3. Inside carry by a Momentum Dribbling / Magnetic Feet AMF in the half-space, then curl,
+   slip the striker or switch. [official]
+4. Wrong-footed AMF cutting in for a controlled curl shot at 50%+ power — Blitz Curler's
+   dipping curve (Kicking Power > Curl > Finishing). [tested]
+5. Byline cutback to the Fox in the Box — he lives on cutbacks, rebounds and low crosses.
+   [official]
+
+## Finishing
+
+- Willpower: +1 Finishing / +1 Kicking Power per shot, up to +8, headers don't count —
+  shoot early with its holder. [tested]
+- Low Screamer: sub-50% stunning shots get faster and never become Dipping Shots. [tested]
+- Long-range Curler works on any curl shot (≈ +10% Finishing and Kicking Power). [tested]
+
+## Without the ball
+
+- Fluid Formation drops the AMFs to LMF/RMF: a 4-4-2 block in front of the box. Don't
+  press with two players. [guides]
+- Defend with the DMF in front of the box and let the AI centre-backs hold the line;
+  pulling a CB out by hand opens the through ball. [reasoning]
+- Long-reach Tackle works while the defender is still or moving slowly — jockey, don't
+  sprint into tackles. [official]
+- Press only on a trigger: back pass, heavy touch, full-back trapped on the touchline.
+  [reasoning]
+- Shadow Hunt (recovery when a pass goes in behind a DMF/LB/RB/CB) and Aerial Fort (own-box
+  aerial duels) on the back line; Fortress improves defending in the second half while
+  leading. [official]
+- Both full-backs never go forward together; width comes from the AMFs. [reasoning]
+
+## Game management
+
+- First 15 minutes: identify the opponent's playstyle and answer it (section 23 triangle;
+  Build Lab Match helper). [guides]
+- ~60': Super-sub (+5% Finishing, +1% Speed/Acceleration) for a tired attacker. [tested]
+- Chasing: fresh target striker and a fresh Goal Poacher (keeps the Link-up); against a deep
+  block switch to Possession with an Orchestrator. [reasoning]
+- Protecting: a second holding midfielder with the Defensive instruction; replace a
+  Destroyer CB only with a Destroyer, never pair two. [reasoning]
+
