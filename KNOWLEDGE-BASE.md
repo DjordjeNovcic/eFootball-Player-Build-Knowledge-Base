@@ -2518,3 +2518,23 @@ centre-back; Shoulder Charge only level with the dribbler; switch player before 
 arrives. Button mappings differ between guides — use the in-game Command List
 (footymeta Oct 2026, FIFPlay 2027 controls, gamemarket Sep 2026).
 
+
+## Community builds for the squad's cards (eFHUB top-voted, read 11 Oct 2026)
+
+The most-voted eFHUB community build for each of the 23 Game Plan cards was compared with
+the Recommended by AI build. eFHUB shows no date or reasoning, and most top builds assume
+Fabio Capello, so they are popularity data, not tests. Patterns:
+
+- **Strikers:** almost all use `10-0-4/6-12-8-4` with Striker's Instinct — maximum
+  Shooting and Dexterity, **no Passing**. Adopted: the Goal Poacher template no longer
+  chases Low Pass 75 (Eto'o 8-5-9-8-9-2 → 8-0-10-8-10-2, Low Pass 75 → 70, Ball Control
+  94, Kicking Power 96; Saviola, Del Piero, Shevchenko likewise). Not adopted: Shooting 10
+  at the cost of Speed — sections 3 and 8 (Speed 90/96/100, Phenomenal Finishing / Willpower
+  make 97–99 Finishing unnecessary), and Ibrahimović keeps his aerial points for long balls.
+- **Centre-backs and full-backs:** more Aerial / Defending, little Dexterity, Shutdown or
+  Duelling +1. Not adopted — the user judged slower builds too slow (section 3, 3 Oct).
+- **Skills:** Through Passing is near-universal (agrees with section 9). Common picks we
+  don't follow: Rising Shot (section 19: lowers scoring chance), Track Back on centre-backs
+  and full-backs (section 19: presses from the front line), Heel Trick (no measured effect).
+- Interception is not an addable pick in any top build; every Game Plan defender already
+  has it natively — it matters more since v6 (positioning depends on it).

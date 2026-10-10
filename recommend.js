@@ -19,7 +19,7 @@ window.Recommender = (deps) => {
   // the §7 "ideal profile" numbers. Past the target a stat keeps 25% of its value up
   // to the cap, then nothing (diminishing returns, §3/§13).
   const T = {
-    goalPoacher: { label: "Goal Poacher", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 91, 97], ["finishing", 8, 90, 94], ["speed", 8, 92, 96], ["ballControl", 6, 88], ["balance", 5, 88], ["kickingPower", 4, 90], ["dribbling", 2, 85], ["tightPossession", 2, 85], ["lowPass", 1, 75]] },
+    goalPoacher: { label: "Goal Poacher", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 91, 97], ["finishing", 8, 90, 94], ["speed", 8, 92, 96], ["ballControl", 6, 88], ["balance", 5, 88], ["kickingPower", 4, 90], ["dribbling", 2, 85], ["tightPossession", 2, 85]] },
     foxInTheBox: { label: "Fox in the Box", stats: [["offensiveAwareness", 10, 90, 95], ["finishing", 9, 90, 94], ["physicalContact", 7, 85], ["ballControl", 6, 88], ["acceleration", 6, 88, 92], ["heading", 4, 89], ["jump", 3, 85], ["kickingPower", 4, 90], ["balance", 4, 85], ["speed", 4, 90, 93]] },
     targetMan: { label: "Target Man", stats: [["physicalContact", 9, 88], ["heading", 8, 89], ["jump", 7, 88], ["ballControl", 7, 88], ["offensiveAwareness", 6, 88], ["finishing", 6, 88], ["lowPass", 4, 80], ["kickingPower", 4, 88], ["acceleration", 3, 85], ["speed", 2, 86]] },
     holePlayer: { label: "Hole Player", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 92, 97], ["balance", 8, 90], ["finishing", 7, 90, 94], ["ballControl", 6, 90], ["tightPossession", 5, 88], ["lowPass", 4, 82], ["speed", 8, 92, 96], ["kickingPower", 3, 88], ["dribbling", 3, 88]] },
