@@ -446,6 +446,12 @@ window.KB = (() => {
         { head: "Protecting · from ~75′", text: "Vieira for Seedorf with the Defensive instruction — two holding midfielders. A tired Desailly → Stam (Destroyer for Destroyer); never Stam next to Desailly.", basis: "reasoning" },
         { head: "Late lead · outlet", text: "Bale for a tired striker: his Attack Outlet style barely tracks back and stays high, ready for the counter — Speed 96 and Low Screamer on the break.", basis: "official" },
       ] },
+      { id: "form", title: "Form before the match", items: [
+        { head: "The rule", text: "Starter on a bad arrow, his like-for-like sub on a good one → swap. Both on a normal arrow → keep the plan. How much an arrow changes the stats isn't measured here.", basis: "reasoning" },
+        { head: "Like for like only", text: "Eto'o ↔ Dembélé / C. Ronaldo (Goal Poacher CF — the Link-up stays on) · Messi ↔ Sneijder (Creative Playmaker AMF — Link-up stays on) · Hazard ↔ Bellingham · Ibrahimović ↔ Gullit / Bale · Makélélé ↔ Vieira · Desailly ↔ Stam · Maldini / Thuram ↔ Zanetti.", basis: "reasoning" },
+        { head: "Never for an arrow", text: "Two Destroyers at CB, Messi on the left, or a change that switches the Link-up off. Puskás only when you start in Plan B.", basis: "reasoning" },
+        { head: "Who swings most", text: "Form is how much a card's condition varies — Bale, Dembélé, C. Ronaldo and Varane have unsteady form, so check their arrows every match; the rest of the XI is steadier.", basis: "official" },
+      ] },
       { id: "planb", title: "Plan B — when it isn't working", items: [
         { head: "When", text: "They sit deep and compact, your long balls get cleared, and by ~55′ you've had few real chances — Long Ball Counter is feeding their block.", basis: "reasoning" },
         { head: "Switch to Possession", text: "Sub-tactic Possession (Deschamps 89) — Possession beats Long Ball Counter and deep blocks.", basis: "guides" },
