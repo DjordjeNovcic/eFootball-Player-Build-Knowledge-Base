@@ -1180,12 +1180,20 @@
       if (seeded && seeded.fluid === undefined && plan.fluid !== undefined) { Object.assign(seeded, shape()); added = true; }
       (plan.updates || []).forEach((u) => {
         if (store.seededPlans.includes(u.id)) return;
+        // Wait until every card the update names is loaded (a stale cached players.js
+        // would otherwise drop the new ones for good).
+        const named = [...(u.bench || []), ...(u.fill || []), ...Object.values(u.replace || {})];
+        if (named.some((id) => !byId[id])) return;
         store.seededPlans.push(u.id);
         added = true;
         if (!seeded) return; // a fresh copy already has it
         // A whole new bench / substitution plan (starters stay off the bench).
         if (u.bench) seeded.bench = u.bench.filter((id) => byId[id] && !seeded.xi.includes(id)).slice(0, BENCH_MAX);
         if (u.subs) seeded.subs = u.subs.map((s) => ({ ...s }));
+        // Add these to the bench if they're missing and there's room.
+        (u.fill || []).forEach((id) => {
+          if (!seeded.xi.includes(id) && !seeded.bench.includes(id) && seeded.bench.length < BENCH_MAX) seeded.bench.push(id);
+        });
         Object.entries(u.replace || {}).forEach(([from, to]) => {
           if (!byId[to] || seeded.xi.includes(to)) return;
           const i = seeded.xi.indexOf(from);

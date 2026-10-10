@@ -351,6 +351,8 @@ window.KB = (() => {
           { minute: 72, out: "88040387118554", in: "106773692395554", note: "Fresh pace in behind — Goal Poacher CF, the Link-up stays on" },
           { minute: 75, out: "88041460859805", in: "88044145348029", note: "If leading: Anchor Man + Defensive instruction" },
         ] },
+        // A device that applied the bench above before Bale/Calafiori loaded kept only 10.
+        { id: "2026-10-11-bench-fill", fill: ["88045755861672", "106788993239598"] },
       ],
       defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
         ["DMF", 36, 41], ["DMF", 64, 41], ["LMF", 12, 55], ["RMF", 88, 55], ["CF", 37, 84], ["CF", 63, 84]],
