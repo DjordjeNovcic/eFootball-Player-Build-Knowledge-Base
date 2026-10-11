@@ -1292,3 +1292,6 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 /* Public cards */
 .pub-more{ grid-column: 1 / -1; justify-self: center; margin: 0.6rem 0; }
 #pubToolbar .field{ margin: 0; flex: 0 1 12rem; }
+
+/* Playing-style filter in every card list */
+.toolbar .style-filter{ flex: 0 1 15rem; min-width: 11rem; }

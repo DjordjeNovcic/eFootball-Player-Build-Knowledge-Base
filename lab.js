@@ -33,6 +33,20 @@
   const isGK = (p) => p.position === "GK";
   const categoriesFor = (p) => KB.CATEGORIES.filter((c) => !c.gk || isGK(p));
   const styleText = (p) => [p.playingStyle, p.playingStyleDefensive].filter(Boolean).join(" · ") || "—";
+  // Playing-style filter shared by every card list (§18): one <select> of the attacking and
+  // defensive styles; a card matches on either of its two style slots.
+  const STYLE_OPTIONS = `<option value="">All styles</option>`
+    + `<optgroup label="Attacking">${KB.ATT_STYLES.map((s) => `<option value="${norm(s.name)}">${esc(s.name)}</option>`).join("")}</optgroup>`
+    + `<optgroup label="Defensive">${KB.DEF_STYLES.map((s) => `<option value="${norm(s.name)}">${esc(s.name)}</option>`).join("")}</optgroup>`
+    + `<option value="basic">No playing style (Basic)</option>`;
+  const styleMatch = (p, key) => !key || (key === "basic" ? !p.playingStyle && !p.playingStyleDefensive
+    : norm(p.playingStyle) === key || norm(p.playingStyleDefensive) === key);
+  function bindStyleFilter(prefix, state, render) {
+    const sel = $(`#${prefix}Style`);
+    if (!sel) return;
+    sel.innerHTML = STYLE_OPTIONS;
+    sel.addEventListener("change", (e) => { state.style = e.target.value; render(); });
+  }
   // Playing-style guide (§18): resolve both style slots to the KB entry, its compatible
   // positions and what to expect. eFHUB files some defensive styles in the attacking slot.
   const STYLE_INDEX = (() => {
@@ -370,13 +384,14 @@
      Squad tab
   --------------------------------------------------------- */
 
-  const squadState = { q: "", group: "ALL" };
+  const squadState = { q: "", group: "ALL", style: "" };
 
   function renderSquad() {
     const root = $("#squadGrid");
     const q = squadState.q.trim().toLowerCase();
     const list = players
       .filter((p) => squadState.group === "ALL" || POSITION_GROUP[p.position] === squadState.group)
+      .filter((p) => styleMatch(p, squadState.style))
       .filter((p) => !q || `${p.name} ${p.team} ${positionList(p).map((x) => x.pos).join(" ")} ${styleText(p)} ${p.id}`.toLowerCase().includes(q))
       .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.overall - a.overall);
 
@@ -436,6 +451,7 @@
   }
 
   $("#squadSearch").addEventListener("input", (e) => { squadState.q = e.target.value; renderSquad(); });
+  bindStyleFilter("squad", squadState, renderSquad);
   $("#squadGroups").addEventListener("click", (e) => {
     const b = e.target.closest("[data-group]");
     if (!b) return;
@@ -1763,7 +1779,7 @@
     const current = lu.sel.area === "xi" ? l.xi[lu.sel.i] : l.bench[lu.sel.i];
     const q = lu.q.trim().toLowerCase();
     const rows = players
-      .filter((p) => !q || `${p.name} ${p.team} ${p.position}`.toLowerCase().includes(q))
+      .filter((p) => !q || `${p.name} ${p.team} ${p.position} ${styleText(p)}`.toLowerCase().includes(q))
       .map((p) => ({ p, r: pos ? slotRating(p, pos, l) : p.overall, prof: pos ? proficiency(p, pos) : "primary" }))
       .sort((a, b) => b.r - a.r);
     const RANK = { primary: 0, high: 1, mid: 2, none: 3 };
@@ -2185,8 +2201,8 @@
     skillMultiplier, managerProficiency, managerObj, notesFor, myPicks, context: recContext(), MAX_LEVEL, boosterPool: DATA.boosterPool,
     onBench: (id) => lineupRole(id)?.label === "Bench",
   });
-  const recState = { q: "", group: "ALL", open: new Set() };
-  const mineState = { q: "", group: "ALL", onlyMine: false };
+  const recState = { q: "", group: "ALL", style: "", open: new Set() };
+  const mineState = { q: "", group: "ALL", style: "", onlyMine: false };
 
   function lineupRole(id) {
     const l = store.lineups.find((x) => x.id === store.activeLineup) || store.lineups[0];
@@ -2257,6 +2273,7 @@
     const order = recState.group === "XI" ? (lineup?.xi || []) : recState.group === "BENCH" ? (lineup?.bench || []) : null;
     const list = players
       .filter((p) => recState.group === "ALL" || (order ? order.includes(p.id) : POSITION_GROUP[p.position] === recState.group))
+      .filter((p) => styleMatch(p, recState.style))
       .filter((p) => !q || `${p.name} ${p.team} ${p.position} ${styleText(p)}`.toLowerCase().includes(q))
       .sort((a, b) => (order ? order.indexOf(a.id) - order.indexOf(b.id)
         : POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || REC.recs[b.id].rating - REC.recs[a.id].rating));
@@ -2376,8 +2393,9 @@
     const q = mineState.q.trim().toLowerCase();
     const list = players
       .filter((p) => mineState.group === "ALL" || POSITION_GROUP[p.position] === mineState.group)
+      .filter((p) => styleMatch(p, mineState.style))
       .filter((p) => !mineState.onlyMine || store.builds[p.id])
-      .filter((p) => !q || `${p.name} ${p.team} ${p.position}`.toLowerCase().includes(q))
+      .filter((p) => !q || `${p.name} ${p.team} ${p.position} ${styleText(p)}`.toLowerCase().includes(q))
       .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.overall - a.overall);
     const total = Object.keys(store.builds).filter((id) => byId[id]).length;
     $("#mineMeta").textContent = `${total} of ${players.length} players have your build · ratings use ${recContextLabel()} for both columns`;
@@ -2429,6 +2447,7 @@
       $(`#${prefix}Groups`).querySelectorAll(".chip").forEach((c) => c.classList.toggle("is-selected", c === b));
       render();
     });
+    bindStyleFilter(prefix, state, render);
   }
   bindFilter("rec", recState, renderRecommended);
   // Cards are collapsed to a one-line summary; remember which ones are open across re-renders.
@@ -2480,7 +2499,7 @@
      CoinPlayTV builds tab — published by the owner, read by every signed-in account
   --------------------------------------------------------- */
 
-  const proState = { q: "", group: "ALL", open: new Set() };
+  const proState = { q: "", group: "ALL", style: "", open: new Set() };
 
   function renderPro() {
     // Public: everyone sees the builds; copying one into a squad needs an account.
@@ -2490,6 +2509,7 @@
     const q = proState.q.trim().toLowerCase();
     const list = all
       .filter((b) => proState.group === "ALL" || POSITION_GROUP[b.position] === proState.group)
+      .filter((b) => styleMatch(b.player, proState.style))
       .filter((b) => !q || `${b.player.name} ${b.player.team} ${b.position} ${styleText(b.player)} ${b.note}`.toLowerCase().includes(q))
       .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.updatedAt - a.updatedAt);
     $("#proMeta").textContent = pro.error ? "" : pro.loaded ? `${all.length} build${all.length === 1 ? "" : "s"} by ${pro.name}` : "Loading…";
@@ -2594,7 +2614,7 @@
 
   const PUB_NEW_DAYS = 14;
   const PUB_PAGE = 60;
-  const pubState = { q: "", group: "ALL", sort: "rating", newOnly: false, open: new Set(), status: "idle", error: null,
+  const pubState = { q: "", group: "ALL", style: "", sort: "rating", newOnly: false, open: new Set(), status: "idle", error: null,
     cards: [], byId: {}, builds: {}, built: null, fetched: null, shown: PUB_PAGE, live: {} };
   const pubIsNew = (p) => !!p.added && (Date.now() - Date.parse(p.added)) / 864e5 <= PUB_NEW_DAYS;
 
@@ -2682,6 +2702,7 @@
     const q = pubState.q.trim().toLowerCase();
     const list = pubState.cards
       .filter((p) => pubState.group === "ALL" || POSITION_GROUP[p.position] === pubState.group)
+      .filter((p) => styleMatch(p, pubState.style))
       .filter((p) => !pubState.newOnly || pubIsNew(p))
       .filter((p) => !q || `${p.name} ${p.team || ""} ${p.position} ${styleText(p)}`.toLowerCase().includes(q));
     const rating = (p) => pubState.builds[p.id]?.rating ?? p.overall ?? 0;

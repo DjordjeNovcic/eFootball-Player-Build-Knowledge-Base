@@ -27,6 +27,9 @@ Two parts:
     sections plus **With your manager** (the card re-run live with your manager and
     playstyle); **Add to my squad** copies it into your squad and opens the Trainer. Kept
     apart from every profile's squad — nothing here touches your cards until you add one.
+  - Every card list (My Squad, CoinPlayTV Builds, Public Cards, Recommended by AI, My Builds)
+    has a **playing-style filter** next to the position chips — any attacking or defensive
+    style (§18), matched on either of a card's two style slots.
   - **Recommended by AI** — a build for every card, generated from the knowledge base
     (`recommend.js`): role from position + styles → §7 priorities and §3 thresholds →
     player-model and native-skill adjustments → every point spent → slot-2 booster last →
