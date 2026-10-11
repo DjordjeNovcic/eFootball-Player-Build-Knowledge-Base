@@ -20,6 +20,13 @@ Two parts:
     card to their squad together with the build. Each published
     build carries its own card snapshot, so viewers don't need the card first. Stored in
     Firestore `creatorBuilds/{playerId}`; anyone can read, only the owner can write (`firestore.rules`).
+  - **Public Cards** — every card in eFHUB's sitemap (~1000: Epic, Legend, Big Time and the
+    current Featured players) with its Recommended by AI build, rated without a manager
+    (`data/public/cards.json` + `builds.json`, refreshed weekly by a GitHub Action). Search,
+    position / "New this week" filters, sort by AI or card rating; a card opens into the §15
+    sections plus **With your manager** (the card re-run live with your manager and
+    playstyle); **Add to my squad** copies it into your squad and opens the Trainer. Kept
+    apart from every profile's squad — nothing here touches your cards until you add one.
   - **Recommended by AI** — a build for every card, generated from the knowledge base
     (`recommend.js`): role from position + styles → §7 priorities and §3 thresholds →
     player-model and native-skill adjustments → every point spent → slot-2 booster last →
@@ -110,6 +117,22 @@ proficiency from eFHUB, photos, Link-up plays and release dates from
 
 `data/knowledge.js` is a hand-maintained extract of `KNOWLEDGE-BASE.md` / `USER-SQUAD.md`
 for the UI — update it when those documents change.
+
+## Public card database
+
+`tools/fetch_public.py` pulls every card listed in efhub.com's sitemap into
+`data/public/cards.json` — new cards only, one page every 5 s as its robots.txt asks (a full
+first run is ~85 minutes), written as it goes; `--all` re-fetches everything, `--limit N`
+is a smoke test, `--ids ID…` adds cards the sitemap doesn't list. `tools/build_public.js`
+then computes the Recommended by AI build for each card without a manager into
+`data/public/builds.json`. `.github/workflows/public-cards.yml` runs both every Monday (and
+on demand), refreshes `data/managers.js` and commits the result; GitHub Pages redeploys
+from `main`. The owner's squad files are never touched.
+
+```bash
+python3 tools/fetch_public.py          # new cards from the sitemap
+node tools/build_public.js             # builds for all public cards
+```
 
 ## Check the builds
 

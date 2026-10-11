@@ -227,43 +227,54 @@ def write_friend(name, ids, left, strip):
     print(f"\n{name}: {len(players)} players written to data/friends.js, {len(failed)} failed: {failed}")
 
 
-def fetch_cards(ids, left, strip):
+def parse_card(s, pid, left, strip):
+    """One card in the data/players.js shape, from a player page's flight payload.
+
+    Returns (card, names) — names is the page's skill/stat label table."""
+    p = obj_at(s, f'"player":{{"id":"{pid}"')
+    if not p:
+        raise ValueError("no player payload (page layout changed?)")
+    names = obj_at(s, '"messages":{') or {}
+    skills = obj_at(s, '"playerSkills":[') or []
+    add_pos = obj_at(s, '"additionalPositions":[') or []
+    stats = obj_at(s, '"baseStats":{')
+    b1 = left.get(p.get("boostId"))
+    b2 = left.get(p.get("boostId2") or 0)
+    undef = lambda v: None if v == "$undefined" else v
+    card = {
+        "id": pid, "name": p["name"], "team": p.get("team"),
+        "position": p["position"], "additionalPositions": add_pos,
+        "playingStyle": undef(p.get("playingStyle")),
+        "playingStyleDefensive": undef(p.get("playingStyleDefensive")),
+        "overall": p.get("overallRating"), "age": p.get("age"),
+        "height": p.get("height"), "weight": p.get("weight"),
+        "foot": p.get("preferredFoot"),
+        "weakFootUsage": p.get("weakFootUsage"),
+        "weakFootAccuracy": p.get("weakFootAccuracy"),
+        "form": p.get("form"), "injuryResistance": p.get("injuryResistance"),
+        "skills": skills, "comSkills": p.get("comSkills") or [],
+        "stats": stats, "model": p.get("playerModel"),
+        "image": p.get("imageUrl"), "levelCap": p.get("levelCap"),
+        "booster1": strip(b1) if b1 else None,
+        # Some cards ship with slot 2 pre-assigned; otherwise slot 2 is free to pick.
+        "booster2Fixed": strip(b2) if b2 else None,
+    }
+    return card, names
+
+
+def fetch_cards(ids, left, strip, delay=1.0):
     players, names, failed = [], {}, []
     for n, pid in enumerate(ids, 1):
         try:
-            s = rsc_payload(get(f"https://efhub.com/players/{pid}"))
-            p = obj_at(s, f'"player":{{"id":"{pid}"')
+            card, page_names = parse_card(rsc_payload(get(f"https://efhub.com/players/{pid}")), pid, left, strip)
             if not names:
-                names = obj_at(s, '"messages":{')
-            skills = obj_at(s, '"playerSkills":[') or []
-            add_pos = obj_at(s, '"additionalPositions":[') or []
-            stats = obj_at(s, '"baseStats":{')
-            b1 = left.get(p.get("boostId"))
-            b2 = left.get(p.get("boostId2") or 0)
-            undef = lambda v: None if v == "$undefined" else v
-            players.append({
-                "id": pid, "name": p["name"], "team": p.get("team"),
-                "position": p["position"], "additionalPositions": add_pos,
-                "playingStyle": undef(p.get("playingStyle")),
-                "playingStyleDefensive": undef(p.get("playingStyleDefensive")),
-                "overall": p.get("overallRating"), "age": p.get("age"),
-                "height": p.get("height"), "weight": p.get("weight"),
-                "foot": p.get("preferredFoot"),
-                "weakFootUsage": p.get("weakFootUsage"),
-                "weakFootAccuracy": p.get("weakFootAccuracy"),
-                "form": p.get("form"), "injuryResistance": p.get("injuryResistance"),
-                "skills": skills, "comSkills": p.get("comSkills") or [],
-                "stats": stats, "model": p.get("playerModel"),
-                "image": p.get("imageUrl"), "levelCap": p.get("levelCap"),
-                "booster1": strip(b1) if b1 else None,
-                # Some cards ship with slot 2 pre-assigned; otherwise slot 2 is free to pick.
-                "booster2Fixed": strip(b2) if b2 else None,
-            })
-            print(f"[{n}/{len(ids)}] {pid} {p['name']}")
+                names = page_names
+            players.append(card)
+            print(f"[{n}/{len(ids)}] {pid} {card['name']}")
         except Exception as e:  # keep going; report at the end
             failed.append(pid)
             print(f"[{n}/{len(ids)}] {pid} FAILED: {e}", file=sys.stderr)
-        time.sleep(1.0)
+        time.sleep(delay)
     return players, names, failed
 
 

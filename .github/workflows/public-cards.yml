@@ -1,0 +1,46 @@
+name: Public cards — weekly refresh
+
+# Pulls new cards from efhub.com's sitemap into data/public/cards.json (one page every
+# 5 s, as its robots.txt asks), recomputes the Recommended by AI builds for all of them
+# (data/public/builds.json) and commits the result — GitHub Pages redeploys from main.
+# The owner's squad (data/players.js, USER-SQUAD.md) is never touched.
+
+on:
+  schedule:
+    - cron: "0 4 * * 1" # Mondays 04:00 UTC
+  workflow_dispatch:
+    inputs:
+      all:
+        description: "Re-fetch every card, not only new ones"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch cards (sitemap, new ones only)
+        run: python3 tools/fetch_public.py ${{ inputs.all && '--all' || '' }}
+      - name: Refresh managers
+        run: python3 tools/fetch_players.py --managers
+      - name: Compute builds
+        run: node tools/build_public.js
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/public data/managers.js
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "Public cards: weekly refresh ($(date -u +%Y-%m-%d))"
+          git push

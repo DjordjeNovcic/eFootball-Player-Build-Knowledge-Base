@@ -1288,3 +1288,7 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .gp-bench a{ color: var(--paper-dim); }
 .gp-bench .field__label{ margin-right: 0.4rem; }
 @media (max-width: 560px){ .panel.gp-section, .panel.gp-hero{ padding: 1.1rem; } }
+
+/* Public cards */
+.pub-more{ grid-column: 1 / -1; justify-self: center; margin: 0.6rem 0; }
+#pubToolbar .field{ margin: 0; flex: 0 1 12rem; }

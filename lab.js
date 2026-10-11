@@ -326,7 +326,7 @@
      Tabs / routing
   --------------------------------------------------------- */
 
-  const TABS = ["squad", "pro", "recommended", "mybuilds", "train", "lineup", "plan", "skills", "managers", "styles"];
+  const TABS = ["squad", "pro", "public", "recommended", "mybuilds", "train", "lineup", "plan", "skills", "managers", "styles"];
   const view = { playerId: null, draft: null, position: null };
 
   function route() {
@@ -348,6 +348,7 @@
     if (active === "recommended") renderRecommended();
     if (active === "mybuilds") renderMyBuilds();
     if (active === "pro") renderPro();
+    if (active === "public") { loadPublic(); renderPublic(); }
   }
   function go(tab, arg) {
     const hash = `#${tab}${arg ? "/" + arg : ""}`;
@@ -2585,6 +2586,223 @@
   });
 
   /* ---------------------------------------------------------
+     Public cards tab — every card in eFHUB's sitemap (data/public/cards.json, weekly by
+     .github/workflows/public-cards.yml) with its Recommended by AI build precomputed
+     without a manager (data/public/builds.json, tools/build_public.js). Kept apart from
+     every profile's squad: nothing here touches the store until "Add to my squad".
+  --------------------------------------------------------- */
+
+  const PUB_NEW_DAYS = 14;
+  const PUB_PAGE = 60;
+  const pubState = { q: "", group: "ALL", sort: "rating", newOnly: false, open: new Set(), status: "idle", error: null,
+    cards: [], byId: {}, builds: {}, built: null, fetched: null, shown: PUB_PAGE, live: {} };
+  const pubIsNew = (p) => !!p.added && (Date.now() - Date.parse(p.added)) / 864e5 <= PUB_NEW_DAYS;
+
+  async function loadPublic() {
+    if (pubState.status !== "idle") return;
+    pubState.status = "loading";
+    renderPublic();
+    try {
+      const [cards, builds] = await Promise.all(["data/public/cards.json", "data/public/builds.json"].map((u) =>
+        fetch(u, { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error(`${u}: HTTP ${r.status}`); return r.json(); })));
+      Object.assign(DATA.labels, cards.labels || {});
+      pubState.cards = (cards.players || []).filter((c) => c && c.id && c.stats);
+      pubState.byId = Object.fromEntries(pubState.cards.map((c) => [c.id, c]));
+      pubState.fetched = cards.fetched;
+      pubState.builds = builds.builds || {};
+      pubState.built = builds.built;
+      pubState.status = "ready";
+    } catch (e) {
+      pubState.status = "error";
+      pubState.error = e.message;
+    }
+    renderPublic();
+  }
+
+  // One card through recommend.js — the precomputed build is manager-less; this is the
+  // same card with the profile's manager and playstyle (recContext), or a card whose
+  // build isn't in builds.json yet.
+  function recommendOne(card, context) {
+    const r = window.Recommender({
+      players: [card], KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
+      skillMultiplier, managerProficiency, managerObj, notesFor: () => null, myPicks: () => [], context, MAX_LEVEL,
+      boosterPool: DATA.boosterPool, onBench: () => false,
+    }).recs[card.id];
+    return { role: r.roleLabel, template: r.template, levels: r.levels, booster2: r.booster2, booster: r.booster.name, boosterFixed: r.boosterFixed,
+      rating: r.rating, final: r.final, targets: r.targets, skills: r.aiSkills, why: r.aiWhy, notes: r.notes, lock: r.lock, missed: r.missed, waste: r.waste, altPosition: r.altPosition };
+  }
+  function pubBuild(p) {
+    if (pubState.builds[p.id]) return pubState.builds[p.id];
+    pubState.live[p.id] ||= recommendOne(p, { manager: "", tactic: "" });
+    return pubState.live[p.id];
+  }
+  function pubVerdict(p, r) {
+    const out = [];
+    if (budgetFor(p.levelCap) === 0) out.push("Fixed card — eFHUB lists no progression points, so only the booster and skills can change.");
+    else if (r.lock) out.push("<b>Lock it.</b> Every high-priority target for the role is met.");
+    else {
+      const bits = [];
+      if (r.missed.length) bits.push(`still short on ${r.missed.map((t) => `${statLabel(t.stat)} (${t.value}/${t.target})`).join(", ")}`);
+      const waste = Object.entries(r.waste || {});
+      if (waste.length) bits.push(`${waste.map(([k, n]) => `${n} pt${n > 1 ? "s" : ""} of ${statLabel(k)}`).join(", ")} past the useful range (§14 step 4) — the category also feeds stats the role needs, so it's a trade-off`);
+      const text = bits.join("; ");
+      out.push(`<b>Test a variant.</b> ${text.charAt(0).toUpperCase()}${text.slice(1)}.`);
+    }
+    const alt = r.altPosition;
+    out.push(alt && alt.r > r.rating
+      ? `Preferred position: <b>${p.position}</b> for the style (${esc(p.playingStyle || p.playingStyleDefensive || "")}); ${alt.pos} rates higher (${alt.r}) but check style compatibility before moving him.`
+      : `Preferred position: <b>${p.position}</b>${alt ? ` (best alternative ${alt.pos} ${alt.r})` : ""}.`);
+    return out.map((x) => `<p>${x}</p>`).join("");
+  }
+  // "With your manager": the card re-run live with the profile's manager and playstyle.
+  function pubManagerHtml(p) {
+    const ctx = recContext();
+    const m = managerObj(ctx.manager);
+    if (!m) return `<p class="rec-muted">Pick a manager in the Trainer or Lineup tab to see this card rated with your team booster and playstyle.</p>`;
+    const r = recommendOne(p, ctx);
+    const cats = categoriesFor(p);
+    const base = pubBuild(p);
+    const line = (b) => cats.map((c) => b.levels[c.key] || 0).join("-");
+    const same = line(r) === line(base) && r.booster === base.booster;
+    return `<p><b>${r.rating}</b> at ${p.position} with ${esc(m.name)} (${esc(ctx.tactic)}) — <code>${line(r)}</code> · ${esc(r.booster)}${same ? " <span class=\"rec-muted\">(same build as without a manager)</span>" : ""}</p>
+      ${same ? "" : `<p class="rec-muted">The manager's +1/+1 and playstyle multiplier move a threshold, so the points shift. Add him to your squad and the Trainer shows both.</p>`}`;
+  }
+
+  function renderPublic() {
+    const box = $("#pubGrid");
+    if (!box) return;
+    const signedOut = auth.enabled && !auth.signedIn;
+    $("#pubGate").hidden = !signedOut;
+    const meta = $("#pubMeta");
+    if (pubState.status !== "ready") {
+      meta.textContent = pubState.status === "error" ? "" : "Loading…";
+      box.innerHTML = `<p class="empty-state">${pubState.status === "error" ? `Couldn't load the public cards (${esc(pubState.error)}).` : "Loading cards…"}</p>`;
+      return;
+    }
+    const q = pubState.q.trim().toLowerCase();
+    const list = pubState.cards
+      .filter((p) => pubState.group === "ALL" || POSITION_GROUP[p.position] === pubState.group)
+      .filter((p) => !pubState.newOnly || pubIsNew(p))
+      .filter((p) => !q || `${p.name} ${p.team || ""} ${p.position} ${styleText(p)}`.toLowerCase().includes(q));
+    const rating = (p) => pubState.builds[p.id]?.rating ?? p.overall ?? 0;
+    const SORT = {
+      rating: (a, b) => rating(b) - rating(a) || (b.overall || 0) - (a.overall || 0) || a.name.localeCompare(b.name),
+      overall: (a, b) => (b.overall || 0) - (a.overall || 0) || rating(b) - rating(a),
+      newest: (a, b) => String(b.added || "").localeCompare(String(a.added || "")) || rating(b) - rating(a),
+      name: (a, b) => a.name.localeCompare(b.name) || rating(b) - rating(a),
+    };
+    list.sort(SORT[pubState.sort] || SORT.rating);
+    const fresh = pubState.cards.filter(pubIsNew).length;
+    meta.textContent = `${list.length} of ${pubState.cards.length} cards · eFHUB ${pubState.fetched || "—"} · builds ${pubState.built || "—"}, rated without a manager${fresh ? ` · ${fresh} new in the last ${PUB_NEW_DAYS} days` : ""}`;
+    $("#pubNew").classList.toggle("is-selected", pubState.newOnly);
+    $("#pubSort").value = pubState.sort;
+    const shown = list.slice(0, pubState.shown);
+    box.innerHTML = shown.map((p) => {
+      const r = pubBuild(p);
+      const cats = categoriesFor(p);
+      const pts = cats.reduce((t, c) => t + cumCost(r.levels[c.key] || 0), 0);
+      const att = KB.ATT_STYLES.find((x) => norm(x.name) === norm(p.playingStyle));
+      const def = KB.DEF_STYLES.find((x) => norm(x.name) === norm(p.playingStyleDefensive || p.playingStyle));
+      const b2 = DATA.boosterPool.find((b) => b.id === r.booster2) || p.booster2Fixed;
+      const owned = !!byId[p.id];
+      const open = pubState.open.has(p.id);
+      return `
+        <details class="rec-card" data-group="${POSITION_GROUP[p.position]}" data-pub="${p.id}" ${open ? "open" : ""}>
+          <summary class="rec-card__head">
+            ${cardImg(p, "rec-card__img")}
+            <div class="rec-card__who">
+              <h3>${esc(p.name)}</h3>
+              <p>${esc(p.team || "")} · ${p.height} cm · Lv cap ${p.levelCap}${p.added ? ` · eFHUB ${esc(p.added)}` : ""}</p>
+              <div class="kb-card__badges">
+                ${pubIsNew(p) ? `<span class="badge badge--lime">New</span>` : ""}
+                <span class="badge">${esc(r.role)}</span>
+                ${r.lock ? `<span class="badge badge--green">Lock</span>` : `<span class="badge badge--amber">Test variant</span>`}
+                ${owned ? `<span class="badge badge--green">in your squad</span>` : ""}
+              </div>
+            </div>
+            <div class="rec-card__ovr"><b>${r.rating}</b><span>${p.position} · card ${p.overall ?? "—"}</span></div>
+            <p class="rec-card__line"><code>${cats.map((c) => r.levels[c.key] || 0).join("-")}</code> · ${esc(r.booster)} · ${r.skills.length} skills</p>
+          </summary>
+          <div class="rec-card__body">
+          <section class="rec-sec">
+            <h4>Role</h4>
+            <p><b>${p.position} — Attacking: ${esc(att?.name || p.playingStyle || "Basic")} · Defensive: ${esc(p.playingStyleDefensive ? (def?.name || p.playingStyleDefensive) : "—")}</b></p>
+            <p class="rec-muted">${esc(r.role)} priorities (§7) · ${esc(p.foot || "")} foot, weak foot ${p.weakFootUsage ?? "—"}/${p.weakFootAccuracy ?? "—"} · ${p.weight ?? "—"} kg</p>
+            <div class="rec-style">${styleGuideHtml(p, p.position)}</div>
+            ${(r.notes || []).map((n) => `<p class="rec-note">${esc(n)}</p>`).join("")}
+          </section>
+          <section class="rec-sec">
+            <h4>Build <span class="rec-muted">${pts}/${budgetFor(p.levelCap)} pts</span></h4>
+            <div class="rec-levels">${cats.map((c) => `<span class="${r.levels[c.key] ? "" : "is-zero"}"><b>${r.levels[c.key] || 0}</b><i>${c.label.replace("Lower Body Strength", "Lower Body").replace("Aerial Strength", "Aerial")}</i></span>`).join("")}</div>
+          </section>
+          <section class="rec-sec">
+            <h4>Boosters</h4>
+            <p>${esc(p.booster1?.name || "—")} <span class="rec-muted">(slot 1, fixed)</span> + <b>${esc(r.booster)}</b>${b2 ? ` — ${Object.keys(b2.stats).map(statLabel).join(", ")}` : ""}${r.boosterFixed ? " <span class=\"rec-muted\">(slot 2 is pre-assigned on this card)</span>" : ""}</p>
+          </section>
+          <section class="rec-sec">
+            <h4>Target stats</h4>
+            <div class="rec-targets">${r.targets.map((t) => `<span class="rec-t ${t.hit ? "is-hit" : "is-miss"}" title="Target ${t.target}"><i>${statLabel(t.stat)}</i><b class="tier-bg-${statTier(t.value)}">${t.value}</b>${t.hit ? "" : `<em>→${t.target}</em>`}</span>`).join("")}</div>
+          </section>
+          <section class="rec-sec">
+            <h4>Additional skills <span class="rec-muted">${r.skills.length}/5</span></h4>
+            <ul class="rec-skills">${r.skills.map((n) => `<li><b>${esc(n)}</b> <span>${esc(r.why?.[n] || "")}</span></li>`).join("")}</ul>
+          </section>
+          <section class="rec-sec rec-verdict">
+            <h4>Final verdict</h4>
+            ${pubVerdict(p, r)}
+          </section>
+          <section class="rec-sec" data-pub-mgr="${p.id}">
+            <h4>With your manager</h4>
+            ${open ? pubManagerHtml(p) : `<p class="rec-muted">…</p>`}
+          </section>
+          <div class="rec-card__actions">
+            ${signedOut
+              ? `<button type="button" class="btn btn--icon btn--solid" data-auth-open>Sign in to add this card</button>`
+              : `<button type="button" class="btn btn--icon btn--solid" data-pub-add="${p.id}">${owned ? "Open in Trainer" : "Add to my squad"}</button>`}
+            <a class="btn btn--icon" href="https://efhub.com/players/${esc(p.id)}" target="_blank" rel="noopener">eFHUB ↗</a>
+          </div>
+          </div>
+        </details>`;
+    }).join("") + (list.length > shown.length
+      ? `<button type="button" class="btn btn--icon pub-more" data-pub-more>Show ${Math.min(PUB_PAGE, list.length - shown.length)} more of ${list.length}</button>` : "")
+      || `<p class="empty-state">${pubState.cards.length ? "No cards match." : "No public cards yet — run tools/fetch_public.py."}</p>`;
+  }
+
+  // Copy a public card into this profile's squad (as a custom card, like a pasted one)
+  // and open its AI build in the Trainer — the public build is the starting point.
+  function addPublic(id) {
+    const card = pubState.byId[id];
+    if (!card) return;
+    if (!byId[id]) {
+      const { added, ...rest } = card;
+      store.removed = store.removed.filter((x) => x !== id);
+      store.customPlayers[id] = { ...rest, labels: Object.fromEntries([...card.skills, ...card.comSkills].map((k) => [k, skillLabel(k)])), custom: true, addedAt: Date.now() };
+      saveStore();
+      refreshAll();
+    }
+    openInTrainer(id, store.builds[id] || recBuild(id));
+  }
+
+  bindFilter("pub", pubState, () => { pubState.shown = PUB_PAGE; renderPublic(); });
+  $("#pubNew").addEventListener("click", () => { pubState.newOnly = !pubState.newOnly; pubState.shown = PUB_PAGE; renderPublic(); });
+  $("#pubSort").addEventListener("change", (e) => { pubState.sort = e.target.value; pubState.shown = PUB_PAGE; renderPublic(); });
+  $("#pubGrid").addEventListener("toggle", (e) => {
+    const d = e.target.closest?.("[data-pub]");
+    if (!d) return;
+    const id = d.dataset.pub;
+    if (d.open) {
+      pubState.open.add(id);
+      const box = d.querySelector("[data-pub-mgr]");
+      if (box && pubState.byId[id]) box.innerHTML = `<h4>With your manager</h4>${pubManagerHtml(pubState.byId[id])}`;
+    } else pubState.open.delete(id);
+  }, true);
+  document.addEventListener("click", (e) => {
+    const add = e.target.closest("[data-pub-add]");
+    if (add) addPublic(add.dataset.pubAdd);
+    if (e.target.closest("[data-pub-more]")) { pubState.shown += PUB_PAGE; renderPublic(); }
+  });
+
+  /* ---------------------------------------------------------
      Add / remove players (stored in this browser)
   --------------------------------------------------------- */
 
@@ -2650,7 +2868,7 @@
     if (!byId[view.playerId]) view.playerId = null;
     renderPlayerSelect();
     renderSquad(); renderSkills(); renderManagers(); renderStyles(); renderLineup(); renderRecommended(); renderMyBuilds();
-    renderRemoved(); renderPro();
+    renderRemoved(); renderPro(); renderPublic();
   }
 
   function renderRemoved() {
@@ -2774,6 +2992,7 @@
       renderProfileBar();
       renderSquad();
       renderPro();
+      renderPublic();
       if (auth.signedIn && isMe() && !repoSquad && !players.length) $("#addPanel").hidden = false;
     },
   };
