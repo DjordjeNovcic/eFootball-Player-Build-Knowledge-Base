@@ -74,17 +74,21 @@ Two parts:
     playstyle; no one without proficiency, intermediate proficiency and an inactive style
     count against a player, one card per player, never two Destroyer CBs) — displaced
     starters go to the bench.
+    The **match card** beside the pitch holds the individual **instructions** (Counter
+    Target, Tight Marking, Defensive, Anchoring — two per group, as in the game), the
+    **sub-tactic** (the saved second playstyle and shape you switch to mid-match, with
+    when to switch and who comes on; *Suggest* fills it from the manager's other playstyles
+    in §23 order and the bench players whose styles fit) and the substitutions; *Copy as
+    text* includes them. The owner's plan lineup carries the written **Playbook** (build-up,
+    five attack patterns, finishing, defending, game management, form, plan B, don'ts,
+    alternatives — `GAME_PLAN` in `data/knowledge.js`, KNOWLEDGE-BASE §24) as a fold below
+    the pitch; the old `#plan` link opens it.
     **Manager fit** compares the XI's average rating and Link-ups across your managers,
     and lists the eFHUB managers you don't own that this XI would rate highest at the
     lineup's playstyle (Link-ups that would switch on first);
     **Position training** lists who plays (or comes on) where his proficiency isn't
     high; the **Match helper** takes the opponent's playstyle and suggests what to switch
     to and which instructions to give whom (KNOWLEDGE-BASE §23).
-  - **Game Plan** — the agreed setup as a playbook: shape, instructions, the XI with each
-    starter's live build, slot-2 booster and skills, then how to play it — build-up, five
-    attack patterns, who shoots what, defending, game management, don'ts and alternatives,
-    each line tagged tested / in-game text / community guides / our reasoning
-    (`GAME_PLAN` in `data/knowledge.js`, KNOWLEDGE-BASE §24).
   - **Skills**, **Managers**, **Playing Styles** — the knowledge base as searchable
     views, cross-linked to which of my cards have each skill/style/Link-up role.
 

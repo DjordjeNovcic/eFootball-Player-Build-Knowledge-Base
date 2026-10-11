@@ -315,7 +315,11 @@ window.KB = (() => {
       updates: [
         { id: "2026-10-03-sneijder", replace: { "89138288266704": "88040387121974" } }, // XI: Ronaldinho → Sneijder
         { id: "2026-10-03-bench-ronaldinho", replace: { "88039581945329": "89138288266704" } }, // bench: Baresi → Ronaldinho
+        { id: "2026-10-11-matchcard", set: { instructions: { counterTarget: "88040387118554", defensive: "88044145348029", tightMarking: "89138288270047", anchoring: null },
+          subTactic: { tactic: "Possession", formation: "", when: "They sit deep and compact, long balls get cleared, few real chances by ~55′ — Possession beats Long Ball Counter.", subs: "Pirlo for Vieira (Orchestrator builds from deep); Messi SS for Ibrahimović (Deep-Lying Forward next to Eto'o)" } } },
       ],
+      instructions: { counterTarget: "88040387118554", defensive: "88044145348029", tightMarking: "89138288270047", anchoring: null },
+      subTactic: { tactic: "Possession", formation: "", when: "They sit deep and compact, long balls get cleared, few real chances by ~55′ — Possession beats Long Ball Counter.", subs: "Pirlo for Vieira (Orchestrator builds from deep); Messi SS for Ibrahimović (Deep-Lying Forward next to Eto'o)" },
       defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
         ["DMF", 36, 41], ["DMF", 64, 41], ["LMF", 12, 55], ["RMF", 88, 55], ["CF", 37, 84], ["CF", 63, 84]],
       xi: ["88040387118039", // GK Buffon
@@ -380,7 +384,12 @@ window.KB = (() => {
         // 11 Oct: Messi has no RMF — defend with him at AMF and Seedorf at RMF.
         { id: "2026-10-11-def-shape", defFormation: "4-3-1-2", defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
           ["DMF", 50, 40], ["RMF", 88, 55], ["LMF", 12, 55], ["AMF", 50, 62], ["CF", 37, 84], ["CF", 63, 84]] },
+        // 11 Oct: match card — instructions and the Possession sub-tactic (Plan B) on the lineup itself.
+        { id: "2026-10-11-matchcard", set: { instructions: { counterTarget: "88040387118554", defensive: "88045755964130", tightMarking: "89138288270047", anchoring: null },
+          subTactic: { tactic: "Possession", formation: "", when: "They sit deep and compact, long balls get cleared, few real chances by ~55′ — Possession beats Long Ball Counter and deep blocks (Deschamps 89).", subs: "Puskás for Gullit (Deep-Lying Forward next to Eto'o); Pirlo for Makélélé (Orchestrator builds from deep)" } } },
       ],
+      instructions: { counterTarget: "88040387118554", defensive: "88045755964130", tightMarking: "89138288270047", anchoring: null },
+      subTactic: { tactic: "Possession", formation: "", when: "They sit deep and compact, long balls get cleared, few real chances by ~55′ — Possession beats Long Ball Counter and deep blocks (Deschamps 89).", subs: "Puskás for Gullit (Deep-Lying Forward next to Eto'o); Pirlo for Makélélé (Orchestrator builds from deep)" },
       defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
         ["DMF", 50, 40], ["RMF", 88, 55], ["LMF", 12, 55], ["AMF", 50, 62], ["CF", 37, 84], ["CF", 63, 84]],
       xi: ["88040387118039", // GK Buffon
@@ -414,6 +423,12 @@ window.KB = (() => {
       fluid: true, defFormation: "4-3-1-2",
       defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
         ["CMF", 27, 49], ["DMF", 50, 40], ["CMF", 73, 49], ["AMF", 50, 66], ["CF", 37, 86], ["CF", 63, 86]],
+      updates: [
+        { id: "2026-10-11-diamond-matchcard", set: { instructions: { counterTarget: "88040387118554", defensive: "88045755964130", tightMarking: "89138288270047", anchoring: null },
+          subTactic: { tactic: "Long Ball", formation: "", when: "You need a goal and the counters aren't coming — Beckenbauer has Long Ball 89 (Possession only 65): go direct to the tall focal striker, runners on the second ball.", subs: "Ibrahimović (195 cm) for Gullit as the focal striker; Bellingham for Hazard on the second balls" } } },
+      ],
+      instructions: { counterTarget: "88040387118554", defensive: "88045755964130", tightMarking: "89138288270047", anchoring: null },
+      subTactic: { tactic: "Long Ball", formation: "", when: "You need a goal and the counters aren't coming — Beckenbauer has Long Ball 89 (Possession only 65): go direct to the tall focal striker, runners on the second ball.", subs: "Ibrahimović (195 cm) for Gullit as the focal striker; Bellingham for Hazard on the second balls" },
       xi: ["88040387118039", // GK Buffon
         "88041460993474", "88039850289220", "89138288270047", "88044145348045", // Maldini, Varane, Desailly, Cafu (Offensive Wingback — the only width)
         "88039581945312", "88045755964130", "88041460859805", // CMF Pirlo (Orchestrator), DMF Makélélé, CMF Seedorf (Box-to-Box)

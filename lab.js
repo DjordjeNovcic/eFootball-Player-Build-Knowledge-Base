@@ -388,12 +388,13 @@
      Tabs / routing
   --------------------------------------------------------- */
 
-  const TABS = ["squad", "pro", "public", "mybuilds", "train", "lineup", "plan", "skills", "managers", "styles"];
+  const TABS = ["squad", "pro", "public", "mybuilds", "train", "lineup", "skills", "managers", "styles"];
   const view = { playerId: null, draft: null, position: null };
 
   function route() {
     const [tab, arg] = location.hash.replace(/^#/, "").split("/");
     if (tab === "recommended") { location.replace("#squad"); return; } // the Recommended by AI tab lives in My Squad now
+    if (tab === "plan") { if (KB.GAME_PLAN && store.lineups.some((x) => x.id === KB.GAME_PLAN.planId)) store.activeLineup = KB.GAME_PLAN.planId; location.replace("#lineup"); return; } // the Game Plan is the plan lineup's Playbook now
     const active = TABS.includes(tab) ? tab : "squad";
     document.querySelectorAll("[data-tab]").forEach((el) => el.classList.toggle("is-active", el.dataset.tab === active));
     document.querySelectorAll("[data-tab-link]").forEach((el) => {
@@ -407,7 +408,6 @@
       if (players.length) openTrainer(arg && byId[arg] ? arg : byId[view.playerId] ? view.playerId : defaultPlayerId());
     }
     if (active === "lineup") renderLineup();
-    if (active === "plan") renderGamePlan();
     if (active === "mybuilds") renderMyBuilds();
     if (active === "pro") renderPro();
     if (active === "public") { loadPublic(); renderPublic(); }
@@ -1295,6 +1295,8 @@
         store.seededPlans.push(u.id);
         added = true;
         if (!seeded) return; // a fresh copy already has it
+        // Plain fields (instructions, sub-tactic, …) set as a whole.
+        if (u.set) Object.entries(u.set).forEach(([k, v]) => { seeded[k] = structuredClone(v); });
         // A whole new bench / substitution plan (starters stay off the bench).
         if (u.bench) seeded.bench = u.bench.filter((id) => byId[id] && !seeded.xi.includes(id)).slice(0, BENCH_MAX);
         if (u.subs) seeded.subs = u.subs.map((s) => ({ ...s }));
@@ -1587,9 +1589,133 @@
     renderPositionTraining(l);
     renderMatchHelper(l);
     renderPicker(l, slots);
+    renderInstructions(l);
+    renderSubTactic(l);
     renderSubs(l, layoutOf(l));
     $("#luNotes").value = l.notes || "";
+    // The owner's plan lineup carries the written playbook (KB.GAME_PLAN) as a fold below.
+    const pb = $("#luPlaybookPanel");
+    const isPlan = !!KB.GAME_PLAN && l.id === KB.GAME_PLAN.planId;
+    pb.hidden = !isPlan;
+    if (isPlan) renderGamePlan();
   }
+
+  // Individual instructions (§23): two per group, as in the game since v6.0.0.
+  const INSTR = [
+    ["counterTarget", "Counter Target", "defensive group — stays high for the ball in behind"],
+    ["tightMarking", "Tight Marking", "defensive group — on their most dangerous attacker"],
+    ["defensive", "Defensive", "attacking group — holds position, doesn't join attacks"],
+    ["anchoring", "Anchoring", "attacking group — a full-back or midfielder who stays home"],
+  ];
+  function renderInstructions(l) {
+    const box = $("#luInstructions");
+    if (!box) return;
+    l.instructions ||= {};
+    const slots = layoutOf(l);
+    const opts = (cur) => `<option value="">—</option>` + l.xi.map((id, i) => (byId[id] ? `<option value="${id}" ${cur === id ? "selected" : ""}>${slots[i][0]} · ${esc(byId[id].name)}</option>` : "")).join("");
+    box.innerHTML = INSTR.map(([k, label, hint]) => `<label class="instr__row" title="${esc(hint)}"><span class="badge">${label}</span><select data-instr="${k}">${opts(l.instructions[k])}</select></label>`).join("");
+  }
+  $("#luInstructions").addEventListener("change", (e) => {
+    const sel = e.target.closest("[data-instr]");
+    if (!sel) return;
+    const l = activeLineup();
+    l.instructions ||= {};
+    l.instructions[sel.dataset.instr] = sel.value || null;
+    saveLineup();
+  });
+
+  // Sub-tactic (eFootball Game Plan): the saved second playstyle + shape you switch to in a
+  // match. "Suggest" picks the manager's strongest other playstyle in §23 order and the
+  // bench players whose styles fit it.
+  const SUB_WHEN = {
+    "Possession": "They sit deep and compact, long balls get cleared, few real chances by ~55′ — keep the ball and draw them out.",
+    "Long Ball": "You need a goal and the counters aren't coming — go direct to the tall focal striker, runners on the second ball.",
+    "Quick Counter": "They play Possession and press high — win it and go at once, pace in behind.",
+    "Long Ball Counter": "They press with a high line — sit deep, soak it up and go in behind.",
+    "Out Wide": "They sit narrow and deep — go wide, overlap and cross early.",
+    "Overload": "They defend zonally in the middle — crowd one side with short options, then switch play.",
+  };
+  const SUB_PREFER = {
+    "Long Ball Counter": ["Possession", "Long Ball", "Quick Counter", "Out Wide", "Overload"],
+    "Quick Counter": ["Long Ball Counter", "Possession", "Long Ball", "Out Wide", "Overload"],
+    "Possession": ["Quick Counter", "Long Ball Counter", "Long Ball", "Out Wide", "Overload"],
+    "Out Wide": ["Long Ball Counter", "Possession", "Quick Counter", "Long Ball", "Overload"],
+    "Long Ball": ["Long Ball Counter", "Possession", "Quick Counter", "Out Wide", "Overload"],
+    "Overload": ["Possession", "Long Ball Counter", "Quick Counter", "Long Ball", "Out Wide"],
+  };
+  function suggestSubTactic(l) {
+    const m = managerObj(l.manager);
+    const prof = (t) => m?.prof[KB.TACTICS.indexOf(t)] ?? null;
+    const order = (SUB_PREFER[l.tactic] || KB.TACTICS).filter((t) => t !== l.tactic);
+    const tactic = order.find((t) => (prof(t) ?? 0) >= 85) || [...order].sort((a, b) => (prof(b) ?? -1) - (prof(a) ?? -1))[0];
+    const slots = layoutOf(l);
+    const bench = l.bench.map((id) => byId[id]).filter(Boolean);
+    const xi = l.xi.map((id, i) => ({ p: byId[id], pos: slots[i][0] })).filter((x) => x.p);
+    const styleIs = (p, ...names) => names.some((n) => norm(p.playingStyle) === norm(n) || norm(p.playingStyleDefensive) === norm(n));
+    const findBench = (...names) => bench.find((p) => styleIs(p, ...names));
+    const findXi = (...names) => xi.find((x) => styleIs(x.p, ...names));
+    const forwards = xi.filter((x) => ["CF", "SS"].includes(x.pos));
+    const pace = (p) => p.stats.speed + p.stats.acceleration;
+    const moves = [];
+    if (tactic === "Possession") {
+      const orch = findBench("Orchestrator"), hold = findXi("Anchor Man", "All-Action Defender", "The Destroyer");
+      if (orch && hold) moves.push(`${orch.name} for ${hold.p.name} (Orchestrator builds from deep)`);
+      const dlf = findBench("Deep-Lying Forward"), fox = forwards.find((x) => styleIs(x.p, "Fox in the Box", "Target Man")) || forwards[0];
+      if (dlf && fox) moves.push(`${dlf.name} for ${fox.p.name} (Deep-Lying Forward drops between the lines)`);
+    } else if (tactic === "Long Ball") {
+      const tall = bench.filter((p) => ["CF", "SS"].includes(p.position)).sort((a, b) => b.height - a.height)[0];
+      const shortest = [...forwards].sort((a, b) => a.p.height - b.p.height)[0];
+      if (tall && shortest && tall.height > shortest.p.height) moves.push(`${tall.name} (${tall.height} cm) for ${shortest.p.name} as the focal striker`);
+      const second = findBench("Box-to-Box", "Hole Player");
+      if (second) moves.push(`${second.name} on for the second balls`);
+    } else if (tactic === "Quick Counter") {
+      const fast = bench.filter((p) => ["CF", "SS", "LWF", "RWF"].includes(p.position)).sort((a, b) => pace(b) - pace(a))[0];
+      const slow = [...forwards].sort((a, b) => pace(a.p) - pace(b.p))[0];
+      if (fast && slow && pace(fast) > pace(slow.p)) moves.push(`${fast.name} for ${slow.p.name} (pace in behind)`);
+    } else if (tactic === "Long Ball Counter") {
+      const anchor = findBench("Anchor Man", "All-Action Defender"), mid = xi.find((x) => x.pos === "CMF");
+      if (anchor && mid) moves.push(`${anchor.name} for ${mid.p.name} (a holding midfielder for the deep block)`);
+      const poacher = findBench("Goal Poacher"), fwd = forwards.find((x) => !styleIs(x.p, "Goal Poacher"));
+      if (poacher && fwd) moves.push(`${poacher.name} for ${fwd.p.name} (runs in behind)`);
+    } else if (tactic === "Out Wide") {
+      const wb = findBench("Offensive Full-back"), fb = xi.find((x) => ["LB", "RB"].includes(x.pos) && !styleIs(x.p, "Offensive Full-back"));
+      if (wb && fb) moves.push(`${wb.name} for ${fb.p.name} (an overlapping full-back)`);
+    }
+    return { tactic, formation: "", when: SUB_WHEN[tactic] || "",
+      subs: moves.join("; ") || (bench.length ? "" : "Fill the bench first — the suggestion names who comes on from it.") };
+  }
+  function renderSubTactic(l) {
+    const box = $("#luSubTactic");
+    if (!box) return;
+    const st = l.subTactic || {};
+    const m = managerObj(l.manager);
+    const prof = (t) => m?.prof[KB.TACTICS.indexOf(t)];
+    const avg = st.tactic && m ? xiAverage(l, m.key, st.tactic) : null;
+    box.innerHTML = `
+      <div class="subtactic__row">
+        <label class="field field--inline"><span class="field__label">Playstyle</span><select data-st="tactic"><option value="">—</option>${KB.TACTICS.map((t) => `<option value="${t}" ${st.tactic === t ? "selected" : ""}>${t}${m ? ` · ${prof(t) ?? "N/A"}` : ""}</option>`).join("")}</select></label>
+        <label class="field field--inline"><span class="field__label">Shape</span><select data-st="formation"><option value="">same as now</option>${Object.keys(FORMATIONS).map((f) => `<option ${st.formation === f ? "selected" : ""}>${f}</option>`).join("")}</select></label>
+        ${avg != null ? `<span class="subtactic__avg" title="Average XI rating at this playstyle with ${esc(m.name)}">${avg.toFixed(1)}<small>avg</small></span>` : ""}
+      </div>
+      <label class="field field--notes"><span class="field__label">When to switch</span><textarea data-st="when" rows="2" placeholder="e.g. they sit deep and the long balls get cleared">${esc(st.when || "")}</textarea></label>
+      <label class="field field--notes"><span class="field__label">Who comes on</span><textarea data-st="subs" rows="2" placeholder="e.g. Pirlo for Makélélé, Puskás for Gullit">${esc(st.subs || "")}</textarea></label>
+      ${!st.tactic ? `<p class="rec-muted">Nothing saved yet — <b>Suggest</b> fills it from ${esc(m?.name || "the manager")}'s other playstyles and your bench.</p>` : ""}`;
+  }
+  $("#luSubTactic").addEventListener("change", (e) => {
+    const el = e.target.closest("[data-st]");
+    if (!el) return;
+    const l = activeLineup();
+    l.subTactic ||= {};
+    l.subTactic[el.dataset.st] = el.value;
+    saveLineup();
+    if (el.dataset.st === "tactic") renderSubTactic(l);
+  });
+  $("#luSubSuggest").addEventListener("click", () => {
+    const l = activeLineup();
+    l.subTactic = suggestSubTactic(l);
+    saveLineup(); renderSubTactic(l);
+    flash($("#luSubSuggest"), l.subTactic.tactic || "—");
+  });
 
   // Manager fit (§17, §22): the XI's average rating with each of the profile's managers —
   // their team booster and playstyle-proficiency multiplier — at the lineup's playstyle
@@ -1817,7 +1943,7 @@
           </div>
           <p class="gp-bench"><span class="field__label">Bench</span> ${bench || "—"}</p>
           <div class="panel__actions">
-            ${own ? `<button type="button" class="btn btn--primary" id="gpOpenLineup">Open in Lineup</button>` : ""}
+
           </div>
         </div>`;
     }
@@ -1846,7 +1972,6 @@
         <div class="panel__head"><h2>ALTERNATIVES</h2><p class="panel__meta">when the base plan isn't the answer</p></div>
         <ul class="gp-items">${gp.alternatives.map((a) => `<li><b>${esc(a.name)}</b><p>${esc(a.when)}</p></li>`).join("")}</ul>
       </div>`;
-    $("#gpOpenLineup")?.addEventListener("click", () => { store.activeLineup = gp.planId; saveStore(); go("lineup"); });
   }
 
   $("#luManagers").addEventListener("click", (e) => {
@@ -2152,6 +2277,8 @@
       `${l.name} — ${l.fluid ? `Fluid: attack ${l.formation} / defence ${l.defFormation || DEFAULT_DEF_FORMATION}` : l.formation} · ${l.tactic}${l.manager ? ` · ${l.manager}` : ""}`,
       ...l.xi.map((id, i) => `${(def ? `${slots[i][0]}/${def[i][0]}` : slots[i][0]).padEnd(def ? 9 : 4)} ${byId[id] ? `${byId[id].name} (${buildRating(byId[id], l)})` : "—"}`),
       `Bench: ${l.bench.map((id) => byId[id]?.name).filter(Boolean).join(", ") || "—"}`,
+      ...INSTR.filter(([k]) => l.instructions?.[k] && byId[l.instructions[k]]).map(([k, label]) => `${label}: ${byId[l.instructions[k]].name}`),
+      ...(l.subTactic?.tactic ? [`Sub-tactic: ${l.subTactic.tactic}${l.subTactic.formation ? ` ${l.subTactic.formation}` : ""}${l.subTactic.when ? ` — ${l.subTactic.when}` : ""}${l.subTactic.subs ? ` — ${l.subTactic.subs}` : ""}`] : []),
       ...l.subs.map((s) => `${s.minute ?? "?"}' ${byId[s.out]?.name || "?"} → ${byId[s.in]?.name || "?"}${s.note ? ` (${s.note})` : ""}`),
     ].join("\n");
     try { await navigator.clipboard.writeText(text); flash($("#luCopy"), "Copied"); }
