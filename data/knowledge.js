@@ -404,6 +404,36 @@ window.KB = (() => {
         + "Gullit at CF is a 3–5 match test (user, 11 Oct) — Ibrahimović is the first CF off the bench; back in the XI if Gullit doesn't score more.\n"
         + "Plan B (it isn't working): Possession sub-tactic, Puskás for Gullit, Pirlo for Makélélé.\n"
         + "Full game plan: Game Plan tab." },
+    // 11 Oct 2026 — the user's diamond, rebuilt (USER-SQUAD §3 "Diamond — 11 Oct 2026, test"):
+    // attack 4-1-2-1-2 (Hazard pushed up to SS), defence 4-3-1-2; width only from Cafu;
+    // Beckenbauer so the Box-to-Box CMF → Goal Poacher CF Link-up is on. Slot order:
+    // GK, LB, CB, CB, RB, CMF (left), DMF, CMF (right), AMF, CF (left), CF (right).
+    { id: "plan-2026-10-11-diamond", name: "Diamond — Beckenbauer LBC 4-1-2-1-2 (11 Oct test)", formation: "4-3-1-2", manager: "F. Beckenbauer", tactic: "Long Ball Counter",
+      layout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
+        ["CMF", 27, 49], ["DMF", 50, 40], ["CMF", 73, 49], ["SS", 50, 74], ["CF", 37, 86], ["CF", 63, 86]],
+      fluid: true, defFormation: "4-3-1-2",
+      defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
+        ["CMF", 27, 49], ["DMF", 50, 40], ["CMF", 73, 49], ["AMF", 50, 66], ["CF", 37, 86], ["CF", 63, 86]],
+      xi: ["88040387118039", // GK Buffon
+        "88041460993474", "88039850289220", "89138288270047", "88044145348045", // Maldini, Varane, Desailly, Cafu (Offensive Wingback — the only width)
+        "88039581945312", "88045755964130", "88041460859805", // CMF Pirlo (Orchestrator), DMF Makélélé, CMF Seedorf (Box-to-Box)
+        "89137214427270", // SS Hazard (Hole Player active at SS — AMF in defence)
+        "88039045074410", "88040387118554"], // CF Gullit (left), Eto'o (right)
+      bench: ["89136140651034", "88039581948640", "88044145348029", "89138288266704", // Ibrahimović, Thuram, Vieira, Ronaldinho
+        "89136409091415", "88045755964131", "88033139494357", "89138556700485", // Messi (CP), Stam, Zanetti, Bellingham
+        "106773692395554", "88040387120260", "89135066911146", "88040387121974"], // Dembélé, Puskás, C. Ronaldo, Sneijder
+      subs: [
+        { minute: 60, out: "89137214427270", in: "89138556700485", note: "Hole Player stays active at SS; Bellingham is high at SS" },
+        { minute: 65, out: "88039045074410", in: "89136140651034", note: "Fox in the Box + Willpower for the cutbacks — or when Gullit isn't getting service" },
+        { minute: 72, out: "88040387118554", in: "106773692395554", note: "Fresh pace in behind; Goal Poacher keeps the Link-up" },
+        { minute: 75, out: "88039581945312", in: "88044145348029", note: "If leading: Vieira + Makélélé as a double screen (Defensive on Makélélé)" },
+      ],
+      notes: "Why: the diamond had no width and no passer — Cafu overlaps on the right (Maldini stays home), Pirlo builds from CMF, Makélélé wins it and plays the first pass.\n"
+        + "Instructions: Counter Target — Eto'o; Defensive — Makélélé; Tight Marking — Desailly on their most dangerous striker.\n"
+        + "Link-up: Breakthrough Pass B (Beckenbauer) — Seedorf (Box-to-Box CMF) → Eto'o (Goal Poacher CF). With Deschamps it would be off (no Creative Playmaker at AMF).\n"
+        + "Attack: Hazard sits at SS behind Gullit and Eto'o; in defence he drops to AMF and Cafu to RB — nothing else moves.\n"
+        + "Chasing: Ronaldinho for Pirlo (Creative Playmaker is inactive at CMF — move him to SS and Hazard to CMF if you want his style on).\n"
+        + "Test it 3 matches against the 4-2-2-2 Game Plan; keep whichever creates more." },
   ];
 
   /* ---- USER-SQUAD §3 "Game plan — 10 Oct 2026" + KNOWLEDGE-BASE §24: the Game Plan tab ---- */

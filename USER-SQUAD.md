@@ -315,6 +315,32 @@ goes high); Capello 4-2-1-3 with Pirlo — test only.
 
 ---
 
+## Diamond — 11 Oct 2026 (test, alongside the Game Plan)
+
+The user's own shape, rebuilt after a look at it: attack **4-1-2-1-2**, defence **4-3-1-2**
+(Fluid), **F. Beckenbauer** (LBC 89) so Breakthrough Pass B — Seedorf (Box-to-Box CMF) →
+Eto'o (Goal Poacher CF) — is on. The original diamond had no width (two Defensive
+Full-backs, four central attackers) and no passer in build-up (Vieira alone); Ronaldinho sat
+on the left against the earlier decision. Build Lab lineup `plan-2026-10-11-diamond`.
+
+| Attack | Defence | Player | Rating |
+|---|---|---|---|
+| GK | GK | Buffon | 107 |
+| LB | LB | Maldini (stays home) | 104 |
+| CB / CB | CB / CB | Varane, Desailly | 105 / 107 |
+| RB | RB | Cafu (Offensive Wingback — the only width) | 104 |
+| CMF (L) | CMF | Pirlo (Orchestrator) | 107 |
+| DMF | DMF | Makélélé | 106 |
+| CMF (R) | CMF | Seedorf (Box-to-Box) | 105 |
+| SS | AMF | Hazard (Hole Player active at SS) | 110 |
+| CF / CF | CF / CF | Gullit (L), Eto'o (R) | 109 / 106 |
+
+Average 106.4. Bench: Ibrahimović (65' for Gullit), Thuram (for Cafu when protecting),
+Vieira (75' for Pirlo when leading), Ronaldinho, Messi (CP), Stam, Zanetti, Bellingham (60'
+for Hazard), Dembélé (72' for Eto'o), Puskás, C. Ronaldo, Sneijder. Instructions: Counter
+Target Eto'o, Defensive Makélélé, Tight Marking Desailly. Three matches against the 4-2-2-2
+Game Plan, keep whichever creates more.
+
 # 4. Dated Build Snapshots
 
 These are the most useful saved build states from prior Build Lab work. They are **dated
