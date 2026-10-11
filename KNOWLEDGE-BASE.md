@@ -2615,6 +2615,10 @@ passing is a secondary category. Strikers put Aerial Strength at 3–8 and Passi
 - **Condition:** Epic, Big Time and Legend cards stay at B according to one guide.
   Community estimates put the gap between the best and the worst arrow at "a few points
   per stat", with no exact figures.
+- **Card reviews** (eFHUB, Sep–Oct 2026) [guide]: per-card notes are in USER-SQUAD.md.
+  - An attacker whose playing style doesn't apply at his slot makes few runs of his own.
+    The review's example is a Prolific Winger at CF, which agrees with section 18.
+  - eFHUB thinks v6 weakened heading.
 - **Not found:** pro setups for the v6 season. FIFAe Finals are 16–25 Oct 2026; the July
   2026 world finals were played on v5.
 

@@ -244,6 +244,29 @@ chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poac
 the Link-up; Speed 100 / Acceleration 98, Acceleration Burst, Phenomenal Finishing), Possession sub-tactic with Pirlo for Makélélé against a deep block;
 protecting — Vieira for Seedorf (~75'), Stam only for Desailly (Destroyer for Destroyer).
 
+**Card reviews (web, 11 Oct 2026, eFHUB — confirmed by card ID only where stated):**
+- **Gullit `88039045074410`** (confirmed) — eFHUB's CF ranking (8 Oct) puts this card first.
+  Our model agrees: CF 109, the best CF rating in the squad, against Ibrahimović's 108.
+  - Downside: his Hole Player style doesn't apply at CF.
+  - Plan: test him at CF instead of Ibrahimović for 3–5 matches each way. Until then he is
+    the first CF off the bench (Game Plan alternative).
+- **Bale `88045755861672`** (confirmed) — a "high-speed tank" and the best super-sub.
+  - At CF his Prolific Winger style does nothing, so his runs have to be triggered by hand.
+- **Makélélé `88045755964130`** (confirmed) — "ridiculously strong in a double pivot".
+  Shadow Hunt plus Long-reach Tackle is called the best skill package for a midfielder.
+  - Weak attacking AI (he has no attacking style) — matches his holding role here.
+- **Stam `88045755964131`** (confirmed) — a "moving wall", best against technical
+  centre-forwards.
+  - Pairs with a deep Build Up centre-back such as Varane, so he comes on for Desailly.
+- **Unconfirmed versions:**
+  - Desailly: "best step-up CB", the nightmare of runners and small agile attackers.
+  - Varane: "if I could pick only one CB".
+  - Seedorf: can't shoot.
+  - Pirlo: lacks pace.
+  - Ibrahimović: eFHUB thinks v6 weakened heading, which hurts Fox in the Box.
+- **No review found:** Buffon, Puskás, Dembélé and this Zanetti card. The reviewed Zanetti
+  is the new Inter card.
+
 **Form before the match:** condition is set weekly from the Live Update Rating, and
 Legend / Epic / Big Time cards are fixed at B according to the guides (KNOWLEDGE-BASE §25) —
 nearly the whole squad. Arrows matter for current-season cards (e.g. Dembélé, Calafiori).
