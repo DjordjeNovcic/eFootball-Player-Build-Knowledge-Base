@@ -21,6 +21,16 @@
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // Replace an element's HTML only when it actually changed: the squad is re-rendered on
+  // every sync event at start-up, and rebuilding 55 card tiles makes them flash.
+  const htmlHash = (s) => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return `${s.length}:${h}`; };
+  function setHtml(el, html) {
+    const key = htmlHash(html);
+    if (el.dataset.hash === key) return false;
+    el.innerHTML = html;
+    el.dataset.hash = key;
+    return true;
+  }
   const norm = (s) => {
     const k = String(s || "").toLowerCase().replace(/^the /, "").replace(/[^a-z0-9]/g, "");
     return { offensivewingback: "offensivefullback", attackingfullback: "offensivefullback", offensivegoalkeeper: "attackinggk" }[k] || k;
@@ -411,7 +421,7 @@
       + (order && lineup ? ` · ${squadState.group === "XI" ? "starting XI" : "bench"} of “${esc(lineup.name)}”` : "")
       + (REC ? ` · builds rated with ${recContextHtml()}` : "") + ` · stats from eFHUB, ${esc(DATA.fetched)}`;
 
-    root.innerHTML = list.map((p) => {
+    setHtml(root, list.map((p) => {
       const note = notesFor(p.id);
       const saved = store.builds[p.id];
       // The tile's rating: the saved build's, else the Recommended by AI build's.
@@ -458,7 +468,7 @@
             </div>
           </div>
           </summary>
-          ${r ? recSheetHtml(p, r) : ""}
+          ${r && squadState.open.has(p.id) ? recSheetHtml(p, r) : ""}
         </details>`;
     }).join("") || (players.length ? `<p class="empty-state">${order && lineup && !q
         ? (order.some(Boolean) ? `None of the ${squadState.group === "XI" ? "starters" : "bench players"} in “${esc(lineup.name)}” are in your squad any more.`
@@ -468,7 +478,7 @@
         ? `<p class="empty-state"><b>Sign in</b> (top right) to build your squad — it's saved to your account and follows you to every device.</p>`
       : isMe()
         ? `<p class="empty-state">Your squad is empty — click <b>+ Add player</b> above to bring in your cards from eFHUB, then pick your managers in the Managers tab.</p>`
-        : `<p class="empty-state">No cards in ${esc(store.name)}'s squad yet — click <b>+ Add player</b> above.</p>`);
+        : `<p class="empty-state">No cards in ${esc(store.name)}'s squad yet — click <b>+ Add player</b> above.</p>`));
   }
 
   $("#squadSearch").addEventListener("input", (e) => { squadState.q = e.target.value; renderSquad(); });
@@ -2446,7 +2456,12 @@
   $("#squadGrid").addEventListener("toggle", (e) => {
     const d = e.target.closest?.("[data-rec]");
     if (!d) return;
-    if (d.open) squadState.open.add(d.dataset.rec); else squadState.open.delete(d.dataset.rec);
+    const id = d.dataset.rec;
+    if (d.open) {
+      squadState.open.add(id);
+      // The sheet is built on first open, not for all 55 tiles up front.
+      if (!d.querySelector(":scope > .rec-card__body") && byId[id] && REC?.recs[id]) d.insertAdjacentHTML("beforeend", recSheetHtml(byId[id], REC.recs[id]));
+    } else squadState.open.delete(id);
   }, true);
   $("#squadExpand").addEventListener("click", () => {
     document.querySelectorAll("#squadGrid [data-rec]").forEach((d) => { d.open = true; squadState.open.add(d.dataset.rec); });
