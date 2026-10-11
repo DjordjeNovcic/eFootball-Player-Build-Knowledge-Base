@@ -260,6 +260,13 @@
   ];
   const mgrPhoto = (m, cls = "mgr-photo") => (m?.photo
     ? `<img class="${cls}" src="${esc(m.photo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : "");
+  // The photo of whichever manager a <select> currently holds (Trainer, Lineup).
+  function syncMgrPhoto(selectId) {
+    const sel = $(`#${selectId}`);
+    const box = document.querySelector(`[data-mgr-photo-for="${selectId}"]`);
+    if (sel && box) box.innerHTML = mgrPhoto(managerObj(sel.value), "mgr-photo mgr-photo--inline");
+  }
+  const setManagerSelect = (selectId, value) => { $(`#${selectId}`).value = managerKey(value); syncMgrPhoto(selectId); };
   const linkUpText = (m) => m.linkUps.map((l) =>
     `<b>${esc(l.name)}</b><small>${esc(l.centerPiece.join(" "))} → ${esc(l.keyMan.join(" "))}</small>`).join("") || "—";
   function managerObj(v = store.manager) {
@@ -488,7 +495,7 @@
       view.position = p.position;
     }
     $("#trainPlayer").value = id;
-    $("#trainManager").value = managerKey(store.manager);
+    setManagerSelect("trainManager", store.manager);
     $("#trainTactic").value = store.tactic;
     renderTrainer();
   }
@@ -704,7 +711,7 @@
   }
 
   $("#trainPlayer").addEventListener("change", (e) => go("train", e.target.value));
-  $("#trainManager").addEventListener("change", (e) => { store.manager = e.target.value; saveStore(); renderTrainer(); renderSquad(); });
+  $("#trainManager").addEventListener("change", (e) => { store.manager = e.target.value; syncMgrPhoto("trainManager"); saveStore(); renderTrainer(); renderSquad(); });
   $("#trainTactic").addEventListener("change", (e) => { store.tactic = e.target.value; saveStore(); renderTrainer(); renderSquad(); });
   $("#trainBoost2").addEventListener("change", (e) => { view.draft.booster2 = e.target.value ? Number(e.target.value) : null; renderTrainer(); });
   $("#trainCap").addEventListener("change", (e) => {
@@ -792,7 +799,7 @@
     saveStore();
     renderPlayerSelect();
     $("#trainPlayer").value = view.playerId;
-    $("#trainManager").value = managerKey(store.manager);
+    setManagerSelect("trainManager", store.manager);
     renderTrainer();
     renderSquad();
     renderLineup();
@@ -839,7 +846,7 @@
     saveStore();
     renderPlayerSelect();
     $("#trainPlayer").value = view.playerId;
-    $("#trainManager").value = managerKey(store.manager);
+    setManagerSelect("trainManager", store.manager);
     renderTrainer();
     renderSquad();
     renderLineup();
@@ -1426,7 +1433,7 @@
     const mgrs = profileManagers();
     const cur = managerObj(l.manager);
     $("#luManager").innerHTML = `<option value="">No manager</option>` + (cur && !mgrs.includes(cur) ? managerOption(cur) : "") + mgrs.map(managerOption).join("");
-    $("#luManager").value = managerKey(l.manager);
+    setManagerSelect("luManager", l.manager);
     $("#luTactic").innerHTML = TEAM_TACTICS.map((t) => `<option>${t}</option>`).join("");
     $("#luTactic").value = l.tactic;
 
@@ -1624,7 +1631,7 @@
     const target = prof(mu.answer);
     const others = profileManagers().filter((x) => x !== m && prof(mu.answer, x) >= 85).map((x) => `${x.name} (${prof(mu.answer, x)})`);
     const switchLine = !m ? `Switch to <b>${esc(mu.answer)}</b>.`
-      : target >= PROF_MIN ? `Switch to <b>${esc(mu.answer)}</b> — ${esc(m.name)} has ${target} there${l.tactic === mu.answer ? " (you're already on it)" : "; set it as the sub-tactic or change it in the match"}.`
+      : target >= PROF_MIN ? `Switch to <b>${esc(mu.answer)}</b> — ${mgrPhoto(m, "mgr-photo mgr-photo--inline")}${esc(m.name)} has ${target} there${l.tactic === mu.answer ? " (you're already on it)" : "; set it as the sub-tactic or change it in the match"}.`
       : `<b>${esc(mu.answer)}</b> is the answer, but ${esc(m.name)} has ${target ?? "N/A"} there — stay on ${esc(l.tactic)} and lean on the instructions${others.length ? `, or pick a manager strong in it: ${others.map(esc).join(", ")}` : ""}.`;
     // Players the tips name, from the XI's builds.
     const slots = layoutOf(l);
@@ -1717,7 +1724,7 @@
           </div>
           <div class="lu-kpis">
             <div><b>${avg}</b><span>avg XI rating</span></div>
-            <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${esc(m?.name || "no manager")} · ${esc(l.tactic)}</span></div>
+            <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${mgrPhoto(m, "mgr-photo mgr-photo--kpi")}${esc(m?.name || "no manager")} · ${esc(l.tactic)}</span></div>
             <div><b class="${links.some((x) => x.cp.length && x.km.length) ? "is-hot" : ""}">${links.some((x) => x.cp.length && x.km.length) ? "ON" : "OFF"}</b><span>Link-up${links[0] ? ` · ${esc(links[0].link.name)}` : ""}</span></div>
           </div>
           <div class="table-wrap">
@@ -1897,7 +1904,7 @@
         <div>
           <h2 id="bdTitle">${esc(p.name)}</h2>
           <p>${area === "xi" ? `${pos} in “${esc(l.name)}”` : "On the bench"} · ${esc(styleText(p))} · card ${p.overall} · Lv cap ${p.levelCap}</p>
-          <p class="rec-muted">Rated with ${esc(managerObj(l.manager)?.name || "no manager")} at ${esc(l.tactic)}.</p>
+          <p class="rec-muted">Rated with ${mgrPhoto(managerObj(l.manager), "mgr-photo mgr-photo--inline")}${esc(managerObj(l.manager)?.name || "no manager")} at ${esc(l.tactic)}.</p>
         </div>
       </div>
       <div class="bd-cols">
@@ -2195,6 +2202,7 @@
   // the chosen manager/playstyle for a friend.
   const recContext = () => (ownsRepo() ? { manager: KB.CURRENT_MANAGER, tactic: "Long Ball Counter" } : { manager: store.manager, tactic: store.tactic });
   const recContextLabel = () => { const c = recContext(); return `${managerObj(c.manager)?.name || "no manager"} at ${c.tactic}`; };
+  const recContextHtml = () => { const c = recContext(); const m = managerObj(c.manager); return `${mgrPhoto(m, "mgr-photo mgr-photo--inline")}${esc(m?.name || "no manager")} at ${esc(c.tactic)}`; };
   let REC = null; // filled at init (needs the multiplier table above)
   const makeRecommender = () => window.Recommender({
     players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
@@ -2277,7 +2285,7 @@
       .filter((p) => !q || `${p.name} ${p.team} ${p.position} ${styleText(p)}`.toLowerCase().includes(q))
       .sort((a, b) => (order ? order.indexOf(a.id) - order.indexOf(b.id)
         : POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || REC.recs[b.id].rating - REC.recs[a.id].rating));
-    $("#recMeta").textContent = `${list.length} builds${order && lineup ? ` · ${recState.group === "XI" ? "starting XI" : "bench"} of “${lineup.name}”` : ""} · rated with ${recContextLabel()}`;
+    $("#recMeta").innerHTML = `${list.length} builds${order && lineup ? ` · ${recState.group === "XI" ? "starting XI" : "bench"} of “${esc(lineup.name)}”` : ""} · rated with ${recContextHtml()}`;
     $("#recGrid").innerHTML = list.map((p) => {
       const r = REC.recs[p.id];
       const cats = categoriesFor(p);
@@ -2398,7 +2406,7 @@
       .filter((p) => !q || `${p.name} ${p.team} ${p.position} ${styleText(p)}`.toLowerCase().includes(q))
       .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.overall - a.overall);
     const total = Object.keys(store.builds).filter((id) => byId[id]).length;
-    $("#mineMeta").textContent = `${total} of ${players.length} players have your build · ratings use ${recContextLabel()} for both columns`;
+    $("#mineMeta").innerHTML = `${total} of ${players.length} players have your build · ratings use ${recContextHtml()} for both columns`;
     $("#mineRows").innerHTML = list.map((p) => {
       const r = REC.recs[p.id];
       const rb = recBuild(p.id);
@@ -2545,7 +2553,7 @@
           <section class="rec-sec">
             <h4>Role</h4>
             <p><b>${b.position} — ${esc(styleText(p))}</b></p>
-            <p class="rec-muted">Rated with ${esc(mgr?.name || "no manager")} at ${esc(b.tactic)}.</p>
+            <p class="rec-muted">Rated with ${mgrPhoto(mgr, "mgr-photo mgr-photo--inline")}${esc(mgr?.name || "no manager")} at ${esc(b.tactic)}.</p>
           </section>
           <section class="rec-sec">
             <h4>Build <span class="rec-muted">${pointsUsed(b.build)}/${budgetFor(b.build.levelCap || p.levelCap)} pts</span></h4>
@@ -2684,7 +2692,7 @@
     const base = pubBuild(p);
     const line = (b) => cats.map((c) => b.levels[c.key] || 0).join("-");
     const same = line(r) === line(base) && r.booster === base.booster;
-    return `<p><b>${r.rating}</b> at ${p.position} with ${esc(m.name)} (${esc(ctx.tactic)}) — <code>${line(r)}</code> · ${esc(r.booster)}${same ? " <span class=\"rec-muted\">(same build as without a manager)</span>" : ""}</p>
+    return `<p><b>${r.rating}</b> at ${p.position} with ${mgrPhoto(m, "mgr-photo mgr-photo--inline")}${esc(m.name)} (${esc(ctx.tactic)}) — <code>${line(r)}</code> · ${esc(r.booster)}${same ? " <span class=\"rec-muted\">(same build as without a manager)</span>" : ""}</p>
       ${same ? "" : `<p class="rec-muted">The manager's +1/+1 and playstyle multiplier move a threshold, so the points shift. Add him to your squad and the Trainer shows both.</p>`}`;
   }
 

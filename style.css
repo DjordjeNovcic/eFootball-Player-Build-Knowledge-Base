@@ -1295,3 +1295,10 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 
 /* Playing-style filter in every card list */
 .toolbar .style-filter{ flex: 0 1 15rem; min-width: 11rem; }
+
+/* Manager photo next to the manager pickers and in the KPIs */
+.mgr-pick{ display: flex; align-items: center; gap: 0.5rem; }
+.mgr-pick select{ flex: 1 1 auto; min-width: 0; }
+.mgr-pick__ph:empty{ display: none; }
+.mgr-pick__ph .mgr-photo--inline{ margin-right: 0; }
+.mgr-photo--kpi{ width: 22px; height: 22px; vertical-align: middle; margin-right: 0.35rem; }
