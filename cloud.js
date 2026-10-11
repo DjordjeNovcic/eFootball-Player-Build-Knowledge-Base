@@ -25,10 +25,12 @@ if (!lab || !box) {
   // lab.js not loaded — nothing to sync.
 } else if (!FIREBASE_CONFIG.apiKey) {
   box.hidden = true;
+  lab.setAuth({ enabled: false, signedIn: false }); // no cloud: paint the local squad now
 } else {
   start().catch((err) => {
     console.error("[cloud]", err);
     setStatus("error", "Cloud sync unavailable");
+    lab.setAuth({ enabled: false, signedIn: false }); // Firebase failed: paint what the flag says
   });
 }
 

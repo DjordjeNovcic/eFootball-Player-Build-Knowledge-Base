@@ -177,6 +177,12 @@
   })();
   // "My squad" of the site owner (or anyone signed out, as a demo) = the repo squad with its
   // USER-SQUAD notes and seven managers. Everyone else's "My squad" works like a friend's.
+  // With cloud sync on the page, nothing is painted from the owner flag until the auth
+  // state is known (cloud.js → setAuth): a stale flag used to flash the owner's squad at a
+  // signed-out visitor. Without cloud.js the site is single-user and paints at once; if
+  // Firebase never answers, the flag is trusted after a few seconds.
+  const CLOUD = !!document.querySelector('script[src^="cloud.js"]');
+  let authKnown = !CLOUD;
   const ownsRepo = () => isMe() && repoSquad;
   const notesFor = (id) => (ownsRepo() ? KB.SQUAD_NOTES[id] : null);
   const auth = { enabled: false, signedIn: false };
@@ -186,7 +192,7 @@
 
   function rebuildPlayers() {
     const removed = new Set(store.removed);
-    const base = isMe() ? (repoSquad ? DATA.players : []) : FRIEND_FILES[store.fileKey]?.players || [];
+    const base = isMe() ? (repoSquad && authKnown ? DATA.players : []) : FRIEND_FILES[store.fileKey]?.players || [];
     const all = [...base, ...Object.values(store.customPlayers).filter((c) => !base.some((p) => p.id === c.id))];
     all.forEach((p) => { if (p.labels) Object.assign(DATA.labels, p.labels); });
     players.length = 0;
@@ -427,6 +433,11 @@
 
   function renderSquad() {
     const root = $("#squadGrid");
+    if (!authKnown) {
+      $("#squadMeta").textContent = "Loading…";
+      setHtml(root, `<p class="empty-state">Loading your squad…</p>`);
+      return;
+    }
     const q = squadState.q.trim().toLowerCase();
     // "Starting XI" / "Bench" follow the active lineup (Lineup tab), in its own order.
     const lineup = store.lineups.find((x) => x.id === store.activeLineup) || store.lineups[0] || null;
@@ -3062,6 +3073,7 @@
     clearLocal() { try { localStorage.removeItem(STORE_KEY); localStorage.removeItem(OWNER_FLAG); } catch { /* private mode */ } },
     setAuth(state) {
       Object.assign(auth, state);
+      if (!authKnown) { authKnown = true; refreshAll(); route(); }
       renderProfileBar();
       renderSquad();
       renderPro();
@@ -3073,6 +3085,7 @@
   /* ---------------------------------------------------------
      Init
   --------------------------------------------------------- */
+  if (!authKnown) setTimeout(() => { if (!authKnown) { authKnown = true; refreshAll(); route(); } }, 4000);
 
   seedMatchPlans();
   REC = makeRecommender();
