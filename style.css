@@ -1483,3 +1483,32 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .hero--compact{ padding: clamp(1.2rem, 3vw, 2rem) clamp(1.25rem, 5vw, 4rem) clamp(1rem, 2.5vw, 1.6rem); }
 .hero--compact .hero__eyebrow{ margin-bottom: 0.35rem; font-size: 0.68rem; }
 .hero--compact .hero__title{ font-size: clamp(2.2rem, 5vw, 3.4rem); }
+
+/* ============================================================
+   CoinPlayTV on YouTube — nav button, hero line, builds-tab button, footer link
+   ============================================================ */
+:root{ --yt: #ff3d3d; }
+.tabs__yt{
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 0.4rem; margin-left: auto;
+  padding: 0.38rem 0.75rem 0.38rem 0.6rem; border-radius: 999px; text-decoration: none;
+  font-family: var(--font-cond); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--paper); background: rgba(255,61,61,0.14); border: 1px solid rgba(255,61,61,0.55);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.tabs__yt svg{ width: 18px; height: 18px; color: var(--yt); }
+.tabs__yt:hover{ background: var(--yt); color: #fff; }
+.tabs__yt:hover svg{ color: #fff; }
+.tabs__yt + .tabs__cloud{ margin-left: 0.6rem; }
+.hero__yt{ margin: 0.9rem 0 0; max-width: 46rem; font-size: 0.92rem; color: var(--paper-dim); }
+.hero__yt a{ display: inline-flex; align-items: center; gap: 0.35rem; color: var(--paper); font-weight: 700; text-decoration: none; border-bottom: 1px solid rgba(255,61,61,0.6); }
+.hero__yt a svg{ width: 18px; height: 18px; color: var(--yt); }
+.hero__yt a:hover{ color: var(--yt); border-bottom-color: var(--yt); }
+.btn--yt{ display: inline-flex; align-items: center; gap: 0.45rem; background: var(--yt); color: #fff; border-color: var(--yt); }
+.btn--yt svg{ width: 18px; height: 18px; }
+.btn--yt:hover{ background: #ff5c5c; border-color: #ff5c5c; color: #fff; }
+.site-footer a{ color: var(--paper); }
+@media (max-width: 640px){
+  .tabs__yt span{ display: none; }
+  .tabs__yt{ padding: 0.35rem 0.5rem; }
+  .hero__yt{ font-size: 0.84rem; }
+}
