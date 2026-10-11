@@ -1439,3 +1439,42 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .squad-card[open] .squad-card__foot{ border-bottom: 1px solid var(--line); }
 .squad-card > summary .squad-card__foot{ margin-top: auto; }
 .tabs__sep{ flex: 0 0 1px; width: 1px; align-self: stretch; margin: 0.4rem 0.35rem; background: var(--line); }
+
+/* ============================================================
+   Navigation as an app bar: small wordmark, three link groups, account at the right;
+   the active section is underlined in lime instead of filled.
+   ============================================================ */
+.tabs{
+  gap: 0.15rem; align-items: center; max-width: none; margin: 0 0 1.5rem;
+  padding: 0 clamp(1rem, 5vw, 4rem); min-height: 3.4rem;
+  background: rgba(9,13,10,0.92); border-bottom: 1px solid var(--line);
+}
+.tabs__brand{
+  flex: 0 0 auto; margin-right: 0.9rem; text-decoration: none;
+  font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; letter-spacing: 0.02em; line-height: 1;
+  color: var(--paper); text-transform: uppercase; display: inline-flex; align-items: center;
+}
+.tabs__brand span{ color: var(--ink); background: var(--lime); padding: 0 0.15em; margin-left: 0.1em; transform: skewX(-8deg); display: inline-block; }
+.tabs__link{
+  position: relative; padding: 1.05rem 0.75rem 0.95rem; border-radius: 0; clip-path: none;
+  font-size: 0.78rem; letter-spacing: 0.1em; color: var(--paper-dim); background: none;
+}
+.tabs__link::after{
+  content: ""; position: absolute; left: 0.75rem; right: 0.75rem; bottom: 0; height: 2px;
+  background: var(--lime); transform: scaleX(0); transform-origin: left; transition: transform 0.18s cubic-bezier(.2,.8,.2,1);
+}
+.tabs__link:hover{ color: var(--paper); background: none; }
+.tabs__link.is-active{ color: var(--lime); background: none; }
+.tabs__link.is-active::after{ transform: scaleX(1); }
+.tabs__sep{ margin: 0 0.55rem; height: 1.1rem; align-self: center; }
+.tabs__cloud{ margin-left: auto; padding-left: 1rem; flex: 0 0 auto; }
+.profile-bar:empty, .profile-bar:not(:has(:not([hidden]))){ display: none; }
+@media (max-width: 900px){
+  .tabs__brand{ display: none; }
+  .tabs__cloud .cloud__status{ display: none; }
+}
+@media (max-width: 640px){
+  .tabs{ padding: 0 0.75rem; min-height: 3rem; }
+  .tabs__link{ padding: 0.9rem 0.6rem 0.8rem; font-size: 0.74rem; }
+  .tabs__cloud{ padding-left: 0.5rem; }
+}
