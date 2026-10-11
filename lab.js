@@ -2682,6 +2682,20 @@
     renderMyBuilds(); renderSquad(); renderLineup();
   }
 
+  // Every saved build that differs from today's AI build → the AI build (the doctrine moved,
+  // e.g. the Speed 96 rule); the player's ★ skills are untouched. Asks once.
+  function useRecommendationForAll() {
+    const stale = players.filter((p) => store.builds[p.id] && REC.recs[p.id] && !sameBuild(store.builds[p.id], recBuild(p.id)));
+    if (!stale.length) { flash($("#mineUseAll"), "All up to date"); return; }
+    if (!confirm(`Replace ${stale.length} saved build${stale.length > 1 ? "s" : ""} (${stale.map((p) => p.name).slice(0, 6).join(", ")}${stale.length > 6 ? "…" : ""}) with today's Recommended by AI builds? Your ★ skills stay.`)) return;
+    stale.forEach((p) => { store.builds[p.id] = { ...recBuild(p.id), skills: store.builds[p.id].skills, savedAt: Date.now() }; });
+    saveStore();
+    renderPlayerSelect();
+    renderMyBuilds(); renderSquad(); renderLineup();
+    flash($("#mineUseAll"), `${stale.length} updated`);
+  }
+  $("#mineUseAll").addEventListener("click", useRecommendationForAll);
+
   function renderMyBuilds() {
     if (!REC) return;
     const q = mineState.q.trim().toLowerCase();
