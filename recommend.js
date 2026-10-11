@@ -32,8 +32,8 @@ window.Recommender = (deps) => {
     roamingFlank: { label: "Roaming Flank", stats: [["acceleration", 9, 92, 97], ["offensiveAwareness", 8, 90], ["dribbling", 8, 90], ["finishing", 7, 88], ["speed", 8, 92, 96], ["ballControl", 7, 88], ["balance", 7, 88], ["kickingPower", 4, 88]] },
     boxToBox: { label: "Box-to-Box", stats: [["stamina", 8, 90], ["speed", 7, 90], ["acceleration", 7, 90], ["lowPass", 7, 87], ["ballControl", 6, 88], ["defensiveAwareness", 6, 85], ["ballWinning", 6, 85], ["balance", 6, 88], ["defensiveEngagement", 4, 85], ["physicalContact", 4, 82], ["kickingPower", 3, 85], ["finishing", 2, 80]] },
     orchestrator: { label: "Orchestrator", stats: [["lowPass", 10, 87, 92], ["tightPossession", 8, 88], ["ballControl", 8, 88], ["balance", 7, 88], ["acceleration", 6, 88], ["stamina", 6, 88], ["loftedPass", 5, 85], ["defensiveAwareness", 5, 82, 86], ["kickingPower", 2, 85], ["ballWinning", 3, 80, 84], ["dribbling", 3, 85], ["speed", 4, 88, 92]] },
-    anchorMan: { label: "Anchor Man", stats: [["defensiveAwareness", 10, 90, 96], ["defensiveEngagement", 9, 88], ["ballWinning", 9, 88], ["speed", 7, 90], ["acceleration", 7, 88], ["physicalContact", 6, 85], ["stamina", 6, 88], ["lowPass", 3, 78], ["aggression", 3, 85], ["jump", 2, 80]] },
-    allActionDefender: { label: "All-Action Defender", stats: [["defensiveAwareness", 9, 90, 96], ["defensiveEngagement", 9, 88], ["ballWinning", 8, 88], ["stamina", 8, 90], ["speed", 7, 90], ["acceleration", 7, 90], ["physicalContact", 5, 85], ["lowPass", 6, 87], ["ballControl", 3, 82]] },
+    anchorMan: { label: "Anchor Man", stats: [["defensiveAwareness", 10, 90, 96], ["defensiveEngagement", 9, 88], ["ballWinning", 9, 88], ["speed", 7, 90, 92], ["acceleration", 7, 88], ["physicalContact", 6, 85], ["stamina", 6, 88], ["lowPass", 3, 78], ["aggression", 3, 85], ["jump", 2, 80]] },
+    allActionDefender: { label: "All-Action Defender", stats: [["defensiveAwareness", 9, 90, 96], ["defensiveEngagement", 9, 88], ["ballWinning", 8, 88], ["stamina", 8, 90], ["speed", 7, 90, 92], ["acceleration", 7, 90], ["physicalContact", 5, 85], ["lowPass", 6, 87], ["ballControl", 3, 82]] },
     buildUp: { label: "Build Up CB", stats: [["defensiveAwareness", 10, 90, 96], ["speed", 8, 91, 95], ["acceleration", 8, 90], ["ballWinning", 7, 88], ["physicalContact", 7, 85], ["defensiveEngagement", 6, 88], ["jump", 4, 85], ["heading", 3, 82], ["aggression", 3, 85]] },
     destroyer: { label: "Destroyer", stats: [["acceleration", 10, 91, 95], ["defensiveAwareness", 9, 90, 96], ["ballWinning", 8, 88], ["speed", 8, 91, 95], ["physicalContact", 7, 85], ["defensiveEngagement", 6, 88], ["aggression", 5, 88], ["jump", 4, 85], ["heading", 2, 82]] },
     coveringRole: { label: "Covering Role", stats: [["defensiveAwareness", 10, 90, 96], ["speed", 9, 92, 96], ["acceleration", 8, 90], ["ballWinning", 7, 88], ["defensiveEngagement", 6, 88], ["physicalContact", 6, 85], ["jump", 3, 85]] },
@@ -165,11 +165,7 @@ window.Recommender = (deps) => {
     if (ballRoll >= 2 && ["Double Touch", "Flip Flap", "Sole Control"].some(hasT) && p.height <= 182) { scale("dribbling", 1.15); scale("tightPossession", 1.15); scale("balance", 1.15); used.push("the Double Touch / Flip Flap / Sole Control package"); }
     if (["Interception", "Blocker", "Man Marking"].some(hasT) && !["CB", "LB", "RB"].includes(p.position)) { ensure("defensiveAwareness", 2, 70); used.push(["Interception", "Blocker", "Man Marking"].filter(hasT).join(" + ")); }
     if (used.length) notes.push(`Trained on the card: ${used.join(", ")} — the build serves them like native skills (§8, §9).`);
-    // §3 / §7 (user decision, 11 Oct 2026): a Creative Playmaker is a pure creator — Ball
-    // Control, Dribbling, Tight Possession, Low Pass and Balance come first, and 96 Speed is
-    // already top speed. The 100+ Speed step isn't worth 28 points of Lower Body to him
-    // (Messi: Speed 100 → 96 bought Ball Control 99, Dribbling 100, OA 90, Balance 97).
-    if (tpl.key === "creativePlaymaker") { const s = get("speed"); if (s) s.noStep = true; }
+
     // §7 Box-to-Box: "do NOT force every Box-to-Box player into a scorer" — Lampard can
     // justify more Shooting, Seedorf is a transition player / carrier / passer / defender
     // "rather than forcing high Finishing from a weak base". The card's native skills say
@@ -248,31 +244,29 @@ window.Recommender = (deps) => {
   // §14 step 4 / §3 / §13: past these values extra training is waste (the examples in
   // §14 are Acceleration 102, Speed 98, DA 102, Finishing 99, Passing 97; OA 96+ only
   // "when progression cost is low"). Only points that came from training count.
+  // Speed: training never goes past 96 (user decision, 11 Oct 2026 — the 97–99 band is
+  // dead and the "100+ step" isn't bought with progression points; boosters and the
+  // manager may still land there).
   const WASTE = { offensiveAwareness: 95, acceleration: 97, speed: 96, defensiveAwareness: 98, finishing: 95,
     lowPass: 95, loftedPass: 94, ballWinning: 98, defensiveEngagement: 98, aggression: 96,
     ballControl: 97, dribbling: 97, tightPossession: 97, balance: 97 };
-  function wasteOf(f) {
+  // Speed's waste line is the role's own cap when that is lower than 96 (a holding
+  // midfielder stops at 92 — user decision, 11 Oct 2026: "what does Makélélé need 96 for").
+  const speedLimit = (profile) => Math.min(96, profile?.stats.find((s) => s.k === "speed")?.cap ?? 96);
+  function wasteOf(f, profile) {
     const out = {};
     Object.entries(WASTE).forEach(([k, lim]) => {
-      if (k === "speed" && f.speed >= 100) return; // 100+ is a step again (§3)
-      const over = Math.min(f.$gain?.[k] || 0, f[k] - lim);
+      const over = Math.min(f.$gain?.[k] || 0, f[k] - (k === "speed" ? speedLimit(profile) : lim));
       if (over > 0) out[k] = over;
     });
-    // Speed trained into the dead 97–99 band is waste too.
-    if (f.speed >= 97 && f.speed <= 99) {
-      const dead = Math.min(f.$gain?.speed || 0, f.speed - 96);
-      if (dead > 0) out.speed = Math.max(out.speed || 0, dead);
-    }
     Object.entries(f.$lost || {}).forEach(([k, v]) => { out[k] = (out[k] || 0) + v; });
     return out;
   }
 
   // Community tests (Amadeusz, via KNOWLEDGE-BASE §3): 96 Speed is already top speed and
-  // 97–99 adds nothing, while 100+ gives a new step. Value Speed as capped at 96 unless it
-  // reaches 100, which earns a small step bonus (one target-point's worth: enough when a
-  // booster makes 100 cheap, not enough to sell core stats for it).
-  const SPEED_STEP = 1;
-  const effective = (k, x) => (k === "speed" && x < 100 ? Math.min(x, 96) : x);
+  // 97–99 adds nothing. Speed is valued as capped at 96 — the "100+ step" is never bought
+  // with progression points (user decision, 11 Oct 2026).
+  const effective = (k, x) => (k === "speed" ? Math.min(x, 96) : x);
   // Acceleration pays roughly 3 : 2 : 1 per point below 88 : 88–91 : above 91 (§3,
   // community testing), so each point past 91 is worth a third of one below 88 — and
   // nothing past the role's cap.
@@ -297,16 +291,14 @@ window.Recommender = (deps) => {
         continue;
       }
       v += s.w * (Math.min(x, s.t) - 0.5 * half + (s.slope ?? 0.25) * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0)
-        + tail(s, x)
-        // §3: 100+ Speed is a noticeable step again — worth it when boosters make it cheap.
-        + (s.k === "speed" && x >= 100 && !s.noStep ? SPEED_STEP : 0));
+        + tail(s, x));
     }
     // Secondary stats: once the role's priorities are met, every extra point in a stat the
     // role still uses beats parking it somewhere useless (§4: KP/Jump/Stamina stay linear).
     for (const k of profile.secondary) v += 0.25 * Math.min(effective(k, f[k]), WASTE[k] ?? 99);
     // Trained points past the useful range (dead-zone Speed included) are pure loss —
     // penalised hard enough that the optimiser moves them to a stat the role still uses.
-    for (const over of Object.values(wasteOf(f))) v -= 8 * over;
+    for (const over of Object.values(wasteOf(f, profile))) v -= 8 * over;
     return v;
   }
 
@@ -314,15 +306,16 @@ window.Recommender = (deps) => {
 
   function optimise(p, profile, booster2) {
     const levels = optimiseOnce(p, profile, booster2, null);
-    // Speed trained into the dead 97–99 band: step Lower Body back to 96 and spend the
-    // freed points elsewhere (Lower Body frozen for the rerun).
+    // Speed trained past 96: step Lower Body back until it isn't and spend the freed
+    // points elsewhere (Lower Body frozen for the rerun).
     let f = finalStats(p, levels, booster2);
-    if (f.speed >= 97 && f.speed <= 99 && (f.$gain?.speed || 0) > 0) {
+    const lim = speedLimit(profile);
+    if (f.speed > lim && (f.$gain?.speed || 0) > 0) {
       const fixed = { ...levels };
       while (fixed.lowerBody > 0) {
         fixed.lowerBody -= 1;
         f = finalStats(p, fixed, booster2);
-        if (f.speed <= 96) break;
+        if (f.speed <= lim) break;
       }
       return optimiseOnce(p, profile, booster2, fixed);
     }
@@ -646,7 +639,7 @@ window.Recommender = (deps) => {
     const { skills, why } = chooseSkills(p, profile, f);
     const ai = chooseSkills(p, profile, f, true);
     return { aiSkills: ai.skills, aiWhy: ai.why, id: p.id, template: profile.tpl.key, roleLabel: profile.tpl.label, levels, booster2: b.fixed ? null : b.booster.id,
-      booster: b.booster, boosterFixed: b.fixed, boosterOverlap: b.overlap || 0, final: f, rating, targets, skills, skillWhy: why, notes, path };
+      booster: b.booster, boosterFixed: b.fixed, boosterOverlap: b.overlap || 0, final: f, rating, targets, skills, skillWhy: why, notes, path, waste: wasteOf(f, profile) };
   }
 
   const recs = Object.fromEntries(players.map((p) => [p.id, recommend(p)]));
@@ -668,7 +661,6 @@ window.Recommender = (deps) => {
     const alt = OVR.POSITIONS.filter((pos) => pos !== p.position && profAt(p, pos) !== "none")
       .map((pos) => ({ pos, r: OVR.rating(pos, p.height, p.weakFootAccuracy, r.final) }))
       .sort((a, b) => b.r - a.r)[0];
-    r.waste = wasteOf(r.final);
     r.lock = missed.length === 0 && Object.keys(r.waste).length === 0;
     r.missed = missed;
     r.altPosition = alt || null;

@@ -175,8 +175,11 @@ directly reviewed here — treat as strong working knowledge, re-check after pat
   place to spend progression.
 - **100+ gives a noticeable step again** (relevant for strong boosters).
 
-Practical rule: aim for ~90; above that stop at **96**, or go to **100+** only when it's
-cheap (boosters). Never train into 97–99.
+Practical rule: aim for ~90; above that stop at **96**. **Training never goes past 96
+(user decision, 11 Oct 2026):** the 100+ "step" is not bought with progression points —
+it only happens where boosters and the manager land there on their own. Points that would
+have taken Speed to 97–101 go to the role's other stats (`recommend.js` values Speed as
+capped at 96 and treats anything trained past it as waste).
 
 **Conflicting relay (11 Oct 2026, section 25):** a second repost of the same kind of test
 says 96 → 99 gives a very small but non-zero gain (still far less than 99 → 102) and that
@@ -194,10 +197,11 @@ thresholds:
 - Goal Poacher, Dummy Runner, Hole Player, wingers, full-backs: 92
 - Fox in the Box, Target Man and pure creators stay lower (section 7: Fox in the Box
   does not need extreme Speed)
-- **Creative Playmaker never buys the 100+ Speed step** (user decision, 11 Oct 2026):
-  96 is already top speed, and the Lower Body levels it takes to reach 100 (28 points for
-  Messi's Creative Playmaker card) do more as Ball Control, Dribbling, Attacking Awareness,
-  Finishing and Balance (section 7). `recommend.js` switches the step bonus off for that role.
+- **Nobody buys the 100+ Speed step** (user decision, 11 Oct 2026 — first for the Creative
+  Playmaker, then for every role): 96 is already top speed, and the Lower Body levels it
+  takes to reach 100 do more as the role's other stats (Messi's Creative Playmaker card:
+  28 points for Speed 100 became Ball Control, Dribbling, Attacking Awareness, Finishing
+  and Balance).
 
 ---
 

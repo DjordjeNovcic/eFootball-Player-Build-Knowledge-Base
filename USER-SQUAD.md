@@ -252,6 +252,20 @@ Finishing + Low Screamer + Snap Strike, and a left foot in a right-footed attack
 Outlet keeps him high late on. C. Ronaldo's edge was Bullet Header (Heading 93 vs 87).
 AI build 8-0-9-9-8-8-0: OA 91, Finishing 92, Speed 95, Acceleration 93, Jump 94.
 
+**Build update (11 Oct 2026, Speed — user decision): training never takes Speed past
+96, and a holding midfielder stops at 92** (KNOWLEDGE-BASE §3). "What does Makélélé need
+96 for" — the Lower Body levels that bought Speed 96–101 now buy the role's other stats:
+
+| Player | Was | Now | What moved |
+|---|---|---|---|
+| Eto'o | 8-0-10-8-10-2-0 Fantasista +1 | **9-1-12-8-5-4-0 Physicality +1** | Speed 100 → 96; Ball Control 94 → 95, Dribbling 94 → 95, Finishing 93, Physical Contact 80 → 83, Jump 79 → 82 |
+| Makélélé | 0-4-2-8-12-4-10 Ball Protection +1 | **0-6-4-10-8-4-10 Hard Worker +1** | Speed 96 → 92; Low Pass 88 → 90, Lofted 84 → 87, Acceleration 93 → 96, Balance 93 → 94, Tackling 98 / DA 96 unchanged |
+| Messi (CP) | 8-9-6-7-9-5-0 Offence Creator +1 | **8-11-6-7-7-4-1 Shooting +1** | Speed 96 → 94; Low Pass 94 → 95, Lofted 88 → 90, Finishing 91 → 92, Acceleration 97 |
+| Ibrahimović | 5-0-8-10-10-8-0 Agility +1 | **5-1-6-10-11-8-0 Fantasista +1** | Speed 93, Finishing 92 → 93, Kicking Power 97 → 98; Ball Control 89 → 88 |
+| Puskás (bench) | 7-3-8-9-10-4-0 | **7-3-8-9-8-7-0** | Speed 95 → 93; Heading 78 → 81, Jump 76 → 79, Physical Contact 77 → 80 |
+
+Neymar and Dembélé (bench) lose Speed 100 the same way. Everyone else is unchanged.
+
 **XI change (11 Oct 2026, later — user decision): Gullit (`88039045074410`) for
 Ibrahimović at CF**, a 3–5 match test; only the player changes. Gullit takes the left CF
 slot, Eto'o stays right (Messi's deliveries from the right go to the far-post target,
