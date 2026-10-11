@@ -31,6 +31,28 @@
     el.dataset.hash = key;
     return true;
   }
+  // Keyed list render: a tile whose HTML didn't change keeps its DOM node (and its loaded
+  // images, open sheet and scroll position); the others are rebuilt, and all are put in the
+  // new order. Cloud sync re-renders the squad a few times at start-up — without this every
+  // card image flashed.
+  function renderKeyed(root, items) {
+    const existing = new Map([...root.children].filter((el) => el.dataset.key).map((el) => [el.dataset.key, el]));
+    const frag = document.createDocumentFragment();
+    for (const { key, html } of items) {
+      const h = htmlHash(html);
+      let el = existing.get(key);
+      if (!el || el.dataset.hash !== h) {
+        const tpl = document.createElement("template");
+        tpl.innerHTML = html.trim();
+        el = tpl.content.firstElementChild;
+        el.dataset.key = key;
+        el.dataset.hash = h;
+      }
+      frag.appendChild(el);
+    }
+    root.replaceChildren(frag);
+    delete root.dataset.hash;
+  }
   const norm = (s) => {
     const k = String(s || "").toLowerCase().replace(/^the /, "").replace(/[^a-z0-9]/g, "");
     return { offensivewingback: "offensivefullback", attackingfullback: "offensivefullback", offensivegoalkeeper: "attackinggk" }[k] || k;
@@ -421,7 +443,7 @@
       + (order && lineup ? ` · ${squadState.group === "XI" ? "starting XI" : "bench"} of “${esc(lineup.name)}”` : "")
       + (REC ? ` · builds rated with ${recContextHtml()}` : "") + ` · stats from eFHUB, ${esc(DATA.fetched)}`;
 
-    setHtml(root, list.map((p) => {
+    const tiles = list.map((p) => {
       const note = notesFor(p.id);
       const saved = store.builds[p.id];
       // The tile's rating: the saved build's, else the Recommended by AI build's.
@@ -431,8 +453,8 @@
       else if (note?.snapshot) savedBadge = `<span class="badge">Snapshot ${esc(note.snapshot.date)}</span>`;
       const r = REC?.recs[p.id];
       const role = lineupRole(p.id);
-      return `
-        <details class="rec-card squad-card" data-group="${POSITION_GROUP[p.position]}" data-rec="${p.id}" ${squadState.open.has(p.id) ? "open" : ""}>
+      return { key: p.id, html: `
+        <details class="rec-card squad-card" data-group="${POSITION_GROUP[p.position]}" data-rec="${p.id}">
           <summary class="squad-card__sum" title="${r ? "Open the Recommended by AI build" : ""}">
           <div class="squad-card__head">
             <div class="squad-card__media">${cardImg(p, "squad-card__img")}
@@ -468,9 +490,19 @@
             </div>
           </div>
           </summary>
-          ${r && squadState.open.has(p.id) ? recSheetHtml(p, r) : ""}
-        </details>`;
-    }).join("") || (players.length ? `<p class="empty-state">${order && lineup && !q
+        </details>` };
+    });
+    if (tiles.length) {
+      renderKeyed(root, tiles);
+      // Open state and the lazily built sheet live outside the tile's HTML, so a tile that
+      // didn't change keeps both and a rebuilt one gets them back.
+      root.querySelectorAll("details[data-rec]").forEach((d) => {
+        const id = d.dataset.rec;
+        const open = squadState.open.has(id);
+        if (open && !d.querySelector(":scope > .rec-card__body") && REC?.recs[id]) d.insertAdjacentHTML("beforeend", recSheetHtml(byId[id], REC.recs[id]));
+        if (d.open !== open) d.open = open;
+      });
+    } else setHtml(root, (players.length ? `<p class="empty-state">${order && lineup && !q
         ? (order.some(Boolean) ? `None of the ${squadState.group === "XI" ? "starters" : "bench players"} in “${esc(lineup.name)}” are in your squad any more.`
           : `“${esc(lineup.name)}” has no ${squadState.group === "XI" ? "starting XI" : "bench"} yet — fill it in the Lineup tab.`)
         : order && !lineup ? "No lineup yet — set up your starting XI and bench in the Lineup tab." : "No cards match."}</p>`
