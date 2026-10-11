@@ -118,21 +118,27 @@ proficiency from eFHUB, photos, Link-up plays and release dates from
 `data/knowledge.js` is a hand-maintained extract of `KNOWLEDGE-BASE.md` / `USER-SQUAD.md`
 for the UI — update it when those documents change.
 
-## Public card database
+## Public card database — the weekly refresh
 
-`tools/fetch_public.py` pulls every card listed in efhub.com's sitemap into
-`data/public/cards.json` — new cards only, one page every 5 s as its robots.txt asks (a full
-first run is ~85 minutes), written as it goes; `--all` re-fetches everything, `--limit N`
-is a smoke test, `--ids ID…` adds cards the sitemap doesn't list. `tools/build_public.js`
-then computes the Recommended by AI build for each card without a manager into
-`data/public/builds.json`. `.github/workflows/public-cards.yml` runs both every Monday (and
-on demand), refreshes `data/managers.js` and commits the result; GitHub Pages redeploys
-from `main`. The owner's squad files are never touched.
+Once a week, from anywhere:
 
 ```bash
-python3 tools/fetch_public.py          # new cards from the sitemap
-node tools/build_public.js             # builds for all public cards
+tools/weekly.sh            # new cards → builds → managers → the week's new cards → commit + push
+tools/weekly.sh --no-push  # same, but leave the commit for you to push
 ```
+
+It runs, in order: `tools/fetch_public.py` (every card listed in efhub.com's sitemap into
+`data/public/cards.json` — new cards only, one page every 5 s as its robots.txt asks, so a
+weekly run is a few minutes and only the very first crawl is ~85 min; `--all` re-fetches
+everything, `--ids ID…` adds cards the sitemap doesn't list), `tools/fetch_players.py
+--managers`, `tools/build_public.js` (the Recommended by AI build for each public card
+without a manager → `data/public/builds.json`) and `tools/new_cards.js` (the cards that
+appeared in the last 7 days, ranked by AI build rating with their builds, plus the best new
+card per position — `node tools/new_cards.js 14` for two weeks, `--all` for the top 40 of
+the whole database). Then it commits `data/public` and `data/managers.js` and pushes;
+GitHub Pages redeploys from `main`. The owner's squad files are never touched.
+`.github/workflows/public-cards.yml` does the same on GitHub every Monday if you'd rather
+not run it by hand (needs Settings → Actions → Workflow permissions: read and write).
 
 ## Check the builds
 
