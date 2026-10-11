@@ -511,6 +511,9 @@ window.Recommender = (deps) => {
         push("Heading", "More downward, accurate headers (§19).");
         push("Aerial Superiority", aerialWhy);
       }
+      // v6: keepers win far more one-on-ones (KONAMI 1v1 positioning change, eFHUB pro
+      // survey) — the runner who ends up alone with the keeper gets the chip (§25).
+      if (key === "goalPoacher") push("Chip Shot Control", "Runs in behind end one-on-one, and v6 keepers react to dribbling better — the chip is his finish (§25).");
       push("Through Passing", tpWhy);
       push("One-touch Pass", "Quick combinations (§9 attacking).");
       if (["prolificWinger", "roamingFlank", "holePlayer", "creativePlaymaker", "dummyRunner"].includes(key) || (key === "goalPoacher" && p.height <= 182))

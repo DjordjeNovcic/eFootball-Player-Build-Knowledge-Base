@@ -2566,6 +2566,58 @@ passing is a secondary category. Strikers put Aerial Strength at 3–8 and Passi
   Moving 2 Dribbling levels into Passing would only take Low Pass 89 → 92, above the
   ideal he already meets.
 
+## Skills, defending, keepers and v6 match play (third sweep, 11 Oct 2026)
+
+- **Skill Training pool** [skill DB, Operation Sports Aug 2026]: the same 44 trainable
+  skills as our pool. Show Time skills stay card-only, including Shadow Hunt, Power Tackle
+  (Sep 2026), Tap Trick, Snap Strike, Long-reach Tackle, Fortress and Aerial Fort.
+  - v6.1.0 adds **Select Skill Tokens** [official]: 100 tokens buy any trainable skill.
+    Advanced tokens convert at 20 each. Our five-skill lists can now be bought exactly.
+  - GK skills are trainable too, but Buffon already has all four, so his slots are filler.
+  - No published odds for random training.
+- **No numbers anywhere** for Long-reach Tackle, Interception, Blocker, Man Marking,
+  Aerial Fort, Aerial Superiority, Sliding Tackle, Acrobatic Clearance, Track Back,
+  Captaincy, Fighting Spirit or Gamesmanship. Descriptions only. No tested thresholds
+  for Defensive Awareness, Tackling, Defensive Engagement or Aggression.
+- **Other v6.0.0 notes** [official]:
+  - Centre-backs recover a little more stamina at half-time.
+  - Forwards track back more when the opponent attacks deep.
+  - Sliding-tackle foul calls were revised.
+  - Keepers' one-on-one positioning was revised, so they react to dribbling more easily.
+  - Accuracy improved on one-time shots from fast-moving balls.
+- **eFHUB v6 engine survey** (22 Aug 2026; pro group plus 200 players) [guide]:
+  - 89% of the pros say **lofted through balls improved**; about half say ground
+    through balls got worse.
+  - Ground passes are intercepted more easily, which the author thinks hurts Long Ball
+    Counter.
+  - Long-range and Stunning shots still pay off.
+  - Keepers are far too strong in one-on-ones.
+  - Fluid Formation drains stamina.
+
+  **Applied:**
+  - The Game Plan defaults to the chipped through ball and finishes one-on-ones early or
+    with a chip.
+  - Every Goal Poacher gets Chip Shot Control among the AI skills. Eto'o swaps Fighting
+    Spirit for it.
+  - The DMF passing change above (Low Pass 87) fits the same finding.
+- **Formation guides** (Aug–Sep 2026) [guide]:
+  - 4-2-2-2 and 4-2-1-3 stay at the top for counter styles.
+  - Operation Sports advises against Fluid Formation, because players leave gaps while
+    switching. Our two shapes differ only by Seedorf moving wide.
+- **Individual instructions in v6** [guide]:
+  - Attacking group: Anchoring, Defensive. Defensive group: Counter Target, Tight Marking,
+    Man Marking (in-match only). Two per group.
+  - No source tests Tight Marking in v6.
+- **Keepers:** v6.1.0 adds a **Build Up GK** playing style (Zion Suzuki so far). No
+  tested GK thresholds or GK1–GK3 community builds were found.
+- **Overall rating:** KONAMI never published the formula. A 1-point gap with the game
+  (Messi 109 in game vs 108 here) has no confirmed cause.
+- **Condition:** Epic, Big Time and Legend cards stay at B according to one guide.
+  Community estimates put the gap between the best and the worst arrow at "a few points
+  per stat", with no exact figures.
+- **Not found:** pro setups for the v6 season. FIFAe Finals are 16–25 Oct 2026; the July
+  2026 world finals were played on v5.
+
 ## Community builds for the squad's cards (eFHUB top-voted, read 11 Oct 2026)
 
 The most-voted eFHUB community build for each of the 23 Game Plan cards was compared with
