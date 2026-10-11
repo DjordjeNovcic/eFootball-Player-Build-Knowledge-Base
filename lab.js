@@ -2715,6 +2715,7 @@
               <p>${esc(p.team || "")} · ${p.height} cm · Lv cap ${p.levelCap}${p.added ? ` · eFHUB ${esc(p.added)}` : ""}</p>
               <div class="kb-card__badges">
                 ${pubIsNew(p) ? `<span class="badge badge--lime">New</span>` : ""}
+                ${p.cardType ? `<span class="badge badge--violet">${esc(p.cardType)}</span>` : ""}
                 <span class="badge">${esc(r.role)}</span>
                 ${r.lock ? `<span class="badge badge--green">Lock</span>` : `<span class="badge badge--amber">Test variant</span>`}
                 ${owned ? `<span class="badge badge--green">in your squad</span>` : ""}

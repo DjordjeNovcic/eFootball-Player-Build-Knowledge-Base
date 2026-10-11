@@ -5,8 +5,11 @@ data/public/cards.json, kept apart from the owner's squad (data/players.js).
 The sitemap lists ~1000 cards (the ones people look up: Epic, Legend, Big Time, current
 Featured). Only cards that aren't in cards.json yet are fetched, one page every
 --delay seconds (efhub.com's robots.txt asks for 5), and the file is written as it goes,
-so an interrupted run keeps what it got. Each card records the day it first appeared
-("added") for the Build Lab's "new this week" view. Builds are computed separately by
+so an interrupted run keeps what it got. Only Epic, Big Time and Show Time cards are kept (eFHUB's playerType 5 / 7 / 8); a page also
+lists the player's other versions with their type, so cards of other series are skipped without
+being fetched. Each card records the day it first appeared
+("added") for the Build Lab's "new this week" view; the cards of the very first crawl carry
+no date (`--baseline` clears them), so "new" means new on eFHUB since then. Builds are computed separately by
 `node tools/build_public.js`.
 
     python3 tools/fetch_public.py                 # new cards only
@@ -21,10 +24,19 @@ import sys
 import time
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from fetch_players import ROOT, get, obj_at, parse_card, rsc_payload  # noqa: E402
+from fetch_players import CARD_TYPES, ROOT, get, obj_at, parse_card, rsc_payload  # noqa: E402
 
 OUT = ROOT / "data" / "public" / "cards.json"
 SITEMAP = "https://efhub.com/sitemap.xml"
+# Only the card series worth a build (user decision, 11 Oct 2026): Epic, Big Time, Show Time.
+# Standard, Featured, Trending, Legend and Highlight cards are skipped.
+KEEP = {5, 7, 8}
+VERSION_RE = re.compile(r'"player":\{"id":"(\d{4,16})"[^{}]*?"playerType":(\d+)')
+
+
+def page_types(s):
+    """id → playerType for every card the page mentions (the player's other versions too)."""
+    return {pid: int(tp) for pid, tp in VERSION_RE.findall(s)}
 
 
 def sitemap_ids():
@@ -55,15 +67,29 @@ def main():
     ap.add_argument("--limit", type=int, default=0, help="stop after this many fetched cards")
     ap.add_argument("--delay", type=float, default=5.0, help="seconds between page requests (robots.txt: 5)")
     ap.add_argument("--ids", nargs="*", default=[], help="extra eFHUB IDs to include besides the sitemap")
+    ap.add_argument("--baseline", action="store_true", help="clear every card's 'added' date (after the first crawl) and exit")
     args = ap.parse_args()
+    if args.baseline:
+        db = load()
+        for p in db["players"]:
+            p["added"] = None
+        save(db)
+        print(f"{len(db['players'])} cards marked as the baseline (no 'added' date)")
+        return
 
     db = load()
     have = {p["id"]: p for p in db["players"]}
+    # Types learnt so far (a page lists the player's other versions with their type), so
+    # cards of a series we skip are never fetched.
+    types = {p["id"]: p["playerType"] for p in db["players"] if p.get("playerType")}
+    types.update({k: int(v) for k, v in db.get("types", {}).items()})
+    for pid in [k for k, c in have.items() if types.get(k) and types[k] not in KEEP]:
+        db["players"].remove(have.pop(pid))
     ids = sitemap_ids() + [re.sub(r"\D", "", x) for x in args.ids]
-    todo = [pid for pid in ids if args.all or pid not in have]
+    todo = [pid for pid in ids if (args.all or pid not in have) and (pid not in types or types[pid] in KEEP)]
     if args.limit:
         todo = todo[: args.limit]
-    print(f"sitemap: {len(ids)} cards · in cards.json: {len(have)} · to fetch: {len(todo)}")
+    print(f"sitemap: {len(ids)} cards · in cards.json: {len(have)} · known types: {len(types)} · to fetch: {len(todo)}")
     if not todo:
         save(db)
         return
@@ -74,9 +100,20 @@ def main():
     today = time.strftime("%Y-%m-%d")
     failed = []
     for n, pid in enumerate(todo, 1):
+        if pid in types and types[pid] not in KEEP:
+            continue  # learnt from an earlier page this run
         try:
-            card, names = parse_card(rsc_payload(get(f"https://efhub.com/players/{pid}")), pid, left, strip)
-            card["added"] = have[pid]["added"] if pid in have and have[pid].get("added") else today
+            s = rsc_payload(get(f"https://efhub.com/players/{pid}"))
+            types.update(page_types(s))
+            db["types"] = dict(types)
+            card, names = parse_card(s, pid, left, strip)
+            if card["playerType"] not in KEEP:
+                print(f"[{n}/{len(todo)}] {pid} {card['name']} — {card['cardType'] or card['playerType']}, skipped")
+                if pid in have:
+                    db["players"].remove(have.pop(pid))
+                continue
+            # First seen today, unless the card is already known (a baseline card has no date).
+            card["added"] = have[pid].get("added") if pid in have else today
             used = set(card["skills"]) | set(card["comSkills"])
             for k, v in names.items():
                 if k in used and isinstance(v, str):
@@ -86,7 +123,7 @@ def main():
             else:
                 db["players"].append(card)
             have[pid] = card
-            print(f"[{n}/{len(todo)}] {pid} {card['name']} ({card['position']} {card.get('overall')})")
+            print(f"[{n}/{len(todo)}] {pid} {card['name']} ({card['position']} {card.get('overall')}, {card['cardType']})")
         except Exception as e:  # keep going; report at the end
             failed.append(pid)
             print(f"[{n}/{len(todo)}] {pid} FAILED: {e}", file=sys.stderr)

@@ -27,7 +27,7 @@ for (const p of list) {
   const line = KEYS.filter((k) => k in r.levels || (p.position === "GK" ? true : !k.startsWith("gk"))).map((k) => r.levels[k] || 0).join("-");
   const styles = [p.playingStyle, p.playingStyleDefensive].filter(Boolean).join(" / ") || "no style";
   const targets = r.targets.slice(0, 6).map((t) => `${LABEL[t.stat] || t.stat} ${t.value}${t.hit ? "" : "/" + t.target}`).join(" ");
-  console.log(`\n${p.name} (${p.team || "—"}) · ${p.position} · card ${p.overall ?? "—"} → AI ${r.rating} · ${p.height} cm, ${p.foot || "?"} foot · cap ${p.levelCap} · added ${p.added}`);
+  console.log(`\n${p.name} (${p.team || "—"}) · ${p.cardType || "?"} · ${p.position} · card ${p.overall ?? "—"} → AI ${r.rating} · ${p.height} cm, ${p.foot || "?"} foot · cap ${p.levelCap} · added ${p.added}`);
   console.log(`  ${styles} → ${r.role}${r.lock ? " · lock" : " · test"} · ${line} · ${r.booster}${r.boosterFixed ? " (fixed)" : ""}`);
   console.log(`  ${targets}`);
   console.log(`  skills: ${r.skills.join(", ")}`);

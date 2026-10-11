@@ -20,8 +20,8 @@ Two parts:
     card to their squad together with the build. Each published
     build carries its own card snapshot, so viewers don't need the card first. Stored in
     Firestore `creatorBuilds/{playerId}`; anyone can read, only the owner can write (`firestore.rules`).
-  - **Public Cards** — every card in eFHUB's sitemap (~1000: Epic, Legend, Big Time and the
-    current Featured players) with its Recommended by AI build, rated without a manager
+  - **Public Cards** — every Epic, Big Time and Show Time card in eFHUB's sitemap (other
+    series are skipped) with its Recommended by AI build, rated without a manager
     (`data/public/cards.json` + `builds.json`, refreshed weekly by a GitHub Action). Search,
     position / "New this week" filters, sort by AI or card rating; a card opens into the §15
     sections plus **With your manager** (the card re-run live with your manager and
@@ -127,8 +127,8 @@ tools/weekly.sh            # new cards → builds → managers → the week's ne
 tools/weekly.sh --no-push  # same, but leave the commit for you to push
 ```
 
-It runs, in order: `tools/fetch_public.py` (every card listed in efhub.com's sitemap into
-`data/public/cards.json` — new cards only, one page every 5 s as its robots.txt asks, so a
+It runs, in order: `tools/fetch_public.py` (every Epic, Big Time and Show Time card listed in
+efhub.com's sitemap into `data/public/cards.json` — other series are skipped, new cards only, one page every 5 s as its robots.txt asks, so a
 weekly run is a few minutes and only the very first crawl is ~85 min; `--all` re-fetches
 everything, `--ids ID…` adds cards the sitemap doesn't list), `tools/fetch_players.py
 --managers`, `tools/build_public.js` (the Recommended by AI build for each public card

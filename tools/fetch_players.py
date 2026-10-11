@@ -227,6 +227,10 @@ def write_friend(name, ids, left, strip):
     print(f"\n{name}: {len(players)} players written to data/friends.js, {len(failed)} failed: {failed}")
 
 
+# eFHUB's playerType codes (from its player-card bundle, 11 Oct 2026).
+CARD_TYPES = {1: "Standard", 2: "Featured", 3: "Trending", 4: "Legend", 5: "Epic", 6: "Highlight", 7: "Big Time", 8: "Show Time"}
+
+
 def parse_card(s, pid, left, strip):
     """One card in the data/players.js shape, from a player page's flight payload.
 
@@ -255,6 +259,7 @@ def parse_card(s, pid, left, strip):
         "skills": skills, "comSkills": p.get("comSkills") or [],
         "stats": stats, "model": p.get("playerModel"),
         "image": p.get("imageUrl"), "levelCap": p.get("levelCap"),
+        "playerType": p.get("playerType"), "cardType": CARD_TYPES.get(p.get("playerType")),
         "booster1": strip(b1) if b1 else None,
         # Some cards ship with slot 2 pre-assigned; otherwise slot 2 is free to pick.
         "booster2Fixed": strip(b2) if b2 else None,
