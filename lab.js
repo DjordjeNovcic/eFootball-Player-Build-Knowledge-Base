@@ -189,6 +189,11 @@
   const ownsRepo = () => isMe() && repoSquad;
   const notesFor = (id) => (ownsRepo() ? KB.SQUAD_NOTES[id] : null);
   const auth = { enabled: false, signedIn: false };
+  // Signed out on a site with cloud sync: the squad features ask for an account first.
+  // Elements with data-auth-open open the sign-in / register dialog (cloud.js).
+  const gated = () => auth.enabled && !auth.signedIn;
+  const gateHtml = (what) => `<div class="pro-gate gate"><p><b>Sign in or create a free account</b> to ${what}. Your squad, builds and lineups are saved to your account and follow you to every device.</p><button type="button" class="btn btn--primary" data-auth-open>Sign in / Register</button></div>`;
+  const openAuth = () => { if (gated()) document.getElementById("cloudIn")?.click(); };
   // Builds the site owner publishes for everyone (cloud.js → creatorBuilds/{playerId}).
   // Each carries its own card snapshot, so viewers don't need the card in their squad.
   const pro = { name: "CoinPlayTV", isCreator: false, loaded: false, error: null, builds: {}, publish: null, unpublish: null };
@@ -404,6 +409,7 @@
     });
     if (active === "train") {
       $("#trainEmpty").hidden = players.length > 0;
+      if (!players.length) $("#trainEmpty").innerHTML = gated() ? gateHtml("train your own players") : `No players in this squad yet — add some in <a href="#squad">My Squad</a>.`;
       $("#trainBody").hidden = players.length === 0;
       if (players.length) openTrainer(arg && byId[arg] ? arg : byId[view.playerId] ? view.playerId : defaultPlayerId());
     }
@@ -506,6 +512,7 @@
           </summary>
         </details>` };
     });
+    if (!players.length && gated()) { setHtml(root, gateHtml("build your squad — add your cards from eFHUB or the Public Cards tab")); return; }
     if (tiles.length) {
       renderKeyed(root, tiles);
       // Open state and the lazily built sheet live outside the tile's HTML, so a tile that
@@ -1728,7 +1735,7 @@
   function renderManagerFit(l) {
     const box = $("#luManagers");
     if (!box) return;
-    if (!l.xi.some((id) => byId[id])) { box.innerHTML = `<p class="empty-state">Put players in the XI to compare managers.</p>`; return; }
+    if (!l.xi.some((id) => byId[id])) { box.innerHTML = gated() && !players.length ? gateHtml("build a lineup") : `<p class="empty-state">Put players in the XI to compare managers.</p>`; return; }
     const cur = managerObj(l.manager);
     const rows = profileManagers().map((m) => {
       const profAtTactic = (t) => m.prof[KB.TACTICS.indexOf(t)];
@@ -2601,6 +2608,7 @@
       .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.overall - a.overall);
     const total = Object.keys(store.builds).filter((id) => byId[id]).length;
     $("#mineMeta").innerHTML = `${total} of ${players.length} players have your build · ratings use ${recContextHtml()} for both columns`;
+    if (!players.length && gated()) { $("#mineRows").innerHTML = `<tr><td colspan="7">${gateHtml("save and compare your builds")}</td></tr>`; return; }
     $("#mineRows").innerHTML = list.map((p) => {
       const r = REC.recs[p.id];
       const rb = recBuild(p.id);
@@ -2984,7 +2992,9 @@
             ${open ? pubManagerHtml(p) : `<p class="rec-muted">…</p>`}
           </section>
           <div class="rec-card__actions">
-            <button type="button" class="btn btn--icon btn--solid" data-pub-add="${p.id}">${owned ? "Open in Trainer" : "Add to my squad"}</button>
+            ${signedOut
+              ? `<button type="button" class="btn btn--icon btn--solid" data-auth-open>Sign in to add this card</button>`
+              : `<button type="button" class="btn btn--icon btn--solid" data-pub-add="${p.id}">${owned ? "Open in Trainer" : "Add to my squad"}</button>`}
             <a class="btn btn--icon" href="https://efhub.com/players/${esc(p.id)}" target="_blank" rel="noopener">eFHUB ↗</a>
           </div>
           </div>
@@ -3108,6 +3118,7 @@
   }
 
   $("#addToggle").addEventListener("click", () => {
+    if (gated()) { openAuth(); return; }
     const box = $("#addPanel");
     box.hidden = !box.hidden;
     if (!box.hidden) $("#addPaste").focus();

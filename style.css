@@ -1564,3 +1564,8 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .subtactic__avg small{ font-family: var(--font-cond); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--paper-dim); }
 .subtactic .field--notes{ margin-bottom: 0.5rem; }
 .match-card .field--notes{ margin-bottom: 0; }
+
+/* sign-in gate inside a tab */
+.gate{ margin: 0.5rem 0; }
+.gate .btn{ white-space: nowrap; }
+#trainEmpty .gate{ font-style: normal; }

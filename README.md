@@ -40,8 +40,8 @@ Two parts:
     style (§18), matched on either of a card's two style slots.
   - **My Builds** — your builds next to the recommended ones (status, OVR delta); start
     from a recommendation and tweak it in the Trainer.
-  - **Any card gets a build.** Add one (bookmarklet, or *Add to my squad* in Public Cards —
-    no account needed, it's saved in this browser) and it opens in the Trainer with its
+  - **Any card gets a build.** Add one (bookmarklet, or *Add to my squad* in Public Cards)
+    and it opens in the Trainer with its
     Recommended by AI build; skills you mark as yours (★) shape that build like native ones
     (Heading + Aerial Superiority → the aerial package, Pinpoint Crossing → Lofted Pass 90…).
   - **Additional skills live on the player** (up to 5, as in the game): your picks (★ —
@@ -96,7 +96,10 @@ Two parts:
 password reset) gives every person their own squad — cards, managers, builds, lineups —
 while the knowledge (skills, styles, boosters, recommendations, trainer) is shared.
 The repo squad (`data/players.js` + `USER-SQUAD.md` notes) is shown only to the owner
-(`OWNER_UID` in `firebase-config.js`); signed-out visitors start with an empty squad.
+(`OWNER_UID` in `firebase-config.js`). Signed-out visitors can browse everything (Public
+Cards, CoinPlayTV builds, Skills, Managers, Playing Styles); My Squad, adding a card, the
+Trainer, Lineup and My Builds ask them to sign in or register first (the dialog opens from
+the button in each of those places).
 Each account's squad syncs through Firestore (project `efootballbuild-4a791`, rules in
 `firestore.rules`). Each squad is one document visible only to its owner.
 The browser copy stays as an offline cache; the first sign-in merges it into the cloud.
