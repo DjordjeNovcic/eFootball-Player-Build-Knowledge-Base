@@ -1,0 +1,27 @@
+name: Checks
+
+# Every push and pull request: the scripts parse, the data files load, and every
+# Recommended by AI build spends its card's exact point budget.
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: JavaScript parses
+        run: for f in lab.js recommend.js cloud.js data/*.js tools/*.js; do node --check "$f"; done
+      - name: Python parses
+        run: python3 -m py_compile tools/*.py
+      - name: Builds spend every point
+        run: node tools/check_builds.js | tail -1
+      - name: Public builds spend every point
+        run: node tools/build_public.js >/dev/null && git diff --quiet -- data/public/builds.json || echo "builds.json differs from the committed one — run tools/weekly.sh"

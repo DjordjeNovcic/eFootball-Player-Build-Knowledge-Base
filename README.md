@@ -31,7 +31,8 @@ Two parts:
   - **Public Cards** — every Epic, Big Time and Show Time card in eFHUB's sitemap (other
     series are skipped) with its Recommended by AI build, rated without a manager
     (`data/public/cards.json` + `builds.json`, refreshed weekly by a GitHub Action). Search,
-    position / "New this week" filters, sort by AI or card rating; a card opens into the §15
+    position / "New this week" filters, sort by AI or card rating or **Best per position**
+    (the top six at every position); a card opens into the §15
     sections plus **With your manager** (the card re-run live with your manager and
     playstyle); **Add to my squad** copies it into your squad and opens the Trainer. Kept
     apart from every profile's squad — nothing here touches your cards until you add one.
@@ -73,7 +74,8 @@ Two parts:
     formation's slots (rating at each slot from the builds with the chosen manager and
     playstyle; no one without proficiency, intermediate proficiency and an inactive style
     count against a player, one card per player, never two Destroyer CBs) — displaced
-    starters go to the bench.
+    starters go to the bench. **Best bench** fills the bench with the best cover for every
+    position the XI uses (a keeper first), then the strongest cards left.
     The **match card** beside the pitch holds the individual **instructions** (Counter
     Target, Tight Marking, Defensive, Anchoring — two per group, as in the game), the
     **sub-tactic** (the saved second playstyle and shape you switch to mid-match, with
@@ -174,6 +176,12 @@ the whole database). Then it commits `data/public` and `data/managers.js` and pu
 GitHub Pages redeploys from `main`. The owner's squad files are never touched.
 `.github/workflows/public-cards.yml` does the same on GitHub every Monday if you'd rather
 not run it by hand (needs Settings → Actions → Workflow permissions: read and write).
+
+## Checks on every push
+
+`.github/workflows/ci.yml` runs on every push and pull request: every script parses, and
+`tools/check_builds.js` confirms that each Recommended by AI build spends its card's exact
+point budget.
 
 ## Check the builds
 

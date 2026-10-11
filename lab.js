@@ -2299,6 +2299,32 @@
     const l = newLineup(`Lineup ${store.lineups.length + 1}`);
     store.lineups.push(l); store.activeLineup = l.id; lu.sel = null; saveLineup(); renderLineup();
   });
+  // Best bench: cover for every position the XI uses (a keeper first), then the
+  // strongest cards left — one card per player, never a starter.
+  function bestBench(l) {
+    const slots = layoutOf(l);
+    const names = new Set(l.xi.filter((id) => byId[id]).map((id) => norm(byId[id].name)));
+    const pool = players.filter((p) => !l.xi.includes(p.id) && !names.has(norm(p.name)));
+    const taken = new Set();
+    const out = [];
+    const take = (p) => { if (p && !taken.has(p.id) && out.length < BENCH_MAX) { taken.add(p.id); out.push(p.id); names.add(norm(p.name)); } };
+    const best = (pos) => pool.filter((p) => !taken.has(p.id) && !names.has(norm(p.name)) && proficiency(p, pos) !== "none")
+      .sort((a, b) => slotRating(b, pos, l) - slotRating(a, pos, l) || (proficiency(a, pos) === "high" ? -1 : 1))[0];
+    take(best("GK"));
+    const positions = [...new Set(slots.slice(1).map(([pos]) => pos))];
+    positions.forEach((pos) => take(best(pos)));
+    pool.filter((p) => !taken.has(p.id) && !names.has(norm(p.name)) && p.position !== "GK")
+      .sort((a, b) => buildRating(b, l) - buildRating(a, l)).forEach(take);
+    return out;
+  }
+  $("#luBestBench").addEventListener("click", () => {
+    const l = activeLineup();
+    if (!l.xi.some(Boolean)) { flash($("#luBestBench"), "Fill the XI first"); return; }
+    if (l.bench.length && !confirm(`Replace the bench of "${l.name}" with the best cover for this XI?`)) return;
+    l.bench = bestBench(l);
+    lu.sel = null; saveLineup(); renderLineup();
+    flash($("#luBestBench"), `${l.bench.length} on the bench`);
+  });
   $("#luBest").addEventListener("click", () => {
     const l = activeLineup();
     const r = bestXI(l);
@@ -2985,13 +3011,17 @@
       newest: (a, b) => String(b.added || "").localeCompare(String(a.added || "")) || rating(b) - rating(a),
       name: (a, b) => a.name.localeCompare(b.name) || rating(b) - rating(a),
     };
-    list.sort(SORT[pubState.sort] || SORT.rating);
+    list.sort(SORT[pubState.sort === "byPos" ? "rating" : pubState.sort] || SORT.rating);
+    // Best per position: the top six at every position, grouped.
+    const groups = pubState.sort === "byPos"
+      ? POS_ORDER.map((pos) => ({ pos, cards: list.filter((p) => p.position === pos).slice(0, 6) })).filter((g) => g.cards.length) : null;
     const fresh = pubState.cards.filter(pubIsNew).length;
     meta.textContent = `${list.length} of ${pubState.cards.length} cards · eFHUB ${pubState.fetched || "—"} · builds ${pubState.built || "—"}, rated without a manager${fresh ? ` · ${fresh} new in the last ${PUB_NEW_DAYS} days` : ""}`;
     $("#pubNew").classList.toggle("is-selected", pubState.newOnly);
     $("#pubSort").value = pubState.sort;
-    const shown = list.slice(0, pubState.shown);
-    box.innerHTML = shown.map((p) => {
+    const shown = groups ? groups.flatMap((g) => g.cards) : list.slice(0, pubState.shown);
+    const groupHead = (p) => { const g = groups?.find((x) => x.cards[0] === p); return g ? `<div class="pub-group"><b>${g.pos}</b><span>top ${g.cards.length} by AI build</span></div>` : ""; };
+    box.innerHTML = shown.map((p) => groupHead(p) + (() => {
       const r = pubBuild(p);
       const cats = categoriesFor(p);
       const pts = cats.reduce((t, c) => t + cumCost(r.levels[c.key] || 0), 0);
@@ -3058,7 +3088,7 @@
           </div>
           </div>
         </details>`;
-    }).join("") + (list.length > shown.length
+    })()).join("") + (!groups && list.length > shown.length
       ? `<button type="button" class="btn btn--icon pub-more" data-pub-more>Show ${Math.min(PUB_PAGE, list.length - shown.length)} more of ${list.length}</button>` : "")
       || `<p class="empty-state">${pubState.cards.length ? "No cards match." : "No public cards yet — run tools/fetch_public.py."}</p>`;
   }
