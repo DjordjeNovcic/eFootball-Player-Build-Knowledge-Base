@@ -220,6 +220,15 @@ Lab's **Game Plan** tab shows it with live builds; the general template is
 
 **Instructions:** Counter Target — Eto'o; Defensive — Makélélé; Tight Marking — Desailly.
 
+**Build update (11 Oct 2026, passing in midfield):** the two DMFs play the first forward
+pass after a regain, so their Low Pass target went up to section 3's 87 (KNOWLEDGE-BASE §25):
+Seedorf 0-0-8-9-12-2-9 Fantasista +1 → **0-5-8-8-11-2-9 Agility +1** (Low Pass 82 → 87,
+Lofted 80 → 85, Speed 95, Stamina 97, DA 90 / Tackling 91 unchanged); Makélélé
+0-2-4-8-12-4-10 → **0-4-2-8-12-4-10** Ball Protection +1 (Low Pass 85 → 88, Lofted 82 → 84;
+Ball Control 84 → 82; DA 96 / Tackling 98 / Physical Contact 90 unchanged). Everyone else
+stays — see §25 for why the forwards, Hazard and Messi get no extra Passing or Physical
+Contact.
+
 **Bench (12, updated 11 Oct):** Vieira, Stam, Zanetti, Pirlo, Sneijder, Bellingham
 (`89138556700485`), Gullit, Dembélé (`106773692395554`), Puskás (`88040387120260`),
 Bale (`88045755861672`), Kaká (`88044145217198`), C. Ronaldo (`89135066911146`).

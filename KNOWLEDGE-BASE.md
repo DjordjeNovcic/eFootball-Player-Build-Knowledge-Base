@@ -2519,6 +2519,53 @@ arrives. Button mappings differ between guides — use the in-game Command List
 (footymeta Oct 2026, FIFPlay 2027 controls, gamemarket Sep 2026).
 
 
+## Passing and Physical Contact (second sweep, 11 Oct 2026)
+
+**What the web has:**
+
+- **No tested thresholds** for Low Pass, Lofted Pass or Physical Contact. Two YouTube
+  "passing stats" and "threshold" tests exist but couldn't be read. Section 3's 82 / 87
+  remain our own working numbers. [guide]
+- **Low Pass** sets both the accuracy and the speed of ground passes (FIFPlay 2026 stat
+  definitions). eFHUB (Sep 2026) says the current engine intercepts ground passes more
+  easily. A faster, more accurate first pass matters more for a counter team. [guide]
+- **Physical Contact is relative.** KONAMI v4.0.0: in a physical contest "the player with
+  the higher Physical Contact stat will have an advantage". AI players weigh relative
+  Physical Contact before a Shoulder Charge, and shielding is automatic. [official]
+- Balance does not decide physical duels; it only stops a player losing his balance or
+  helps him recover (eFHUB, Sep 2026). [guide]
+- **Patches:** v5.4.0 added physical-contest motions and made defenders likelier to tackle
+  in side-on contests. v6.0.0 changed contact motions for dribblers only. No patch
+  changed the weight of the stat. [official]
+- **Skill numbers:** none found for Through Passing, Weighted Pass or Low Lofted Pass.
+  Through Passing's +20% (section 19) stays a single-source skill-DB value.
+
+**Community builds:** treated as popularity data, not tests (user, 11 Oct 2026). Midfield
+passing is a secondary category. Strikers put Aerial Strength at 3–8 and Passing at 0–1.
+
+**What changed in our builds (our reasoning):**
+
+- **Box-to-Box and All-Action Defender midfielders aim for Low Pass 87** (section 3's
+  ideal) instead of 82–85. In Long Ball Counter they play the first forward pass after a
+  regain, so its speed and accuracy decide whether the counter starts.
+  - The Box-to-Box role no longer drops to the Through Passing minimum of 82.
+  - Seedorf: Low Pass 82 → 87, paid with one level each of Dexterity and Lower Body.
+  - Makélélé: Low Pass 85 → 88, paid with two Dribbling levels. His defensive stats are
+    unchanged.
+- **Physical Contact unchanged everywhere:**
+  - Because the stat is relative, +4 for Eto'o (80 → 84) still loses to a centre-back
+    with 90+. His Ball Control 94 matters more for controlling long balls.
+  - Hazard's Magnetic Feet already adds +8 Physical Contact when he is heavily marked.
+  - Messi stays light by design (section 5).
+  - Ibrahimović (99) and the defenders already win their duels.
+- **Strikers get no extra Passing:**
+  - Ibrahimović's spare points sit in Aerial Strength (Heading 89 threshold) and Ball
+    Control 89.
+  - Eto'o runs in behind; a lay-off doesn't justify taking points from his core stats.
+- **Hazard keeps his Dribbling** (Momentum Dribbling and Magnetic Feet carry role).
+  Moving 2 Dribbling levels into Passing would only take Low Pass 89 → 92, above the
+  ideal he already meets.
+
 ## Community builds for the squad's cards (eFHUB top-voted, read 11 Oct 2026)
 
 The most-voted eFHUB community build for each of the 23 Game Plan cards was compared with

@@ -404,6 +404,7 @@ window.KB = (() => {
       { text: "Makélélé in for Vieira at DMF — the best DMF in the squad (Speed 96, Defensive Awareness 96, Tackling 98, Stamina 99; DMF rating 106 vs 104) and he gets the Defensive instruction. Vieira is the first sub to protect a lead.", basis: "reasoning" },
       { text: "Messi's other card (Deep-Lying Forward SS) can't sit on the same team sheet, so Sneijder takes his bench place and covers right AMF without losing the Link-up.", basis: "reasoning" },
       { text: "Bench (11 Oct): Puskás in as the Deep-Lying Forward for Plan B, Bellingham is the first attacking sub (AMF 105, LMF high), Bale is the late Attack Outlet. One full-back on the bench — Zanetti covers both sides — so Cafu and Calafiori make room for Kaká (Super-sub) and C. Ronaldo (Goal Poacher CF with Bullet Header: keeps the Link-up and wins headers when chasing).", basis: "reasoning" },
+      { text: "Builds (11 Oct): more Passing for the two DMFs, who play the first pass of every counter — Seedorf Low Pass 82 → 87 (0-5-8-8-11-2-9, Agility +1), Makélélé 85 → 88 (0-4-2-8-12-4-10) with his defending unchanged. Physical Contact stays as it is: it is relative (the higher stat wins the duel), so +4 for a forward still loses to 90+ centre-backs.", basis: "reasoning" },
     ],
     instructions: [
       { who: "Eto'o", what: "Counter Target", why: "stays on the last defender for the ball in behind (Speed 100)." },

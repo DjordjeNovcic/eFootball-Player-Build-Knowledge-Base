@@ -30,10 +30,10 @@ window.Recommender = (deps) => {
     prolificWinger: { label: "Prolific Winger", stats: [["acceleration", 9, 92, 97], ["speed", 9, 92, 96], ["dribbling", 8, 90], ["ballControl", 7, 88], ["balance", 7, 88], ["finishing", 6, 88], ["offensiveAwareness", 6, 88], ["kickingPower", 4, 88], ["tightPossession", 4, 85], ["loftedPass", 3, 80]] },
     crossSpecialist: { label: "Cross Specialist", stats: [["loftedPass", 9, 90, 92], ["speed", 8, 92, 96], ["acceleration", 8, 90], ["dribbling", 6, 88], ["ballControl", 6, 88], ["curl", 5, 85], ["balance", 5, 85], ["stamina", 4, 88], ["offensiveAwareness", 3, 85], ["finishing", 3, 80]] },
     roamingFlank: { label: "Roaming Flank", stats: [["acceleration", 9, 92, 97], ["offensiveAwareness", 8, 90], ["dribbling", 8, 90], ["finishing", 7, 88], ["speed", 8, 92, 96], ["ballControl", 7, 88], ["balance", 7, 88], ["kickingPower", 4, 88]] },
-    boxToBox: { label: "Box-to-Box", stats: [["stamina", 8, 90], ["speed", 7, 90], ["acceleration", 7, 90], ["lowPass", 7, 85], ["ballControl", 6, 88], ["defensiveAwareness", 6, 85], ["ballWinning", 6, 85], ["balance", 6, 88], ["defensiveEngagement", 4, 85], ["physicalContact", 4, 82], ["kickingPower", 3, 85], ["finishing", 2, 80]] },
+    boxToBox: { label: "Box-to-Box", stats: [["stamina", 8, 90], ["speed", 7, 90], ["acceleration", 7, 90], ["lowPass", 7, 87], ["ballControl", 6, 88], ["defensiveAwareness", 6, 85], ["ballWinning", 6, 85], ["balance", 6, 88], ["defensiveEngagement", 4, 85], ["physicalContact", 4, 82], ["kickingPower", 3, 85], ["finishing", 2, 80]] },
     orchestrator: { label: "Orchestrator", stats: [["lowPass", 10, 87, 92], ["tightPossession", 8, 88], ["ballControl", 8, 88], ["balance", 7, 88], ["acceleration", 6, 88], ["stamina", 6, 88], ["loftedPass", 5, 85], ["defensiveAwareness", 5, 82, 86], ["kickingPower", 2, 85], ["ballWinning", 3, 80, 84], ["dribbling", 3, 85], ["speed", 4, 88, 92]] },
     anchorMan: { label: "Anchor Man", stats: [["defensiveAwareness", 10, 90, 96], ["defensiveEngagement", 9, 88], ["ballWinning", 9, 88], ["speed", 7, 90], ["acceleration", 7, 88], ["physicalContact", 6, 85], ["stamina", 6, 88], ["lowPass", 3, 78], ["aggression", 3, 85], ["jump", 2, 80]] },
-    allActionDefender: { label: "All-Action Defender", stats: [["defensiveAwareness", 9, 90, 96], ["defensiveEngagement", 9, 88], ["ballWinning", 8, 88], ["stamina", 8, 90], ["speed", 7, 90], ["acceleration", 7, 90], ["physicalContact", 5, 85], ["lowPass", 4, 80], ["ballControl", 3, 82]] },
+    allActionDefender: { label: "All-Action Defender", stats: [["defensiveAwareness", 9, 90, 96], ["defensiveEngagement", 9, 88], ["ballWinning", 8, 88], ["stamina", 8, 90], ["speed", 7, 90], ["acceleration", 7, 90], ["physicalContact", 5, 85], ["lowPass", 6, 87], ["ballControl", 3, 82]] },
     buildUp: { label: "Build Up CB", stats: [["defensiveAwareness", 10, 90, 96], ["speed", 8, 91, 95], ["acceleration", 8, 90], ["ballWinning", 7, 88], ["physicalContact", 7, 85], ["defensiveEngagement", 6, 88], ["jump", 4, 85], ["heading", 3, 82], ["aggression", 3, 85]] },
     destroyer: { label: "Destroyer", stats: [["acceleration", 10, 91, 95], ["defensiveAwareness", 9, 90, 96], ["ballWinning", 8, 88], ["speed", 8, 91, 95], ["physicalContact", 7, 85], ["defensiveEngagement", 6, 88], ["aggression", 5, 88], ["jump", 4, 85], ["heading", 2, 82]] },
     coveringRole: { label: "Covering Role", stats: [["defensiveAwareness", 10, 90, 96], ["speed", 9, 92, 96], ["acceleration", 8, 90], ["ballWinning", 7, 88], ["defensiveEngagement", 6, 88], ["physicalContact", 6, 85], ["jump", 3, 85]] },
@@ -120,9 +120,11 @@ window.Recommender = (deps) => {
     // §3: Low Pass 82 is the functional minimum for a passer with native Through Passing.
     // Only applied where passing is part of the role — a striker's lay-off pass doesn't
     // justify pulling points out of his core stats (the skill reason flags a low LP instead).
+    // A Box-to-Box midfielder keeps the §3 87 ideal instead: in Long Ball Counter he plays the
+    // first forward pass after a regain, and Low Pass sets both its accuracy and its speed (§25).
     const lp = get("lowPass");
     if (has("Through Passing") && lp && lp.w >= 4) {
-      if (!["orchestrator", "creativePlaymaker", "classicNo10"].includes(tpl.key)) { lp.t = Math.min(lp.t, 82); lp.cap = lp.t + 3; }
+      if (!["orchestrator", "creativePlaymaker", "classicNo10", "boxToBox"].includes(tpl.key)) { lp.t = Math.min(lp.t, 82); lp.cap = lp.t + 3; }
       notes.push("Through Passing — Low Pass 82 is its functional minimum (§3).");
     }
     if (has("Phenomenal Pass") || has("Visionary Pass")) {
