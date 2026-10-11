@@ -141,6 +141,11 @@ window.Recommender = (deps) => {
       notes.push("Momentum Dribbling — feed it Dribbling, Tight Possession and Balance (§8).");
     }
     if (has("Magnetic Feet")) { const s = get("ballControl"); if (s) s.cap = s.t + 2; }
+    // §3 / §7 (user decision, 11 Oct 2026): a Creative Playmaker is a pure creator — Ball
+    // Control, Dribbling, Tight Possession, Low Pass and Balance come first, and 96 Speed is
+    // already top speed. The 100+ Speed step isn't worth 28 points of Lower Body to him
+    // (Messi: Speed 100 → 96 bought Ball Control 99, Dribbling 100, OA 90, Balance 97).
+    if (tpl.key === "creativePlaymaker") { const s = get("speed"); if (s) s.noStep = true; }
     // §7 Box-to-Box: "do NOT force every Box-to-Box player into a scorer" — Lampard can
     // justify more Shooting, Seedorf is a transition player / carrier / passer / defender
     // "rather than forcing high Finishing from a weak base". The card's native skills say
@@ -270,7 +275,7 @@ window.Recommender = (deps) => {
       v += s.w * (Math.min(x, s.t) - 0.5 * half + (s.slope ?? 0.25) * Math.max(0, Math.min(x, s.cap) - s.t) + (x >= s.t ? 2 : 0)
         + tail(s, x)
         // §3: 100+ Speed is a noticeable step again — worth it when boosters make it cheap.
-        + (s.k === "speed" && x >= 100 ? SPEED_STEP : 0));
+        + (s.k === "speed" && x >= 100 && !s.noStep ? SPEED_STEP : 0));
     }
     // Secondary stats: once the role's priorities are met, every extra point in a stat the
     // role still uses beats parking it somewhere useless (§4: KP/Jump/Stamina stay linear).

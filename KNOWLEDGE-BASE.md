@@ -194,6 +194,10 @@ thresholds:
 - Goal Poacher, Dummy Runner, Hole Player, wingers, full-backs: 92
 - Fox in the Box, Target Man and pure creators stay lower (section 7: Fox in the Box
   does not need extreme Speed)
+- **Creative Playmaker never buys the 100+ Speed step** (user decision, 11 Oct 2026):
+  96 is already top speed, and the Lower Body levels it takes to reach 100 (28 points for
+  Messi's Creative Playmaker card) do more as Ball Control, Dribbling, Attacking Awareness,
+  Finishing and Balance (section 7). `recommend.js` switches the step bonus off for that role.
 
 ---
 
@@ -553,6 +557,12 @@ Prioritize:
 - enough Finishing
 
 Do NOT overspend on Offensive Awareness if the player is primarily a creator.
+
+Do NOT chase Speed 100 either (user decision, 11 Oct 2026 — section 3): a Creative
+Playmaker lives on the ball, so Speed stops at 96. Messi (Creative Playmaker card, AMF):
+5-8-6-6-13-4-0 Passing +1 → **8-9-6-7-9-5-0 Offence Creator +1** — Speed 100 → 96 and
+Kicking Power 95 → 91 bought Attacking Awareness 88 → 90, Finishing 88 → 91, Curl 90 → 92,
+Low Pass 93 → 94, Ball Control 96 → 97, Balance 95 → 96 (AMF rating 106 → 107).
 
 ---
 

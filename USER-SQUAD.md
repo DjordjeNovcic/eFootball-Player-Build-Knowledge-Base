@@ -229,6 +229,13 @@ Ball Control 84 → 82; DA 96 / Tackling 98 / Physical Contact 90 unchanged). Ev
 stays — see §25 for why the forwards, Hazard and Messi get no extra Passing or Physical
 Contact.
 
+**Build update (11 Oct 2026, Messi):** a Creative Playmaker no longer buys the 100+ Speed
+step (KNOWLEDGE-BASE §3/§7). Messi (`89136409091415`, AMF) 5-8-6-6-13-4-0 Passing +1 →
+**8-9-6-7-9-5-0 Offence Creator +1**: Speed 100 → 96, Kicking Power 95 → 91, Stamina 90 → 85
+for Attacking Awareness 88 → 90, Finishing 88 → 91, Curl 90 → 92, Low Pass 93 → 94, Ball
+Control 96 → 97, Balance 95 → 96; AMF rating 106 → 107. Skills unchanged (Flip Flap, Cut
+Behind & Turn, Outside Curler, Weighted Pass, Chip Shot Control). No other card changed.
+
 **Bench (12, updated 11 Oct):** Vieira, Stam, Zanetti, Pirlo, Sneijder, Bellingham
 (`89138556700485`), Gullit, Dembélé (`106773692395554`), Puskás (`88040387120260`),
 Bale (`88045755861672`), Kaká (`88044145217198`), C. Ronaldo (`89135066911146`).
