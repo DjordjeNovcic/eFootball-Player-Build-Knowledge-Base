@@ -10,6 +10,14 @@ Two parts:
   known player mappings, manager inventory, tactical context and dated build snapshots.
 - **The Build Lab** (`index.html`) — a dependency-free web UI with tabs:
   - **My Squad** — every owned card from `USER-SQUAD.md`, with eFHUB stats, styles,
+    boosters, level cap and role notes, as card tiles. **A tile opens into the card's
+    Recommended by AI build** (`recommend.js`): role from position + styles → §7
+    priorities and §3 thresholds → player-model and native-skill adjustments → every point
+    spent → slot-2 booster last → 5 additional skills → verdict, in the §15 format, never
+    optimised for OVR, rated with your manager and playstyle; plus the **spending order**
+    (the build at every 5th level while he trains up) and Open in Trainer / Use as my build.
+    Filter by position group, playing style, or **Starting XI** / **Bench** of the active
+    lineup. The old `#recommended` link opens this tab. Originally:
     boosters, level cap and role notes. **+ Add player** imports a card from its eFHUB
     page via a "Copy to Build Lab" bookmarklet (eFHUB pages can't be fetched cross-site);
     ✕ removes a card (restorable). Both are stored in the browser.
@@ -30,12 +38,6 @@ Two parts:
   - Every card list (My Squad, CoinPlayTV Builds, Public Cards, Recommended by AI, My Builds)
     has a **playing-style filter** next to the position chips — any attacking or defensive
     style (§18), matched on either of a card's two style slots.
-  - **Recommended by AI** — a build for every card, generated from the knowledge base
-    (`recommend.js`): role from position + styles → §7 priorities and §3 thresholds →
-    player-model and native-skill adjustments → every point spent → slot-2 booster last →
-    5 additional skills → verdict, in the §15 format. Never optimised for OVR. Filter
-    by position group, or by **Starting XI** / **Bench** of the active lineup. Each card
-    also shows the **spending order** — the build at every 5th level while he trains up.
   - **My Builds** — your builds next to the recommended ones (status, OVR delta); start
     from a recommendation and tweak it in the Trainer.
   - **Additional skills live on the player** (up to 5, as in the game): your picks (★ —

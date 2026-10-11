@@ -1421,3 +1421,21 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .squad-card__foot{ padding: 0.6rem 0.8rem 0.7rem; }
 .squad-card__remove{ padding: 0.35rem 0.5rem; }
 .squad-card__remove svg{ width: 15px; height: 15px; display: block; }
+
+/* My Squad tiles open into the Recommended by AI sheet */
+.squad-card > summary{ list-style: none; cursor: pointer; display: flex; flex-direction: column; flex: 1 1 auto; position: relative; }
+.squad-card > summary::-webkit-details-marker{ display: none; }
+.squad-card > summary::after{
+  content: "▸"; position: absolute; top: 0.6rem; right: 0.6rem; z-index: 1;
+  color: var(--lime); background: rgba(9,13,10,0.85); border: 1px solid rgba(212,255,63,0.35); border-radius: 3px;
+  padding: 0.02rem 0.4rem 0.08rem; font-size: 0.85rem; line-height: 1.2; transition: transform 0.15s ease;
+}
+.squad-card[open] > summary::after{ transform: rotate(90deg); }
+.squad-card[open]{ grid-column: 1 / -1; }
+.squad-card[open]:hover{ transform: none; }
+.squad-card[open] .squad-card__head{ display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 0.9rem; padding: 0.85rem 0.8rem 0; align-items: start; }
+.squad-card[open] .squad-card__media{ border-radius: 3px; }
+.squad-card[open] .squad-card__id{ padding: 0; }
+.squad-card[open] .squad-card__foot{ border-bottom: 1px solid var(--line); }
+.squad-card > summary .squad-card__foot{ margin-top: auto; }
+.tabs__sep{ flex: 0 0 1px; width: 1px; align-self: stretch; margin: 0.4rem 0.35rem; background: var(--line); }

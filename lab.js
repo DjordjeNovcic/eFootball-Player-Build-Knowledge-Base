@@ -347,11 +347,12 @@
      Tabs / routing
   --------------------------------------------------------- */
 
-  const TABS = ["squad", "pro", "public", "recommended", "mybuilds", "train", "lineup", "plan", "skills", "managers", "styles"];
+  const TABS = ["squad", "pro", "public", "mybuilds", "train", "lineup", "plan", "skills", "managers", "styles"];
   const view = { playerId: null, draft: null, position: null };
 
   function route() {
     const [tab, arg] = location.hash.replace(/^#/, "").split("/");
+    if (tab === "recommended") { location.replace("#squad"); return; } // the Recommended by AI tab lives in My Squad now
     const active = TABS.includes(tab) ? tab : "squad";
     document.querySelectorAll("[data-tab]").forEach((el) => el.classList.toggle("is-active", el.dataset.tab === active));
     document.querySelectorAll("[data-tab-link]").forEach((el) => {
@@ -366,7 +367,6 @@
     }
     if (active === "lineup") renderLineup();
     if (active === "plan") renderGamePlan();
-    if (active === "recommended") renderRecommended();
     if (active === "mybuilds") renderMyBuilds();
     if (active === "pro") renderPro();
     if (active === "public") { loadPublic(); renderPublic(); }
@@ -391,20 +391,25 @@
      Squad tab
   --------------------------------------------------------- */
 
-  const squadState = { q: "", group: "ALL", style: "" };
+  const squadState = { q: "", group: "ALL", style: "", open: new Set() };
 
   function renderSquad() {
     const root = $("#squadGrid");
     const q = squadState.q.trim().toLowerCase();
+    // "Starting XI" / "Bench" follow the active lineup (Lineup tab), in its own order.
+    const lineup = store.lineups.find((x) => x.id === store.activeLineup) || store.lineups[0] || null;
+    const order = squadState.group === "XI" ? (lineup?.xi || []) : squadState.group === "BENCH" ? (lineup?.bench || []) : null;
     const list = players
-      .filter((p) => squadState.group === "ALL" || POSITION_GROUP[p.position] === squadState.group)
+      .filter((p) => squadState.group === "ALL" || (order ? order.includes(p.id) : POSITION_GROUP[p.position] === squadState.group))
       .filter((p) => styleMatch(p, squadState.style))
       .filter((p) => !q || `${p.name} ${p.team} ${positionList(p).map((x) => x.pos).join(" ")} ${styleText(p)} ${p.id}`.toLowerCase().includes(q))
-      .sort((a, b) => POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.overall - a.overall);
+      .sort((a, b) => (order ? order.indexOf(a.id) - order.indexOf(b.id) : POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || b.overall - a.overall));
 
     const counts = players.reduce((c, p) => ((c[POSITION_GROUP[p.position]] = (c[POSITION_GROUP[p.position]] || 0) + 1), c), {});
-    $("#squadMeta").textContent =
-      `${players.length} card${players.length === 1 ? "" : "s"} · GK ${counts.GK || 0} · DEF ${counts.DEF || 0} · MID ${counts.MID || 0} · FWD ${counts.FWD || 0} · stats from eFHUB, ${DATA.fetched}`;
+    $("#squadMeta").innerHTML =
+      `${players.length} card${players.length === 1 ? "" : "s"} · GK ${counts.GK || 0} · DEF ${counts.DEF || 0} · MID ${counts.MID || 0} · FWD ${counts.FWD || 0}`
+      + (order && lineup ? ` · ${squadState.group === "XI" ? "starting XI" : "bench"} of “${esc(lineup.name)}”` : "")
+      + (REC ? ` · builds rated with ${recContextHtml()}` : "") + ` · stats from eFHUB, ${esc(DATA.fetched)}`;
 
     root.innerHTML = list.map((p) => {
       const note = notesFor(p.id);
@@ -414,8 +419,11 @@
       let savedBadge = "";
       if (saved) savedBadge = `<span class="badge badge--lime">★ Build saved</span>`;
       else if (note?.snapshot) savedBadge = `<span class="badge">Snapshot ${esc(note.snapshot.date)}</span>`;
+      const r = REC?.recs[p.id];
+      const role = lineupRole(p.id);
       return `
-        <article class="squad-card" data-group="${POSITION_GROUP[p.position]}">
+        <details class="rec-card squad-card" data-group="${POSITION_GROUP[p.position]}" data-rec="${p.id}" ${squadState.open.has(p.id) ? "open" : ""}>
+          <summary class="squad-card__sum" title="${r ? "Open the Recommended by AI build" : ""}">
           <div class="squad-card__head">
             <div class="squad-card__media">${cardImg(p, "squad-card__img")}
               <div class="squad-card__ovr" title="${saved ? "Your saved build" : "Recommended by AI build"} at ${p.position} · card ${p.overall}"><b>${rating}${saved ? "<sup>★</sup>" : ""}</b><span>${p.position} · card ${p.overall}</span></div>
@@ -436,6 +444,9 @@
           </div>
           <div class="squad-card__foot">
             <div class="squad-card__meta">
+              ${role ? `<span class="badge badge--lime">${esc(role.label)} in lineup</span>` : ""}
+              ${r ? `<span class="badge" title="By the AI build, among the ${p.position} cards in your squad">#${r.depth.rank}/${r.depth.of} ${p.position}</span>` : ""}
+              ${r ? (r.lock ? `<span class="badge badge--green">Lock</span>` : `<span class="badge badge--amber">Test variant</span>`) : ""}
               ${p.custom ? `<span class="badge badge--amber" title="Added in this browser">Added here</span>` : ""}
               ${savedBadge}
               <span class="squad-card__pts">Lv cap ${p.levelCap} · ${budgetFor(p.levelCap)} pts</span>
@@ -446,8 +457,13 @@
               <button type="button" class="btn btn--icon btn--danger squad-card__remove" data-remove-player="${p.id}" aria-label="Remove ${esc(p.name)} from squad" title="Remove from squad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
             </div>
           </div>
-        </article>`;
-    }).join("") || (players.length ? `<p class="empty-state">No cards match.</p>`
+          </summary>
+          ${r ? recSheetHtml(p, r) : ""}
+        </details>`;
+    }).join("") || (players.length ? `<p class="empty-state">${order && lineup && !q
+        ? (order.some(Boolean) ? `None of the ${squadState.group === "XI" ? "starters" : "bench players"} in “${esc(lineup.name)}” are in your squad any more.`
+          : `“${esc(lineup.name)}” has no ${squadState.group === "XI" ? "starting XI" : "bench"} yet — fill it in the Lineup tab.`)
+        : order && !lineup ? "No lineup yet — set up your starting XI and bench in the Lineup tab." : "No cards match."}</p>`
       : isMe() && auth.enabled && !auth.signedIn
         ? `<p class="empty-state"><b>Sign in</b> (top right) to build your squad — it's saved to your account and follows you to every device.</p>`
       : isMe()
@@ -2210,7 +2226,6 @@
     skillMultiplier, managerProficiency, managerObj, notesFor, myPicks, context: recContext(), MAX_LEVEL, boosterPool: DATA.boosterPool,
     onBench: (id) => lineupRole(id)?.label === "Bench",
   });
-  const recState = { q: "", group: "ALL", style: "", open: new Set() };
   const mineState = { q: "", group: "ALL", style: "", onlyMine: false };
 
   function lineupRole(id) {
@@ -2274,45 +2289,18 @@
     return out.map((x) => `<p>${x}</p>`).join("");
   }
 
-  function renderRecommended() {
-    if (!REC) return;
-    const q = recState.q.trim().toLowerCase();
-    // "Starting XI" / "Bench" follow the active lineup (Lineup tab), in its own order.
-    const lineup = store.lineups.find((x) => x.id === store.activeLineup) || store.lineups[0] || null;
-    const order = recState.group === "XI" ? (lineup?.xi || []) : recState.group === "BENCH" ? (lineup?.bench || []) : null;
-    const list = players
-      .filter((p) => recState.group === "ALL" || (order ? order.includes(p.id) : POSITION_GROUP[p.position] === recState.group))
-      .filter((p) => styleMatch(p, recState.style))
-      .filter((p) => !q || `${p.name} ${p.team} ${p.position} ${styleText(p)}`.toLowerCase().includes(q))
-      .sort((a, b) => (order ? order.indexOf(a.id) - order.indexOf(b.id)
-        : POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position) || REC.recs[b.id].rating - REC.recs[a.id].rating));
-    $("#recMeta").innerHTML = `${list.length} builds${order && lineup ? ` · ${recState.group === "XI" ? "starting XI" : "bench"} of “${esc(lineup.name)}”` : ""} · rated with ${recContextHtml()}`;
-    $("#recGrid").innerHTML = list.map((p) => {
-      const r = REC.recs[p.id];
-      const cats = categoriesFor(p);
-      const pts = cats.reduce((t, c) => t + cumCost(r.levels[c.key] || 0), 0);
-      const att = KB.ATT_STYLES.find((s) => norm(s.name) === norm(p.playingStyle));
-      const def = KB.DEF_STYLES.find((s) => norm(s.name) === norm(p.playingStyleDefensive || p.playingStyle));
-      const b = r.booster;
-      const slot1 = Object.keys(p.booster1?.stats || {});
-      const mine = store.builds[p.id];
-      return `
-        <details class="rec-card" data-group="${POSITION_GROUP[p.position]}" data-rec="${p.id}" ${recState.open.has(p.id) ? "open" : ""}>
-          <summary class="rec-card__head">
-            ${cardImg(p, "rec-card__img")}
-            <div class="rec-card__who">
-              <h3>${esc(p.name)}</h3>
-              <p>${esc(p.team || "")} · ${p.height} cm · Lv cap ${p.levelCap}</p>
-              <div class="kb-card__badges">
-                ${lineupRole(p.id) ? `<span class="badge badge--lime">${lineupRole(p.id).label} in lineup</span>` : ""}
-                <span class="badge">#${r.depth.rank}/${r.depth.of} ${p.position}</span>
-                ${r.lock ? `<span class="badge badge--green">Lock</span>` : `<span class="badge badge--amber">Test variant</span>`}
-                ${mine ? `<span class="badge">★ you have a build</span>` : ""}
-              </div>
-            </div>
-            <div class="rec-card__ovr"><b>${r.rating}</b><span>${p.position} · card ${p.overall}</span></div>
-            <p class="rec-card__line"><code>${cats.map((c) => r.levels[c.key] || 0).join("-")}</code> · ${esc(r.booster.name)} · ${r.skills.length} skills</p>
-          </summary>
+  // The Recommended by AI sheet for one of the squad's cards — the §15 sections with the
+  // spending order and the verdict, plus Open in Trainer / Use as my build. It is the open
+  // half of a My Squad tile.
+  function recSheetHtml(p, r) {
+    const cats = categoriesFor(p);
+    const pts = cats.reduce((t, c) => t + cumCost(r.levels[c.key] || 0), 0);
+    const att = KB.ATT_STYLES.find((s) => norm(s.name) === norm(p.playingStyle));
+    const def = KB.DEF_STYLES.find((s) => norm(s.name) === norm(p.playingStyleDefensive || p.playingStyle));
+    const b = r.booster;
+    const slot1 = Object.keys(p.booster1?.stats || {});
+    const mine = store.builds[p.id];
+    return `
           <div class="rec-card__body">
 
           <section class="rec-sec">
@@ -2360,11 +2348,7 @@
             <button type="button" class="btn btn--icon btn--solid" data-rec-use="${p.id}">${mine ? "Replace my build" : "Use as my build"}</button>
           </div>
           </div>
-        </details>`;
-    }).join("") || `<p class="empty-state">${!order ? "No players match."
-      : !lineup ? "No lineup yet — set up your starting XI and bench in the Lineup tab."
-      : order.some(Boolean) && !q ? `None of the ${recState.group === "XI" ? "starters" : "bench players"} in “${esc(lineup.name)}” are in your squad any more.`
-      : q ? "No players match." : `“${esc(lineup.name)}” has no ${recState.group === "XI" ? "starting XI" : "bench"} yet — fill it in the Lineup tab.`}</p>`;
+`;
   }
 
   // The build at every 5th player level along the recommended spending order (§12).
@@ -2394,7 +2378,7 @@
     store.builds[id] = { ...recBuild(id), savedAt: Date.now() };
     saveStore();
     renderPlayerSelect();
-    renderRecommended(); renderMyBuilds(); renderSquad(); renderLineup();
+    renderMyBuilds(); renderSquad(); renderLineup();
   }
 
   function renderMyBuilds() {
@@ -2458,19 +2442,18 @@
     });
     bindStyleFilter(prefix, state, render);
   }
-  bindFilter("rec", recState, renderRecommended);
-  // Cards are collapsed to a one-line summary; remember which ones are open across re-renders.
-  $("#recGrid").addEventListener("toggle", (e) => {
+  // My Squad tiles open into the AI build sheet; remember which are open across re-renders.
+  $("#squadGrid").addEventListener("toggle", (e) => {
     const d = e.target.closest?.("[data-rec]");
     if (!d) return;
-    if (d.open) recState.open.add(d.dataset.rec); else recState.open.delete(d.dataset.rec);
+    if (d.open) squadState.open.add(d.dataset.rec); else squadState.open.delete(d.dataset.rec);
   }, true);
-  $("#recExpand").addEventListener("click", () => {
-    document.querySelectorAll("#recGrid [data-rec]").forEach((d) => { d.open = true; recState.open.add(d.dataset.rec); });
+  $("#squadExpand").addEventListener("click", () => {
+    document.querySelectorAll("#squadGrid [data-rec]").forEach((d) => { d.open = true; squadState.open.add(d.dataset.rec); });
   });
-  $("#recCollapse").addEventListener("click", () => {
-    document.querySelectorAll("#recGrid [data-rec]").forEach((d) => { d.open = false; });
-    recState.open.clear();
+  $("#squadCollapse").addEventListener("click", () => {
+    document.querySelectorAll("#squadGrid [data-rec]").forEach((d) => { d.open = false; });
+    squadState.open.clear();
   });
   bindFilter("mine", mineState, renderMyBuilds);
   $("#mineOnly").addEventListener("change", (e) => { mineState.onlyMine = e.target.checked; renderMyBuilds(); });
@@ -2898,7 +2881,7 @@
     ensureSkillPlans();
     if (!byId[view.playerId]) view.playerId = null;
     renderPlayerSelect();
-    renderSquad(); renderSkills(); renderManagers(); renderStyles(); renderLineup(); renderRecommended(); renderMyBuilds();
+    renderSquad(); renderSkills(); renderManagers(); renderStyles(); renderLineup(); renderMyBuilds();
     renderRemoved(); renderPro(); renderPublic();
   }
 
