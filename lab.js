@@ -1238,12 +1238,27 @@
     if (!Array.isArray(l.defLayout) || l.defLayout.length !== 11) l.defLayout = freshDefLayout(l);
     return l.defLayout;
   }
-  const inDefence = (l) => !!l.fluid && lu.phase === "def";
+  // Sub-tactic shape: the in-game Sub Tactic re-arranges the same eleven, so it is a third
+  // layout for xi[i] (subLayout), laid onto the attacking shape by nearest spot like the
+  // defence one, with its own formation (l.subTactic.formation, else the main one).
+  const subFormationOf = (l) => l.subTactic?.formation || l.formation;
+  function freshSubLayout(l) {
+    const preset = slotsFor(subFormationOf(l));
+    return [[...preset[0]], ...mapShape(layoutOf(l).slice(1), preset.slice(1))];
+  }
+  function subLayoutOf(l) {
+    if (!Array.isArray(l.subLayout) || l.subLayout.length !== 11) l.subLayout = freshSubLayout(l);
+    return l.subLayout;
+  }
+  const inSub = (l) => lu.plan === "sub" && !!l.subTactic?.tactic;
+  const shownTactic = (l) => (inSub(l) ? l.subTactic.tactic : l.tactic);
+  const inDefence = (l) => !inSub(l) && !!l.fluid && lu.phase === "def";
   // Markers are centred on their spot; keep the card-image markers fully on the pitch.
   const slotBottom = (y) => `clamp(3.4rem, ${y}%, calc(100% - 3.4rem))`;
   // The shape on screen: the defence one while Fluid Formation is on and Defence is picked.
-  const shownLayout = (l) => (inDefence(l) ? defLayoutOf(l) : layoutOf(l));
-  const shownEdited = (l) => (inDefence(l) ? JSON.stringify(defLayoutOf(l)) !== JSON.stringify(freshDefLayout(l)) : isEdited(l));
+  const shownLayout = (l) => (inSub(l) ? subLayoutOf(l) : inDefence(l) ? defLayoutOf(l) : layoutOf(l));
+  const shownEdited = (l) => (inSub(l) ? JSON.stringify(subLayoutOf(l)) !== JSON.stringify(freshSubLayout(l))
+    : inDefence(l) ? JSON.stringify(defLayoutOf(l)) !== JSON.stringify(freshDefLayout(l)) : isEdited(l));
 
   // Role from pitch zone (x from left touchline, y from own goal line) — bands chosen so
   // every preset formation maps back onto its own roles.
@@ -1344,19 +1359,19 @@
     if (!l) { l = store.lineups[0]; store.activeLineup = l.id; }
     return l;
   }
-  const lu = { sel: null, q: "", mode: "players", phase: "att", justDragged: false }; // sel = { area: "xi"|"bench", i }
+  const lu = { sel: null, q: "", mode: "players", phase: "att", plan: "main", justDragged: false }; // sel = { area: "xi"|"bench", i }; plan = "main" | "sub"
 
   // Ratings use the player's saved Trainer build, else his Recommended by AI build — not
   // the untrained card.
   const lineupBuild = (p) => store.builds[p.id] || (REC?.recs[p.id] ? recBuild(p.id) : emptyBuild(p));
   const buildTag = (p) => (store.builds[p.id] ? "your saved build" : REC?.recs[p.id] ? "Recommended by AI build" : "untrained");
-  function slotRating(p, pos, l) {
-    return compute(p, lineupBuild(p), l.manager, l.tactic).ratings[pos];
+  function slotRating(p, pos, l, tactic = l.tactic) {
+    return compute(p, lineupBuild(p), l.manager, tactic).ratings[pos];
   }
   // What the lineup shows (user decision, 11 Oct 2026): the build's rating — at the card's
   // main position, as in the Trainer — wherever the player stands. The picker still ranks
   // candidates by their rating at the slot.
-  const buildRating = (p, l) => slotRating(p, p.position, l);
+  const buildRating = (p, l, tactic) => slotRating(p, p.position, l, tactic);
 
   // Best XI: the strongest assignment of the squad to this lineup's slots. Each player's
   // rating at the slot comes from his build (saved or AI) with this manager and playstyle
@@ -1468,6 +1483,17 @@
           w.push(`In defence <b>${esc(p.name)}</b> drops to ${pos}: ${esc(f.name)} isn't active there (§18) — Edit positions to keep him where it is.`));
       });
     }
+    if (l.subTactic?.tactic) {
+      const sub = subLayoutOf(l);
+      l.xi.forEach((id, i) => {
+        const p = byId[id];
+        if (!p || i === 0) return;
+        const pos = sub[i][0];
+        if (proficiency(p, pos) === "none") w.push(`In the sub-tactic <b>${esc(p.name)}</b> stands at ${pos} — no ${pos} proficiency.`);
+        styleFit(p, pos).filter((f) => !f.ok).forEach((f) =>
+          w.push(`In the sub-tactic <b>${esc(p.name)}</b> at ${pos}: ${esc(f.name)} isn't active there (§18).`));
+      });
+    }
     const destroyerCBs = l.xi.filter((id, i) => byId[id] && slots[i][0] === "CB" &&
       [byId[id].playingStyle, byId[id].playingStyleDefensive].some((s) => norm(s) === "destroyer"));
     if (destroyerCBs.length > 1) w.push(`<b>${destroyerCBs.length} Destroyer CBs</b> — both can step out at once; pair a Destroyer with Build Up / Covering Role (§18).`);
@@ -1491,6 +1517,7 @@
     if (!$("#luPitch")) return;
     const l = activeLineup();
     if (!l.fluid) lu.phase = "att";
+    if (!l.subTactic?.tactic) lu.plan = "main";
     const slots = shownLayout(l);
     while (l.xi.length < 11) l.xi.push(null);
     l.xi.length = 11;
@@ -1505,15 +1532,21 @@
     $("#luDefFormationField").hidden = !l.fluid;
     $("#luDefFormation").innerHTML = Object.keys(FORMATIONS).map((f) => `<option>${f}</option>`).join("");
     $("#luDefFormation").value = l.defFormation || DEFAULT_DEF_FORMATION;
-    $("#luPhase").hidden = !l.fluid;
+    $("#luPlan").hidden = !l.subTactic?.tactic;
+    $("#luPlan").querySelectorAll("[data-plan]").forEach((b) => b.classList.toggle("is-on", b.dataset.plan === lu.plan));
+    $("#luFluidSeg").hidden = inSub(l);
+    $("#luPhase").hidden = !l.fluid || inSub(l);
+    $("#luDefFormationField").hidden = !l.fluid || inSub(l);
     $("#luPhase").querySelectorAll("[data-phase]").forEach((b) => b.classList.toggle("is-on", b.dataset.phase === lu.phase));
-    const shapeName = inDefence(l) ? `${l.defFormation || DEFAULT_DEF_FORMATION} · defence` : l.fluid ? `${l.formation} · attack` : l.formation;
+    $("#luPitch").classList.toggle("is-sub", inSub(l));
+    const shapeName = inSub(l) ? `${subFormationOf(l)} · sub-tactic · ${l.subTactic.tactic}` : inDefence(l) ? `${l.defFormation || DEFAULT_DEF_FORMATION} · defence` : l.fluid ? `${l.formation} · attack` : l.formation;
     $("#luLayoutState").textContent = shownEdited(l) ? `${shapeName} · edited` : shapeName;
     $("#luResetLayout").hidden = !shownEdited(l);
     $("#luModes").querySelectorAll("[data-mode]").forEach((b) => b.classList.toggle("is-on", b.dataset.mode === lu.mode));
     $("#luPitch").classList.toggle("is-editing", lu.mode === "positions");
     $("#luModeHint").textContent = lu.mode === "positions"
       ? "Drag a marker to move it — its role follows the pitch zone. Tap a marker to set the role by hand."
+      : inSub(l) ? "Sub-tactic shape: the same eleven re-arranged — drag one starter onto another to swap where they stand, or Edit positions. Change its formation in the match card."
       : inDefence(l) ? "Defence shape: drag one starter onto another to swap where they defend — their attacking spots stay. Drag from the bench to bring a player on."
       : "Drag a player onto another slot or the bench to swap. Tap a player for his builds, an empty slot to pick from the squad.";
     const mgrs = profileManagers();
@@ -1533,8 +1566,8 @@
           return `<button type="button" class="slot slot--empty ${sel ? "is-selected" : ""}" style="left:${x}%;bottom:${slotBottom(y)}" data-slot="${i}" aria-label="Pick ${pos}">
             <span class="slot__ovr">+</span><span class="slot__pos">${pos}</span></button>`;
         }
-        const r = buildRating(p, l);
-        const atSlot = slotRating(p, pos, l);
+        const r = buildRating(p, l, shownTactic(l));
+        const atSlot = slotRating(p, pos, l, shownTactic(l));
         ratings.push(r);
         const prof = proficiency(p, pos);
         const bad = styleFit(p, pos).some((f) => !f.ok);
@@ -1570,14 +1603,14 @@
     // Summary
     const avg = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : "—";
     const m = managerObj(l.manager);
-    const tIdx = KB.TACTICS.indexOf(l.tactic);
+    const tIdx = KB.TACTICS.indexOf(shownTactic(l));
     const prof = m && tIdx >= 0 ? m.prof[tIdx] : null;
     const links = linkUpStatus(l);
     $("#luSummary").innerHTML = `
       <div class="lu-kpis">
         <div><b>${avg}</b><span>avg XI rating</span></div>
         <div><b>${ratings.length}/11</b><span>starters</span></div>
-        <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${esc(l.tactic)} proficiency${prof != null ? ` · +${((skillMultiplier(prof) - 1) * 100).toFixed(1)}%` : ""}</span></div>
+        <div><b class="${prof >= 89 ? "is-hot" : ""}">${prof ?? "—"}</b><span>${esc(shownTactic(l))}${inSub(l) ? " (sub-tactic)" : ""} proficiency${prof != null ? ` · +${((skillMultiplier(prof) - 1) * 100).toFixed(1)}%` : ""}</span></div>
       </div>
       ${m ? `<p class="lu-line">${mgrPhoto(m, "mgr-photo mgr-photo--inline")}Team booster: ${m.boost.map((k) => `${statLabel(k)} +1`).join(", ")}, plus the proficiency multiplier — both included in the ratings.</p>` : ""}
       ${links.map(({ link, cp, km }) => `<div class="lu-link ${cp.length && km.length ? "is-on" : ""}">
@@ -1698,11 +1731,17 @@
     const m = managerObj(l.manager);
     const prof = (t) => m?.prof[KB.TACTICS.indexOf(t)];
     const avg = st.tactic && m ? xiAverage(l, m.key, st.tactic) : null;
+    const p = st.tactic ? prof(st.tactic) : null;
     box.innerHTML = `
+      ${st.tactic ? `<div class="subtactic__head">
+        <span class="subtactic__badge ${p >= 85 ? "is-hot" : ""}">${esc(st.tactic)}<small>${p ?? "N/A"}</small></span>
+        <span class="subtactic__shape">${esc(st.formation || l.formation)}${st.formation ? "" : " <small>(same shape)</small>"}</span>
+        ${avg != null ? `<span class="subtactic__avg" title="Average XI rating at this playstyle with ${esc(m.name)}">${avg.toFixed(1)}<small>avg</small></span>` : ""}
+        <button type="button" class="chip chip--small ${lu.plan === "sub" ? "is-selected" : ""}" data-plan-show="sub">${lu.plan === "sub" ? "On the pitch" : "Show on pitch"}</button>
+      </div>` : ""}
       <div class="subtactic__row">
         <label class="field field--inline"><span class="field__label">Playstyle</span><select data-st="tactic"><option value="">—</option>${KB.TACTICS.map((t) => `<option value="${t}" ${st.tactic === t ? "selected" : ""}>${t}${m ? ` · ${prof(t) ?? "N/A"}` : ""}</option>`).join("")}</select></label>
         <label class="field field--inline"><span class="field__label">Shape</span><select data-st="formation"><option value="">same as now</option>${Object.keys(FORMATIONS).map((f) => `<option ${st.formation === f ? "selected" : ""}>${f}</option>`).join("")}</select></label>
-        ${avg != null ? `<span class="subtactic__avg" title="Average XI rating at this playstyle with ${esc(m.name)}">${avg.toFixed(1)}<small>avg</small></span>` : ""}
       </div>
       <label class="field field--notes"><span class="field__label">When to switch</span><textarea data-st="when" rows="2" placeholder="e.g. they sit deep and the long balls get cleared">${esc(st.when || "")}</textarea></label>
       <label class="field field--notes"><span class="field__label">Who comes on</span><textarea data-st="subs" rows="2" placeholder="e.g. Pirlo for Makélélé, Puskás for Gullit">${esc(st.subs || "")}</textarea></label>
@@ -1714,13 +1753,23 @@
     const l = activeLineup();
     l.subTactic ||= {};
     l.subTactic[el.dataset.st] = el.value;
+    if (el.dataset.st === "formation") l.subLayout = null; // re-lay the eleven onto the new shape
+    if (el.dataset.st === "tactic" && !el.value) lu.plan = "main";
     saveLineup();
-    if (el.dataset.st === "tactic") renderSubTactic(l);
+    if (el.dataset.st === "tactic" || el.dataset.st === "formation") renderLineup(); else renderSubTactic(l);
+  });
+  $("#luSubTactic").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-plan-show]");
+    if (!b) return;
+    lu.plan = lu.plan === "sub" ? "main" : "sub";
+    lu.sel = null; renderLineup();
+    if (lu.plan === "sub") $("#luPitch").scrollIntoView({ behavior: "smooth", block: "start" });
   });
   $("#luSubSuggest").addEventListener("click", () => {
     const l = activeLineup();
     l.subTactic = suggestSubTactic(l);
-    saveLineup(); renderSubTactic(l);
+    l.subLayout = null;
+    saveLineup(); renderLineup();
     flash($("#luSubSuggest"), l.subTactic.tactic || "—");
   });
 
@@ -1804,10 +1853,12 @@
     const att = layoutOf(l);
     const def = l.fluid ? defLayoutOf(l) : null;
     const uses = []; // { id, pos, how }
+    const sub = l.subTactic?.tactic ? subLayoutOf(l) : null;
     l.xi.forEach((id, i) => {
       if (!byId[id]) return;
       uses.push({ id, pos: att[i][0], how: l.fluid ? "attack" : "starter" });
       if (def && def[i][0] !== att[i][0]) uses.push({ id, pos: def[i][0], how: "defence shape" });
+      if (sub && sub[i][0] !== att[i][0]) uses.push({ id, pos: sub[i][0], how: `sub-tactic (${l.subTactic.tactic})` });
     });
     l.subs.forEach((s) => {
       const i = l.xi.indexOf(s.out);
@@ -2194,11 +2245,12 @@
     l.formation = e.target.value;
     l.layout = null;
     l.defLayout = null; // the defence shape is laid onto the attacking one
+    l.subLayout = null; // and so is the sub-tactic shape
     lu.sel = null; saveLineup(); renderLineup();
   });
   $("#luResetLayout").addEventListener("click", () => {
     const l = activeLineup();
-    if (inDefence(l)) l.defLayout = null; else l.layout = null;
+    if (inSub(l)) l.subLayout = null; else if (inDefence(l)) l.defLayout = null; else l.layout = null;
     saveLineup(); renderLineup();
   });
   $("#luFluidSeg").addEventListener("click", (e) => {
@@ -2220,6 +2272,12 @@
     const b = e.target.closest("[data-phase]");
     if (!b) return;
     lu.phase = b.dataset.phase;
+    lu.sel = null; renderLineup();
+  });
+  $("#luPlan").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-plan]");
+    if (!b) return;
+    lu.plan = b.dataset.plan;
     lu.sel = null; renderLineup();
   });
   $("#luModes").addEventListener("click", (e) => {
@@ -2285,7 +2343,7 @@
       ...l.xi.map((id, i) => `${(def ? `${slots[i][0]}/${def[i][0]}` : slots[i][0]).padEnd(def ? 9 : 4)} ${byId[id] ? `${byId[id].name} (${buildRating(byId[id], l)})` : "—"}`),
       `Bench: ${l.bench.map((id) => byId[id]?.name).filter(Boolean).join(", ") || "—"}`,
       ...INSTR.filter(([k]) => l.instructions?.[k] && byId[l.instructions[k]]).map(([k, label]) => `${label}: ${byId[l.instructions[k]].name}`),
-      ...(l.subTactic?.tactic ? [`Sub-tactic: ${l.subTactic.tactic}${l.subTactic.formation ? ` ${l.subTactic.formation}` : ""}${l.subTactic.when ? ` — ${l.subTactic.when}` : ""}${l.subTactic.subs ? ` — ${l.subTactic.subs}` : ""}`] : []),
+      ...(l.subTactic?.tactic ? [`Sub-tactic: ${l.subTactic.tactic} ${subFormationOf(l)} — ${l.xi.map((id, i) => (byId[id] ? `${subLayoutOf(l)[i][0]} ${shortName(byId[id])}` : null)).filter(Boolean).join(", ")}${l.subTactic.when ? `\n  when: ${l.subTactic.when}` : ""}${l.subTactic.subs ? `\n  subs: ${l.subTactic.subs}` : ""}`] : []),
       ...l.subs.map((s) => `${s.minute ?? "?"}' ${byId[s.out]?.name || "?"} → ${byId[s.in]?.name || "?"}${s.note ? ` (${s.note})` : ""}`),
     ].join("\n");
     try { await navigator.clipboard.writeText(text); flash($("#luCopy"), "Copied"); }
@@ -2367,9 +2425,9 @@
     else if (target.dataset?.bench != null) dst = { area: "bench", i: Number(target.dataset.bench) };
     else dst = { area: "bench", i: l.bench.length }; // dropped on the bench area → append
     if (dst.area === src.area && dst.i === src.i) return;
-    if (inDefence(l) && src.area === "xi" && dst.area === "xi" && src.i && dst.i) {
-      // Two starters swap where they defend; their attacking spots stay as they are.
-      const d = defLayoutOf(l);
+    if ((inDefence(l) || inSub(l)) && src.area === "xi" && dst.area === "xi" && src.i && dst.i) {
+      // Two starters swap where they defend (or stand in the sub-tactic); their attacking spots stay.
+      const d = inSub(l) ? subLayoutOf(l) : defLayoutOf(l);
       [d[src.i], d[dst.i]] = [d[dst.i], d[src.i]];
       return;
     }

@@ -79,7 +79,10 @@ Two parts:
     **sub-tactic** (the saved second playstyle and shape you switch to mid-match, with
     when to switch and who comes on; *Suggest* fills it from the manager's other playstyles
     in §23 order and the bench players whose styles fit) and the substitutions; *Copy as
-    text* includes them. The owner's plan lineup carries the written **Playbook** (build-up,
+    text* includes them. The sub-tactic is its own view of the pitch — **Main | Sub-tactic**
+    next to Attack | Defence — with the same eleven laid onto its shape (nearest spot, like
+    the defence shape); drag two starters to swap where they stand or Edit positions, and
+    the ratings and warnings follow the sub-tactic's playstyle. The owner's plan lineup carries the written **Playbook** (build-up,
     five attack patterns, finishing, defending, game management, form, plan B, don'ts,
     alternatives — `GAME_PLAN` in `data/knowledge.js`, KNOWLEDGE-BASE §24) as a fold below
     the pitch; the old `#plan` link opens it.

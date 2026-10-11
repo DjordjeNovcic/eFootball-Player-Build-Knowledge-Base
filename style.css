@@ -1569,3 +1569,14 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .gate{ margin: 0.5rem 0; }
 .gate .btn{ white-space: nowrap; }
 #trainEmpty .gate{ font-style: normal; }
+
+/* Sub-tactic: its own view of the pitch and a summary head in the match card */
+.segmented--plan button.is-on{ background: var(--amber); color: var(--ink); }
+.pitch.is-sub{ outline: 2px solid rgba(255,194,74,0.55); outline-offset: 2px; }
+.subtactic__head{ display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 0.9rem; margin-bottom: 0.6rem; padding: 0.55rem 0.7rem; background: rgba(255,194,74,0.07); border: 1px solid rgba(255,194,74,0.35); border-radius: 4px; }
+.subtactic__badge{ display: inline-flex; align-items: baseline; gap: 0.35rem; font-family: var(--font-cond); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.9rem; color: var(--amber); }
+.subtactic__badge small{ font-size: 0.7rem; color: var(--paper-dim); letter-spacing: 0.04em; }
+.subtactic__badge.is-hot small{ color: var(--lime); }
+.subtactic__shape{ font-family: var(--font-display); font-size: 1.25rem; line-height: 1; }
+.subtactic__shape small{ font-family: var(--font-body); font-size: 0.72rem; color: var(--paper-dim); }
+.subtactic__head .chip{ margin-left: auto; }
