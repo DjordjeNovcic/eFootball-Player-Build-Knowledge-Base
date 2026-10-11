@@ -799,6 +799,7 @@
     list.forEach((x) => { src[x] = "mine"; });
     src.__touched = true;
     setSkills(id, list, src);
+    refreshRec(id); // trained skills shape the build (§14 step 3)
     saveStore();
     renderTrainer(); renderSquad(); renderMyBuilds();
   });
@@ -810,6 +811,7 @@
     if (list.length >= SKILL_CAP || list.includes(b.dataset.aiSkill)) return;
     list.push(b.dataset.aiSkill);
     setSkills(id, list, { ...(store.skillSource[id] || {}), [b.dataset.aiSkill]: "rec", __touched: true });
+    refreshRec(id);
     saveStore();
     renderTrainer(); renderSquad(); renderMyBuilds();
   });
@@ -2263,11 +2265,21 @@
   const recContextLabel = () => { const c = recContext(); return `${managerObj(c.manager)?.name || "no manager"} at ${c.tactic}`; };
   const recContextHtml = () => { const c = recContext(); const m = managerObj(c.manager); return `${mgrPhoto(m, "mgr-photo mgr-photo--inline")}${esc(m?.name || "no manager")} at ${esc(c.tactic)}`; };
   let REC = null; // filled at init (needs the multiplier table above)
-  const makeRecommender = () => window.Recommender({
+  const recDeps = () => ({
     players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
     skillMultiplier, managerProficiency, managerObj, notesFor, myPicks, context: recContext(), MAX_LEVEL, boosterPool: DATA.boosterPool,
     onBench: (id) => lineupRole(id)?.label === "Bench",
   });
+  const makeRecommender = () => window.Recommender(recDeps());
+  // One card's recommendation again (its ★ skills changed) without redoing the whole squad;
+  // the squad-relative rank is kept.
+  function refreshRec(id) {
+    const p = byId[id];
+    if (!p || !REC) return;
+    const one = window.Recommender({ ...recDeps(), players: [p] }).recs[id];
+    if (REC.recs[id]?.depth) one.depth = REC.recs[id].depth;
+    REC.recs[id] = one;
+  }
   const mineState = { q: "", group: "ALL", style: "", onlyMine: false };
 
   function lineupRole(id) {
@@ -2817,9 +2829,7 @@
             ${open ? pubManagerHtml(p) : `<p class="rec-muted">…</p>`}
           </section>
           <div class="rec-card__actions">
-            ${signedOut
-              ? `<button type="button" class="btn btn--icon btn--solid" data-auth-open>Sign in to add this card</button>`
-              : `<button type="button" class="btn btn--icon btn--solid" data-pub-add="${p.id}">${owned ? "Open in Trainer" : "Add to my squad"}</button>`}
+            <button type="button" class="btn btn--icon btn--solid" data-pub-add="${p.id}">${owned ? "Open in Trainer" : "Add to my squad"}</button>
             <a class="btn btn--icon" href="https://efhub.com/players/${esc(p.id)}" target="_blank" rel="noopener">eFHUB ↗</a>
           </div>
           </div>
@@ -2975,6 +2985,8 @@
       refreshAll();
       $("#addPaste").value = "";
       status.classList.add(added.length ? "is-ok" : "is-err");
+      // One new card: open it in the Trainer with its Recommended by AI build loaded.
+      if (added.length === 1 && REC?.recs[added[0].id]) setTimeout(() => openInTrainer(added[0].id, recBuild(added[0].id)), 0);
       const perm = isMe()
         ? `run <code>python3 tools/fetch_players.py --add ${added.map((p) => p.id).join(" ")}</code> or send me the IDs`
         : `run <code>python3 tools/fetch_players.py --friend "${esc(store.name)}" &lt;all IDs&gt;</code> or send me the IDs`;

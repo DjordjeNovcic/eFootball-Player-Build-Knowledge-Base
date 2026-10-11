@@ -1660,6 +1660,15 @@ Check:
 
 ## Step 3 - Inspect natural skills
 
+**Trained skills count too (user decision, 11 Oct 2026):** the additional skills already
+bought for the card (★ picks in the Build Lab Trainer, USER-SQUAD choices) shape the build
+like native ones — a card given Heading and Aerial Superiority gets the Heading 89 / Jump /
+Physical Contact package, Pinpoint Crossing asks for Lofted Pass 90, Long-range Shooting
+for Kicking Power 90, First-time Shot / Acrobatic Finishing for Finishing 90, a trained
+Double Touch / Flip Flap / Sole Control package for close-control stats, Interception /
+Blocker / Man Marking on a midfielder or attacker for Defensive Awareness 70, Through
+Passing for the Low Pass 82 minimum. `recommend.js` reads them from the Trainer's ★ picks.
+
 Identify important traits such as:
 
 - Bullet Header

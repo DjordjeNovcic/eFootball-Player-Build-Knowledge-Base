@@ -70,6 +70,15 @@ window.Recommender = (deps) => {
     const tpl = templateFor(p);
     const native = new Set(p.skills.map((k) => norm(skillLabel(k))));
     const has = (n) => native.has(norm(n));
+    // Skills the user trained on the card — ★ picks in the Trainer, USER-SQUAD choices —
+    // count like native ones for the build (user decision, 11 Oct 2026): a card given
+    // Heading and Aerial Superiority is built to use them. `has` stays native-only for the
+    // skill picker, `hasAny` drives the stat profile.
+    const note0 = notesFor(p.id);
+    const trainedList = [...new Set([...(deps.myPicks?.(p.id) || []), ...(note0?.prefSkills || []), ...(note0?.snapshot?.skills || [])])].filter((n) => !has(n));
+    const trained = new Set(trainedList.map(norm));
+    const hasT = (n) => trained.has(norm(n));
+    const hasAny = (n) => has(n) || hasT(n);
     const notes = [];
     // §4: Kicking Power, Jump and Stamina have no useful hard threshold — past the role's
     // target they keep paying all the way to 99, at the same reduced rate as any other stat
@@ -123,7 +132,7 @@ window.Recommender = (deps) => {
     // A Box-to-Box midfielder keeps the §3 87 ideal instead: in Long Ball Counter he plays the
     // first forward pass after a regain, and Low Pass sets both its accuracy and its speed (§25).
     const lp = get("lowPass");
-    if (has("Through Passing") && lp && lp.w >= 4) {
+    if (hasAny("Through Passing") && lp && lp.w >= 4) {
       if (!["orchestrator", "creativePlaymaker", "classicNo10", "boxToBox"].includes(tpl.key)) { lp.t = Math.min(lp.t, 82); lp.cap = lp.t + 3; }
       notes.push("Through Passing — Low Pass 82 is its functional minimum (§3).");
     }
@@ -141,6 +150,21 @@ window.Recommender = (deps) => {
       notes.push("Momentum Dribbling — feed it Dribbling, Tight Possession and Balance (§8).");
     }
     if (has("Magnetic Feet")) { const s = get("ballControl"); if (s) s.cap = s.t + 2; }
+    // Trained (★) skills the build should serve — only skills from the trainable pool.
+    const used = [];
+    if ((hasT("Heading") || hasT("Aerial Superiority")) && p.height >= 180) {
+      ensure("heading", 4, 89); ensure("jump", 3, 85); ensure("physicalContact", 3, 85);
+      scale("heading", 1.4); scale("jump", 1.3);
+      used.push(hasT("Heading") && hasT("Aerial Superiority") ? "Heading + Aerial Superiority" : hasT("Heading") ? "Heading" : "Aerial Superiority");
+    }
+    if (hasT("Pinpoint Crossing") && tpl.key !== "crossSpecialist") { ensure("loftedPass", 6, 90); const s = get("loftedPass"); s.w = Math.max(s.w, 6); s.t = Math.max(s.t, 90); used.push("Pinpoint Crossing"); }
+    if (hasT("Weighted Pass")) { ensure("loftedPass", 3, 85); used.push("Weighted Pass"); }
+    if (hasT("Long-range Shooting") || hasT("Long-range Curler")) { ensure("kickingPower", 4, 90); const s = get("kickingPower"); s.w = Math.max(s.w, 4); s.t = Math.max(s.t, 90); used.push(hasT("Long-range Shooting") ? "Long-range Shooting" : "Long-range Curler"); }
+    if ((hasT("First-time Shot") || hasT("Acrobatic Finishing")) && ATTACKERS.has(p.position)) { ensure("finishing", 6, 90); const s = get("finishing"); s.w = Math.max(s.w, 6); used.push(hasT("First-time Shot") ? "First-time Shot" : "Acrobatic Finishing"); }
+    const ballRoll = ["Double Touch", "Flip Flap", "Sole Control"].filter(hasAny).length;
+    if (ballRoll >= 2 && ["Double Touch", "Flip Flap", "Sole Control"].some(hasT) && p.height <= 182) { scale("dribbling", 1.15); scale("tightPossession", 1.15); scale("balance", 1.15); used.push("the Double Touch / Flip Flap / Sole Control package"); }
+    if (["Interception", "Blocker", "Man Marking"].some(hasT) && !["CB", "LB", "RB"].includes(p.position)) { ensure("defensiveAwareness", 2, 70); used.push(["Interception", "Blocker", "Man Marking"].filter(hasT).join(" + ")); }
+    if (used.length) notes.push(`Trained on the card: ${used.join(", ")} — the build serves them like native skills (§8, §9).`);
     // §3 / §7 (user decision, 11 Oct 2026): a Creative Playmaker is a pure creator — Ball
     // Control, Dribbling, Tight Possession, Low Pass and Balance come first, and 96 Speed is
     // already top speed. The 100+ Speed step isn't worth 28 points of Lower Body to him
@@ -192,7 +216,7 @@ window.Recommender = (deps) => {
       : ["DMF", "CMF"].includes(p.position) ? SECONDARY.MID : SECONDARY.ATT;
     const tallAttacker = ATTACKERS.has(p.position) && p.height >= 188;
     const secondary = group.filter((k) => !inTpl.has(k) && !(tallAttacker && (k === "dribbling" || k === "tightPossession")));
-    return { tpl, stats, notes, has, secondary };
+    return { tpl, stats, notes, has, secondary, trained: trainedList };
   }
 
   /* ---------- stat pipeline (mirrors lab.js compute) ---------- */

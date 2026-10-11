@@ -241,7 +241,9 @@ function firstMerge(snap) {
   const remoteIds = new Set();
   // Someone other than the owner signing in on a browser that showed the demo: the demo
   // squad isn't theirs, so their "My squad" starts from the cloud (or empty).
-  const demoLocal = !!OWNER_UID && state.user.uid !== OWNER_UID;
+  // (The repo squad is shown only when the owner flag is set, so a visitor's own local
+  // squad — cards added before signing in — is theirs and gets merged.)
+  const demoLocal = !!OWNER_UID && state.user.uid !== OWNER_UID && lab.isRepoSquad();
   if (demoLocal && !snap.docs.some((d) => d.id === docIdFor("me"))) lab.putProfile("me", { kind: "me", name: "My squad" });
   snap.forEach((docSnap) => {
     const id = docSnap.id;
