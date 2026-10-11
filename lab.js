@@ -395,19 +395,26 @@
       }
       return `
         <article class="squad-card" data-group="${POSITION_GROUP[p.position]}">
-          <div class="squad-card__media">${cardImg(p, "squad-card__img")}
-            <div class="squad-card__ovr"><b>${p.overall}</b><span>${p.position}</span></div>
+          <div class="squad-card__head">
+            <div class="squad-card__media">${cardImg(p, "squad-card__img")}
+              <div class="squad-card__ovr"><b>${p.overall}</b><span>${p.position}</span></div>
+            </div>
+            <div class="squad-card__id">
+              <h3 class="squad-card__name">${esc(p.name)}</h3>
+              <p class="squad-card__team">${esc(p.team || "")}</p>
+              <p class="squad-card__team">${p.height} cm · ${esc(p.foot || "")} foot</p>
+              <p class="squad-card__style">${esc(styleText(p))}</p>
+              <p class="squad-card__pos">${positionList(p).map(({ pos, prof }) => `<span class="pp pp--${prof}">${pos}</span>`).join("")}${positionsEdited(p) ? `<span class="pp-edited" title="Edited in Trainer">✎</span>` : ""}</p>
+              <p class="squad-card__boost">${esc(p.booster1?.name || "No booster")}${p.booster2Fixed ? " + " + esc(p.booster2Fixed.name) : ""}</p>
+            </div>
           </div>
           <div class="squad-card__body">
-            <h3 class="squad-card__name">${esc(p.name)}</h3>
-            <p class="squad-card__team">${esc(p.team || "")} · ${p.height} cm · ${esc(p.foot || "")}</p>
-            <p class="squad-card__style">${esc(styleText(p))}</p>
-            ${skillsOf(p.id).length ? `<p class="squad-card__skills" title="Additional skills — ★ your pick, AI = Recommended by AI">${skillsOf(p.id).map((n) => `<span class="${skillSrc(p.id, n) === "mine" ? "is-mine" : ""}">${skillSrc(p.id, n) === "mine" ? "★ " : `<i class="ai-mark">AI</i> `}${esc(n)}</span>`).join("")}</p>` : ""}
+            ${skillsOf(p.id).length ? `<div class="squad-card__skills" title="Additional skills — ★ your pick, outlined = Recommended by AI"><span class="squad-card__label">Skills${skillsOf(p.id).some((n) => skillSrc(p.id, n) !== "mine") ? ` <i class="ai-mark">AI</i>` : ""}</span>${skillsOf(p.id).map((n) => `<span class="sk${skillSrc(p.id, n) === "mine" ? " is-mine" : ""}">${skillSrc(p.id, n) === "mine" ? "★ " : ""}${esc(n)}</span>`).join("")}</div>` : ""}
             ${styleExpectShort(p) ? `<p class="squad-card__expect" title="${esc(stylesOf(p).filter((x) => x.guide).map((x) => `${x.name}: ${x.guide.expect} ${x.guide.use}`).join("\n\n"))}">${esc(styleExpectShort(p))}</p>` : ""}
-            <p class="squad-card__pos">${positionList(p).map(({ pos, prof }) => `<span class="pp pp--${prof}">${pos}</span>`).join("")}${positionsEdited(p) ? `<span class="pp-edited" title="Edited in Trainer">✎</span>` : ""}</p>
-            <p class="squad-card__boost">${esc(p.booster1?.name || "No booster")}${p.booster2Fixed ? " + " + esc(p.booster2Fixed.name) : ""}</p>
             ${note ? `<p class="squad-card__note">${esc(note.role)}</p>` : ""}
-            <div class="squad-card__foot">
+          </div>
+          <div class="squad-card__foot">
+            <div class="squad-card__meta">
               ${p.custom ? `<span class="badge badge--amber" title="Added in this browser">Added here</span>` : ""}
               ${savedBadge}
               <span class="squad-card__pts">Lv cap ${p.levelCap} · ${budgetFor(p.levelCap)} pts</span>
