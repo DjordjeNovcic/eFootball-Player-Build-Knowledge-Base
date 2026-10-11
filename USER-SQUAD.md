@@ -321,14 +321,21 @@ In-game **Sub Tactic** (Game Plan → Sub Tactic ON): it only re-arranges the el
 pitch, so the second plan is a shape, not new players. With Deschamps the only strong
 alternative playstyle is **Possession (89)** — Quick Counter 68, Out Wide 59, Long Ball 63.
 
-**Possession · 4-3-1-2**, same eleven: Makélélé DMF; Hazard left CMF (Hole Player is active
-at CMF — late runs from midfield); Seedorf right CMF; Messi AMF (Creative Playmaker — the
-Breakthrough Pass A Link-up to Eto'o stays on); Gullit pulled back from CF into the SS zone
-(Hole Player active again); Eto'o alone on the last defender's shoulder, Counter Target.
-Switch when they sit deep and compact, long balls get cleared and there are few real
-chances by ~55′. If still nothing by ~65′: Pirlo for Makélélé, Puskás for Gullit. Model
-average 105.3 (Hazard 99 at CMF, Gullit 107 at SS). Build Lab: the Game Plan lineup's
-match card.
+**Possession · 4-3-2-1** (user's idea, 11 Oct: drop Gullit, two behind Eto'o), same eleven:
+
+| Line | Player | Position | Why |
+|---|---|---|---|
+| DMF | Makélélé | DMF (50, 40) | holds, first pass |
+| CMF | Seedorf (L), Gullit (R) | CMF | Gullit is **high** at CMF (intermediate at RMF), Hole Player stays active — carries and arrives late |
+| behind the striker | Hazard (L), Messi (R) | LMF wide (14, 64) / AMF right half-space (66, 66) | Hazard's Hole Player is active at LMF; Messi Creative Playmaker at AMF keeps the Breakthrough Pass A Link-up to Eto'o |
+| CF | Eto'o | CF | alone on the shoulder: cutback or ball in behind |
+
+Every style active, no intermediate position, Link-up on; model average 105.8. Switch when
+they sit deep and compact, long balls get cleared and there are few real chances by ~55′.
+If still nothing by ~65′: Pirlo for Makélélé, Puskás for Gullit. In possession: Counter
+Target off Eto'o, defensive line a notch higher, Thuram stays home. Earlier variants
+(4-3-1-2 diamond; 4-2-3-1 with Gullit at RMF) were dropped: narrow, or Gullit intermediate.
+Build Lab: the Game Plan lineup's match card, **Main | Sub-tactic** switch above the pitch.
 
 ## Diamond — 11 Oct 2026 (test, alongside the Game Plan)
 
