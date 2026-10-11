@@ -362,6 +362,9 @@ window.KB = (() => {
         // 11 Oct: one full-back on the bench is enough (Zanetti covers both sides) —
         // Cafu → Kaká, Calafiori → C. Ronaldo.
         { id: "2026-10-11-bench-one-fullback", replace: { "88044145348045": "88044145217198", "106788993239598": "89135066911146" } },
+        // 11 Oct: Adriano (Goal Poacher / Attack Outlet, CF 107, Kicking Power +6 fixed) for
+        // C. Ronaldo as the Goal Poacher cover — stronger in the duel, a left foot, Low Screamer.
+        { id: "2026-10-11-bench-adriano", replace: { "89135066911146": "88045755960841" } },
         // 11 Oct: Messi has no RMF — defend with him at AMF and Seedorf at RMF.
         { id: "2026-10-11-def-shape", defFormation: "4-3-1-2", defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
           ["DMF", 50, 40], ["RMF", 88, 55], ["LMF", 12, 55], ["AMF", 50, 62], ["CF", 37, 84], ["CF", 63, 84]] },
@@ -375,7 +378,7 @@ window.KB = (() => {
         "89136140651034", "88040387118554"], // CF Ibrahimović (Willpower card), Eto'o
       bench: ["88044145348029", "88045755964131", "88033139494357", "88039581945312", // Vieira, Stam, Zanetti, Pirlo
         "88040387121974", "89138556700485", "88039045074410", "106773692395554", // Sneijder, Bellingham, Gullit, Dembélé
-        "88040387120260", "88045755861672", "88044145217198", "89135066911146"], // Puskás, Bale, Kaká, C. Ronaldo
+        "88040387120260", "88045755861672", "88044145217198", "88045755960841"], // Puskás, Bale, Kaká, Adriano
       subs: [
         { minute: 60, out: "89137214427270", in: "89138556700485", note: "Hole Player stays active, LMF high in defence — or Sneijder for a tired Messi (keeps the Link-up)" },
         { minute: 65, out: "89136140651034", in: "88040387120260", note: "Plan B: Possession sub-tactic + Deep-Lying Forward next to Eto'o (Gullit instead when you need headers)" },
@@ -405,6 +408,7 @@ window.KB = (() => {
       { text: "Messi's other card (Deep-Lying Forward SS) can't sit on the same team sheet, so Sneijder takes his bench place and covers right AMF without losing the Link-up.", basis: "reasoning" },
       { text: "Bench (11 Oct): Puskás in as the Deep-Lying Forward for Plan B, Bellingham is the first attacking sub (AMF 105, LMF high), Bale is the late Attack Outlet. One full-back on the bench — Zanetti covers both sides — so Cafu and Calafiori make room for Kaká (Super-sub) and C. Ronaldo (Goal Poacher CF with Bullet Header: keeps the Link-up and wins headers when chasing).", basis: "reasoning" },
       { text: "Builds (11 Oct): more Passing for the two DMFs, who play the first pass of every counter — Seedorf Low Pass 82 → 87 (0-5-8-8-11-2-9, Agility +1), Makélélé 85 → 88 (0-4-2-8-12-4-10) with his defending unchanged. Physical Contact stays as it is: it is relative (the higher stat wins the duel), so +4 for a forward still loses to 90+ centre-backs.", basis: "reasoning" },
+      { text: "Bench (11 Oct, later): Adriano (Goal Poacher / Attack Outlet card, fixed Kicking Power +6) for C. Ronaldo as the Goal Poacher cover — CF 107 vs 106, Physical Contact 94 vs 87, Kicking Power 101, Phenomenal Finishing + Low Screamer + Snap Strike, and a left foot in a right-footed attack. The Link-up still stays on when he comes on for Eto'o; what goes is C. Ronaldo's Bullet Header (Heading 93 vs 87).", basis: "reasoning" },
       { text: "Messi's build (11 Oct): a Creative Playmaker doesn't buy the 100+ Speed step — 96 is already top speed and he lives on the ball. 5-8-6-6-13-4-0 Passing +1 → 8-9-6-7-9-5-0 Offence Creator +1: Speed 100 → 96 and Kicking Power 95 → 91 pay for Attacking Awareness 90, Finishing 91, Curl 92, Low Pass 94, Ball Control 97, Balance 96 (AMF 106 → 107). Kicking Power 91 still clears the Blitz Curler target.", basis: "reasoning" },
     ],
     instructions: [
@@ -456,7 +460,7 @@ window.KB = (() => {
       { id: "form", title: "Form before the match", items: [
         { head: "Most of the XI never changes", text: "Condition is set weekly from KONAMI's Live Update Rating; Legend, Epic and Big Time cards are fixed at B (normal) according to the guides — that's nearly your whole squad. Arrows only move on current-season cards (e.g. Dembélé, Calafiori).", basis: "guides" },
         { head: "Arrows break ties, they don't pick the XI", text: "How many points an arrow adds isn't published. A top card on a weaker arrow usually still beats a weaker sub on a good one — swap only between like-for-like players.", basis: "guides" },
-        { head: "Like for like only", text: "Eto'o ↔ Dembélé / C. Ronaldo (Goal Poacher CF — the Link-up stays on) · Messi ↔ Sneijder (Creative Playmaker AMF — Link-up stays on) · Hazard ↔ Bellingham · Ibrahimović ↔ Gullit / Bale · Makélélé ↔ Vieira · Desailly ↔ Stam · Maldini / Thuram ↔ Zanetti.", basis: "reasoning" },
+        { head: "Like for like only", text: "Eto'o ↔ Dembélé / Adriano (Goal Poacher CF — the Link-up stays on) · Messi ↔ Sneijder (Creative Playmaker AMF — Link-up stays on) · Hazard ↔ Bellingham · Ibrahimović ↔ Gullit / Bale · Makélélé ↔ Vieira · Desailly ↔ Stam · Maldini / Thuram ↔ Zanetti.", basis: "reasoning" },
         { head: "Never for an arrow", text: "Two Destroyers at CB, Messi on the left, or a change that switches the Link-up off. Puskás only when you start in Plan B.", basis: "reasoning" },
       ] },
       { id: "planb", title: "Plan B — when it isn't working", items: [

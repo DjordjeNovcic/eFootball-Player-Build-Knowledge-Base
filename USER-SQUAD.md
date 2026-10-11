@@ -238,13 +238,19 @@ Behind & Turn, Outside Curler, Weighted Pass, Chip Shot Control). No other card 
 
 **Bench (12, updated 11 Oct):** Vieira, Stam, Zanetti, Pirlo, Sneijder, Bellingham
 (`89138556700485`), Gullit, Dembélé (`106773692395554`), Puskás (`88040387120260`),
-Bale (`88045755861672`), Kaká (`88044145217198`), C. Ronaldo (`89135066911146`).
+Bale (`88045755861672`), Kaká (`88044145217198`), Adriano (`88045755960841`).
 Dembélé replaced Shevchenko on 10 Oct (user: too few useful skills). On 11 Oct Neymar
 and Ronaldinho dropped out (no slot in this shape; Sneijder covers right AMF), and the
 user asked for one full-back instead of three: Zanetti stays (LB and RB high), Cafu and
 Calafiori make room for Kaká (Super-sub) and C. Ronaldo (Goal Poacher CF, Bullet Header —
 keeps the Link-up when chasing). Bellingham is the 60' sub for Hazard (AMF 105 vs Kaká
 104, high at LMF vs intermediate).
+Later on 11 Oct (user: "kako ti kažeš") **Adriano (`88045755960841`) took C. Ronaldo's
+bench place**: the same Goal Poacher CF cover that keeps the Link-up, but CF 107 vs 106,
+Physical Contact 94 vs 87, Kicking Power 101 (fixed slot-2 Kicking Power +6), Phenomenal
+Finishing + Low Screamer + Snap Strike, and a left foot in a right-footed attack; Attack
+Outlet keeps him high late on. C. Ronaldo's edge was Bullet Header (Heading 93 vs 87).
+AI build 8-0-9-9-8-8-0: OA 91, Finishing 92, Speed 95, Acceleration 93, Jump 94.
 
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
@@ -278,7 +284,7 @@ protecting — Vieira for Seedorf (~75'), Stam only for Desailly (Destroyer for 
 Legend / Epic / Big Time cards are fixed at B according to the guides (KNOWLEDGE-BASE §25) —
 nearly the whole squad. Arrows matter for current-season cards (e.g. Dembélé, Calafiori).
 Arrows break ties, they don't pick the XI: swap only like-for-like — Eto'o ↔ Dembélé /
-C. Ronaldo, Messi ↔ Sneijder (both keep the Link-up), Hazard ↔ Bellingham, Ibrahimović ↔
+Adriano, Messi ↔ Sneijder (both keep the Link-up), Hazard ↔ Bellingham, Ibrahimović ↔
 Gullit / Bale, Makélélé ↔ Vieira, Desailly ↔ Stam, Maldini / Thuram ↔ Zanetti. Never two
 Destroyers, Messi on the left or a Link-up switched off for an arrow.
 
