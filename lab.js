@@ -1185,6 +1185,8 @@
   };
   const TEAM_TACTICS = KB.TACTICS; // incl. Overload (v6.0.0)
   const BENCH_MAX = 12;
+  // Bench order, front to back (user request, 11 Oct 2026).
+  const BENCH_ORDER = ["CF", "SS", "LWF", "RWF", "AMF", "LMF", "RMF", "CMF", "DMF", "LB", "RB", "CB", "GK"];
   const slotsFor = (f) => [["GK", 50, 6], ...(FORMATIONS[f] || FORMATIONS["4-3-3"])];
   const OUTFIELD_ROLES = ["CB", "LB", "RB", "DMF", "CMF", "LMF", "RMF", "AMF", "LWF", "RWF", "SS", "CF"];
 
@@ -1490,7 +1492,7 @@
     $("#luFormation").innerHTML = Object.keys(FORMATIONS).map((f) => `<option>${f}</option>`).join("");
     $("#luFormation").value = l.formation;
     $("#luFormationLabel").textContent = l.fluid ? "Attack formation" : "Formation";
-    $("#luFluid").value = l.fluid ? "on" : "";
+    $("#luFluidSeg").querySelectorAll("[data-fluid]").forEach((b) => b.classList.toggle("is-on", (b.dataset.fluid === "on") === !!l.fluid));
     $("#luDefFormationField").hidden = !l.fluid;
     $("#luDefFormation").innerHTML = Object.keys(FORMATIONS).map((f) => `<option>${f}</option>`).join("");
     $("#luDefFormation").value = l.defFormation || DEFAULT_DEF_FORMATION;
@@ -1535,7 +1537,12 @@
           <span class="slot__pos">${pos}</span></button>`;
       }).join("");
 
-    // Bench
+    // Bench — in position order unless the lineup turned it off (then drag order).
+    if (l.benchByPos !== false) {
+      const sorted = [...l.bench].sort((a, b) => BENCH_ORDER.indexOf(byId[a]?.position) - BENCH_ORDER.indexOf(byId[b]?.position));
+      if (sorted.join() !== l.bench.join()) { l.bench = sorted; saveStore(); }
+    }
+    $("#luBenchSort").classList.toggle("is-selected", l.benchByPos !== false);
     const benchCells = l.bench.map((id, i) => {
       const p = byId[id];
       if (!p) return "";
@@ -2062,9 +2069,11 @@
     if (inDefence(l)) l.defLayout = null; else l.layout = null;
     saveLineup(); renderLineup();
   });
-  $("#luFluid").addEventListener("change", (e) => {
+  $("#luFluidSeg").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-fluid]");
+    if (!b) return;
     const l = activeLineup();
-    l.fluid = e.target.value === "on";
+    l.fluid = b.dataset.fluid === "on";
     if (l.fluid && !l.defFormation) l.defFormation = DEFAULT_DEF_FORMATION;
     lu.phase = l.fluid ? "def" : "att"; // show the new shape straight away
     lu.sel = null; saveLineup(); renderLineup();
@@ -2089,6 +2098,11 @@
   });
   $("#luManager").addEventListener("change", (e) => { activeLineup().manager = e.target.value; saveLineup(); renderLineup(); });
   $("#luTactic").addEventListener("change", (e) => { activeLineup().tactic = e.target.value; saveLineup(); renderLineup(); });
+  $("#luBenchSort").addEventListener("click", () => {
+    const l = activeLineup();
+    l.benchByPos = l.benchByPos === false; // off → on, on → off (drag order)
+    saveLineup(); renderLineup();
+  });
   $("#luNotes").addEventListener("change", (e) => { activeLineup().notes = e.target.value; saveLineup(); });
   $("#luNew").addEventListener("click", () => {
     const l = newLineup(`Lineup ${store.lineups.length + 1}`);

@@ -1534,3 +1534,11 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
   .tabs__brand{ font-size: 1.15rem; margin-right: 0.5rem; }
   .topline{ font-size: 0.8rem; }
 }
+
+/* Lineup: Fluid off/on and the defence shape live next to Attack/Defence; bench order toggle */
+.pitch-bar__group{ display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.field--inline{ flex-direction: row; align-items: center; gap: 0.45rem; margin: 0; flex: 0 0 auto; }
+.field--inline .field__label{ margin: 0; }
+.field--inline select{ width: auto; padding-top: 0.45rem; padding-bottom: 0.45rem; }
+.bench-head{ display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.chip--small{ font-size: 0.7rem; padding: 0.2rem 0.55rem; }
