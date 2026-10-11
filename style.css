@@ -1357,3 +1357,43 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .hit{ margin-left: 0.3rem; }
 /* the same badge look everywhere a stat value is shown */
 .rec-t b{ border-radius: 3px; font-family: var(--font-cond); font-weight: 700; }
+
+/* ============================================================
+   Card grid (Public Cards, Recommended by AI, CoinPlayTV): closed cards are tiles
+   with the card art and the build rating over it, like eFHUB's player grid; an open
+   card spans the row and keeps the full build sheet.
+   ============================================================ */
+.rec-grid{ grid-template-columns: repeat(auto-fill, minmax(min(100%, 176px), 1fr)); gap: 0.8rem; }
+.rec-card[open]{ grid-column: 1 / -1; }
+.rec-card:not([open]) > .rec-card__head{
+  display: block; padding: 0; border-bottom: none;
+}
+.rec-card:not([open]) .rec-card__img{
+  width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; object-position: top; border-radius: 0;
+  display: block; background: var(--surface);
+}
+.rec-card:not([open]) .rec-card__ovr{
+  position: absolute; top: 0.55rem; left: 0.5rem; text-align: left;
+  background: rgba(9,13,10,0.88); border: 1px solid rgba(212,255,63,0.35); border-radius: 3px; padding: 0.2rem 0.45rem 0.15rem;
+  backdrop-filter: none;
+}
+.rec-card:not([open]) .rec-card__ovr b{ font-size: 1.6rem; line-height: 0.9; }
+.rec-card:not([open]) .rec-card__ovr span{ display: block; font-size: 0.58rem; }
+.rec-card:not([open]) .rec-card__who{ padding: 0.6rem 0.7rem 0.15rem; }
+.rec-card:not([open]) .rec-card__who h3{ font-size: 0.98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rec-card:not([open]) .rec-card__who p{ font-size: 0.68rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rec-card:not([open]) .kb-card__badges{ gap: 0.25rem; }
+.rec-card:not([open]) .kb-card__badges .badge{ font-size: 0.58rem; padding: 0.05rem 0.3rem; }
+.rec-card:not([open]) .rec-card__line{ padding: 0.1rem 0.7rem 0.75rem; white-space: normal; font-size: 0.7rem; line-height: 1.35; }
+.rec-card:not([open]) .rec-card__line code{ font-size: 0.9rem; }
+.rec-card:not([open]) > .rec-card__head::after{ top: auto; bottom: 0.55rem; right: 0.6rem; transform: none; }
+.rec-card:not([open]) > .rec-card__head:hover .rec-card__img{ filter: brightness(1.08); }
+.rec-card:not([open]) > .rec-card__head:hover{ background: transparent; }
+.rec-card:not([open]){ border-color: var(--line-soft); }
+.rec-card:not([open]):hover{ border-color: rgba(212,255,63,0.45); }
+/* an open card: the head goes back to the one-line layout with a big rating on the right */
+.rec-card[open] > .rec-card__head{ grid-template-columns: 72px minmax(0, 1fr) auto; }
+.rec-card[open] .rec-card__img{ width: 72px; }
+@media (max-width: 640px){
+  .rec-grid{ grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 0.6rem; }
+}
