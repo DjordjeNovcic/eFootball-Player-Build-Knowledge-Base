@@ -20,6 +20,9 @@
   const POS_ORDER = OVR.POSITIONS;
 
   const $ = (sel, root = document) => root.querySelector(sel);
+  // Card and manager photos that fail to load drop out (no inline onerror handlers — the
+  // Content Security Policy in index.html forbids them).
+  document.addEventListener("error", (e) => { const t = e.target; if (t instanceof HTMLImageElement && t.classList.contains("js-img")) t.remove(); }, true);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   // Replace an element's HTML only when it actually changed: the squad is re-rendered on
   // every sync event at start-up, and rebuilding 55 card tiles makes them flash.
@@ -132,7 +135,7 @@
   const playerNativeNames = (p) => new Set(p.skills.map((k) => norm(skillLabel(k))));
 
   function cardImg(p, cls) {
-    return `<img class="${cls}" src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`;
+    return `<img class="${cls} js-img" src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`;
   }
 
   /* ---------------------------------------------------------
@@ -297,7 +300,7 @@
     ...(window.EF_MANAGERS || []).map((m) => ({ ...m, key: `ef:${m.id}`, linkUps: m.linkUps || [], affinity: null })),
   ];
   const mgrPhoto = (m, cls = "mgr-photo") => (m?.photo
-    ? `<img class="${cls}" src="${esc(m.photo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : "");
+    ? `<img class="${cls} js-img" src="${esc(m.photo)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : "");
   // The photo of whichever manager a <select> currently holds (Trainer, Lineup).
   function syncMgrPhoto(selectId) {
     const sel = $(`#${selectId}`);

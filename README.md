@@ -100,6 +100,22 @@ The browser copy stays as an offline cache; the first sign-in merges it into the
 No backend, no build step — plain HTML/CSS/JS, everything persists to the browser's
 `localStorage`. Not affiliated with KONAMI; this is just a fan-made companion tool.
 
+## Security notes
+
+- `firebase-config.js` is public by design (every Firebase web app ships it); what anyone
+  can read or write is decided by `firestore.rules`: a squad is readable and writable only
+  by its members, the owner alone manages members and the invite code, an invite-link
+  holder can add only themselves, every write is shape- and size-checked and stamped with
+  the writer's uid; CoinPlayTV builds are public to read and writable only by the owner's
+  uid. After changing the rules deploy them: `firebase deploy --only firestore:rules`.
+- Sign-in and password reset never reveal whether an address has an account; sign-up asks
+  for 8+ characters and sends a verification email (Firebase's own rate limits apply;
+  enable *Email enumeration protection* and a password policy in the Firebase console too).
+- `index.html` carries a Content Security Policy: scripts only from this site and Firebase's
+  CDN, no inline handlers, connections only to Firebase, eFHUB and the manager photos. Every
+  user-written string is escaped before it reaches the page; the CSP is the second line.
+- Signing out clears this browser's copy of the squad.
+
 ## Run it locally
 
 ```bash

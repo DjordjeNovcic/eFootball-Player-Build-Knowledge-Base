@@ -79,7 +79,8 @@ async function start() {
     emailIn: (email, pw) => auth.signInWithEmailAndPassword(a, email, pw),
     emailUp: async (email, pw, name) => {
       const cred = await auth.createUserWithEmailAndPassword(a, email, pw);
-      if (name) await auth.updateProfile(cred.user, { displayName: name });
+      if (name) await auth.updateProfile(cred.user, { displayName: name.slice(0, 40) });
+      try { await auth.sendEmailVerification(cred.user); } catch { /* optional */ }
       return cred;
     },
     reset: (email) => auth.sendPasswordResetEmail(a, email),
@@ -129,9 +130,9 @@ const AUTH_ERRORS = {
   "auth/invalid-credential": "Wrong email or password.",
   "auth/invalid-login-credentials": "Wrong email or password.",
   "auth/wrong-password": "Wrong email or password.",
-  "auth/user-not-found": "No account with that email — create one below.",
+  "auth/user-not-found": "Wrong email or password.",
   "auth/email-already-in-use": "That email already has an account — sign in instead.",
-  "auth/weak-password": "Use at least 6 characters.",
+  "auth/weak-password": "Use at least 8 characters.",
   "auth/invalid-email": "That doesn't look like an email address.",
   "auth/missing-password": "Enter your password.",
   "auth/too-many-requests": "Too many attempts — wait a minute and try again.",
@@ -170,6 +171,7 @@ function bindDialog() {
     const email = $("#authEmail").value.trim();
     const pw = $("#authPassword").value;
     if (!email || !pw) return authMsg("Enter your email and password.");
+    if (mode === "up" && pw.length < 8) return authMsg("Use at least 8 characters.");
     $("#authSubmit").disabled = true;
     try {
       if (mode === "up") await state.auth.emailUp(email, pw, $("#authName").value.trim());
@@ -188,7 +190,9 @@ function bindDialog() {
       await state.auth.reset(email);
       authMsg("If that email has an account, a reset link is on its way.", "ok");
     } catch (err) {
-      authMsg(explain(err));
+      // The same answer whether or not the address has an account.
+      if (["auth/invalid-email", "auth/network-request-failed", "auth/too-many-requests"].includes(err?.code)) authMsg(explain(err));
+      else authMsg("If that email has an account, a reset link is on its way.", "ok");
     }
   });
 }
@@ -381,7 +385,7 @@ async function invite() {
   if (!code) {
     const bytes = crypto.getRandomValues(new Uint8Array(18));
     code = [...bytes].map((b) => b.toString(36).padStart(2, "0")).join("").slice(0, 28);
-    await updateDoc(doc(state.db, "squads", id), { inviteCode: code });
+    await updateDoc(doc(state.db, "squads", id), { inviteCode: code, updatedBy: state.user.uid });
     d.inviteCode = code;
   }
   const link = `${location.origin}${location.pathname}?join=${encodeURIComponent(`${id}~${code}`)}`;
