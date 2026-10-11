@@ -722,6 +722,9 @@ a.btn{ text-decoration: none; display: inline-flex; align-items: center; }
 .mfit__num b{ font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; line-height: 1; }
 .mfit__num span{ font-family: var(--font-cond); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--paper-dim); text-align: center; }
 .mfit__note{ margin: 0.7rem 0 0; font-size: 0.74rem; color: var(--paper-dim); }
+.mfit__scout{ margin-top: 0.9rem; }
+.mfit__scout > summary{ cursor: pointer; color: var(--lime); font-weight: 600; font-size: 0.85rem; }
+.mfit__scout .mfit{ margin-top: 0.6rem; }
 .match-helper{ display: grid; gap: 0.5rem; }
 .match-helper .field{ max-width: 22rem; }
 .match__line{ margin: 0; font-size: 0.9rem; }

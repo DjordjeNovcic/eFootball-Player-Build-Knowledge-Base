@@ -53,7 +53,14 @@ Two parts:
     show card images and ratings from the saved build (★) or the AI build; tapping a
     player opens his AI build next to yours (rating at that slot, booster, key stats with
     the differences, skills), with Replace player / Open in Trainer / Use AI build.
-    **Manager fit** compares the XI's average rating and Link-ups across your managers;
+    **Best XI** fills the eleven with the strongest assignment of the squad to the
+    formation's slots (rating at each slot from the builds with the chosen manager and
+    playstyle; no one without proficiency, intermediate proficiency and an inactive style
+    count against a player, one card per player, never two Destroyer CBs) — displaced
+    starters go to the bench.
+    **Manager fit** compares the XI's average rating and Link-ups across your managers,
+    and lists the eFHUB managers you don't own that this XI would rate highest at the
+    lineup's playstyle (Link-ups that would switch on first);
     **Position training** lists who plays (or comes on) where his proficiency isn't
     high; the **Match helper** takes the opponent's playstyle and suggests what to switch
     to and which instructions to give whom (KNOWLEDGE-BASE §23).
@@ -68,7 +75,8 @@ Two parts:
 **Accounts & cloud sync:** *Sign in* (Google, or email + password with sign-up and
 password reset) gives every person their own squad — cards, managers, builds, lineups —
 while the knowledge (skills, styles, boosters, recommendations, trainer) is shared.
-Signed-out visitors see the owner's squad as a demo (`OWNER_UID` in `firebase-config.js`).
+The repo squad (`data/players.js` + `USER-SQUAD.md` notes) is shown only to the owner
+(`OWNER_UID` in `firebase-config.js`); signed-out visitors start with an empty squad.
 Each account's squad syncs through Firestore (project `efootballbuild-4a791`, rules in
 `firestore.rules`). Each squad is one document visible only to its owner.
 The browser copy stays as an offline cache; the first sign-in merges it into the cloud.
@@ -102,6 +110,20 @@ proficiency from eFHUB, photos, Link-up plays and release dates from
 
 `data/knowledge.js` is a hand-maintained extract of `KNOWLEDGE-BASE.md` / `USER-SQUAD.md`
 for the UI — update it when those documents change.
+
+## Check the builds
+
+`tools/check_builds.js` runs `recommend.js` headlessly (Node, no browser) the way the Build
+Lab wires it and prints every card's role, build, slot-2 booster, rating and the §14 flags
+(trained points past the useful range, missed core targets); it fails if a build doesn't
+spend the card's exact point budget (§12). Run it after changing build doctrine,
+`recommend.js` or `data/`:
+
+```bash
+node tools/check_builds.js                        # owner context: D. Deschamps, Long Ball Counter
+node tools/check_builds.js "Xabi Alonso" "Quick Counter"
+node tools/check_builds.js --json > /tmp/builds.json
+```
 
 ## Deploy
 

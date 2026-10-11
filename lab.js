@@ -1248,6 +1248,74 @@
   // candidates by their rating at the slot.
   const buildRating = (p, l) => slotRating(p, p.position, l);
 
+  // Best XI: the strongest assignment of the squad to this lineup's slots. Each player's
+  // rating at the slot comes from his build (saved or AI) with this manager and playstyle
+  // (compute); nobody without proficiency there (§20); intermediate proficiency and a
+  // playing style that is inactive at the slot (§18) count against him; one card per
+  // player and never two Destroyer centre-backs (§18). GK: the best keeper.
+  function hungarian(cost) {
+    const n = cost.length, m = cost[0].length;
+    const u = new Array(n + 1).fill(0), v = new Array(m + 1).fill(0), p = new Array(m + 1).fill(0), way = new Array(m + 1).fill(0);
+    for (let i = 1; i <= n; i++) {
+      p[0] = i;
+      let j0 = 0;
+      const minv = new Array(m + 1).fill(Infinity), used = new Array(m + 1).fill(false);
+      do {
+        used[j0] = true;
+        const i0 = p[j0];
+        let delta = Infinity, j1 = 0;
+        for (let j = 1; j <= m; j++) {
+          if (used[j]) continue;
+          const cur = cost[i0 - 1][j - 1] - u[i0] - v[j];
+          if (cur < minv[j]) { minv[j] = cur; way[j] = j0; }
+          if (minv[j] < delta) { delta = minv[j]; j1 = j; }
+        }
+        for (let j = 0; j <= m; j++) { if (used[j]) { u[p[j]] += delta; v[j] -= delta; } else minv[j] -= delta; }
+        j0 = j1;
+      } while (p[j0] !== 0);
+      do { const j1 = way[j0]; p[j0] = p[j1]; j0 = j1; } while (j0);
+    }
+    const out = new Array(n).fill(-1);
+    for (let j = 1; j <= m; j++) if (p[j]) out[p[j] - 1] = j - 1;
+    return out;
+  }
+  const isDestroyer = (p) => [p.playingStyle, p.playingStyleDefensive].some((s) => norm(s) === "destroyer");
+  function bestXI(l) {
+    const slots = layoutOf(l);
+    const rows = slots.map(([pos], i) => ({ pos, i })).filter((s) => s.pos !== "GK");
+    const score = (p, pos) => {
+      const prof = proficiency(p, pos);
+      if (prof === "none") return null;
+      return slotRating(p, pos, l) - (prof === "mid" ? 1.5 : 0) - (styleFit(p, pos).some((f) => !f.ok) ? 3 : 0);
+    };
+    const banned = new Set();
+    let picked = null;
+    for (let iter = 0; iter < 30 && !picked; iter++) {
+      const cols = players.filter((p) => p.position !== "GK" && !banned.has(p.id));
+      if (cols.length < rows.length) return null;
+      const asg = hungarian(rows.map(({ pos }) => cols.map((p) => { const sc = score(p, pos); return sc == null ? 1e6 : 1000 - sc; })));
+      const xi = rows.map((r, k) => ({ ...r, p: cols[asg[k]], sc: score(cols[asg[k]], r.pos) }));
+      if (xi.some((x) => x.sc == null)) return null;
+      const byName = {};
+      xi.forEach((x) => (byName[norm(x.p.name)] ||= []).push(x));
+      const twice = Object.values(byName).find((g) => g.length > 1);
+      const cbs = xi.filter((x) => x.pos === "CB" && isDestroyer(x.p));
+      const clash = twice || (cbs.length > 1 ? cbs : null);
+      if (clash) { banned.add(clash.sort((a, b) => a.sc - b.sc)[0].p.id); continue; }
+      picked = xi;
+    }
+    if (!picked) return null;
+    const gk = players.filter((p) => p.position === "GK").sort((a, b) => slotRating(b, "GK", l) - slotRating(a, "GK", l))[0];
+    const xi = slots.map(() => null);
+    if (gk) xi[0] = gk.id;
+    picked.forEach((x) => { xi[x.i] = x.p.id; });
+    // Displaced starters go to the bench if there is room; nobody twice on the team sheet.
+    const names = new Set(xi.filter(Boolean).map((id) => norm(byId[id].name)));
+    const bench = [...l.bench, ...l.xi].filter((id, k, arr) => byId[id] && !xi.includes(id) && !names.has(norm(byId[id].name)) && arr.indexOf(id) === k).slice(0, BENCH_MAX);
+    const ratings = xi.filter(Boolean).map((id) => buildRating(byId[id], l));
+    return { xi, bench, avg: ratings.reduce((a, b) => a + b, 0) / ratings.length };
+  }
+
   function placePlayer(l, id) {
     const { area, i } = lu.sel;
     const target = area === "xi" ? l.xi : l.bench;
@@ -1276,7 +1344,7 @@
         w.push(`<b>${esc(p.name)}</b>: ${esc(f.name)} is not compatible with ${pos}${f.kind === "att" ? " — plays as Basic" : " — style inactive"} (§18).`));
     });
     const names = {};
-    [...l.xi, ...l.bench].filter(Boolean).forEach((id) => { const n = norm(byId[id]?.name); (names[n] ||= []).push(id); });
+    [...l.xi, ...l.bench].filter((id) => byId[id]).forEach((id) => { const n = norm(byId[id].name); (names[n] ||= []).push(id); });
     Object.values(names).filter((ids) => ids.length > 1).forEach((ids) =>
       w.push(`<b>${esc(byId[ids[0]].name)}</b> is selected ${ids.length}× (different cards of the same player).`));
     if (l.fluid) {
@@ -1458,7 +1526,35 @@
         ${cur && cur.key === r.m.key ? `<span class="badge badge--lime">Current</span>`
           : `<button type="button" class="btn btn--icon" data-mfit="${esc(r.m.key)}" data-mfit-tactic="${esc(r.here >= PROF_MIN ? l.tactic : r.best)}">Use</button>`}
       </div>`).join("")}</div>
-      <p class="mfit__note">Ratings include each manager's +1/+1 booster and playstyle multiplier (§17). Link-up needs both roles in the XI at their positions (§22) — its strength isn't measured.</p>`;
+      <p class="mfit__note">Ratings include each manager's +1/+1 booster and playstyle multiplier (§17). Link-up needs both roles in the XI at their positions (§22) — its strength isn't measured.</p>
+      ${scoutHtml(l, rows.map((r) => r.m))}`;
+  }
+  // Managers you don't own (every eFHUB manager card): the ones this XI would rate highest
+  // at the lineup's playstyle, Link-ups that would switch on first — what to look for in
+  // the next manager pick. Only playstyle proficiency 85+ is worth a look.
+  function scoutHtml(l, owned) {
+    const tIdx = KB.TACTICS.indexOf(l.tactic);
+    if (tIdx < 0) return "";
+    const sig = new Set(owned.map((m) => m.prof.slice(0, 5).join()));
+    const rows = ALL_MANAGERS.filter((m) => m.key.startsWith("ef:") && !sig.has(m.prof.slice(0, 5).join()) && (m.prof[tIdx] ?? 0) >= 85)
+      .map((m) => ({ m, here: m.prof[tIdx], avg: xiAverage(l, m.key, l.tactic), on: linkUpStatus(l, m).filter((x) => x.cp.length && x.km.length) }))
+      .filter((r) => r.avg != null)
+      .sort((a, b) => b.on.length - a.on.length || b.avg - a.avg || b.here - a.here)
+      .slice(0, 6);
+    if (!rows.length) return "";
+    return `<details class="mfit__scout"><summary>Not owned — managers worth a look for this XI at ${esc(l.tactic)}</summary>
+      <div class="mfit">${rows.map((r) => `
+        <div class="mfit__row">
+          <span class="mfit__ph">${mgrPhoto(r.m, "mgr-photo")}</span>
+          <div class="mfit__who">
+            <b>${esc(r.m.name)}</b>
+            <span>${r.m.boost.map((k) => `${statLabel(k)} +1`).join(" · ")}${r.m.released ? ` · eFHUB ${esc(r.m.released)}` : ""}</span>
+            ${r.on.length ? r.on.map((x) => `<span class="mfit__link">Link-up ${esc(x.link.name)}: ${x.cp.map((p) => esc(shortName(p))).join("/")} → ${x.km.map((p) => esc(shortName(p))).join("/")}</span>`).join("")
+              : (r.m.linkUps || []).map((x) => `<span class="mfit__nolink">${esc(x.name)}: ${esc(x.centerPiece.join(" "))} → ${esc(x.keyMan.join(" "))} — not with this XI</span>`).join("") || `<span class="mfit__nolink">No Link-up play on this card</span>`}
+          </div>
+          <div class="mfit__num" title="Average XI rating at ${esc(l.tactic)} (proficiency ${r.here})"><b>${r.avg.toFixed(1)}</b><span>${esc(l.tactic)} ${r.here}</span></div>
+        </div>`).join("")}</div>
+      <p class="mfit__note">From eFHUB's manager list (data/managers.js) — whether a card is on sale in the game right now isn't tracked.</p></details>`;
   }
   // Position Training (§20): every spot this lineup asks a player to fill — attacking
   // shape, Fluid defence shape, and the slot a planned substitute takes over — where his
@@ -1898,6 +1994,14 @@
   $("#luNew").addEventListener("click", () => {
     const l = newLineup(`Lineup ${store.lineups.length + 1}`);
     store.lineups.push(l); store.activeLineup = l.id; lu.sel = null; saveLineup(); renderLineup();
+  });
+  $("#luBest").addEventListener("click", () => {
+    const l = activeLineup();
+    const r = bestXI(l);
+    if (!r) { flash($("#luBest"), "No full XI"); return; }
+    if (l.xi.some(Boolean) && !confirm(`Replace the starting XI of "${l.name}" with the strongest XI for ${l.fluid ? `${l.formation} (attack)` : l.formation}, ${managerObj(l.manager)?.name || "no manager"} and ${l.tactic}? Displaced starters go to the bench.`)) return;
+    l.xi = r.xi; l.bench = r.bench; lu.sel = null; saveLineup(); renderLineup();
+    flash($("#luBest"), `avg ${r.avg.toFixed(1)}`);
   });
   $("#luDuplicate").addEventListener("click", () => {
     const l = { ...structuredClone(activeLineup()), id: uid() };
