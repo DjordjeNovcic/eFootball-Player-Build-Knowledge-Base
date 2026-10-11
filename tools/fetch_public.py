@@ -7,9 +7,10 @@ Featured). Only cards that aren't in cards.json yet are fetched, one page every
 --delay seconds (efhub.com's robots.txt asks for 5), and the file is written as it goes,
 so an interrupted run keeps what it got. Only Epic, Big Time and Show Time cards are kept (eFHUB's playerType 5 / 7 / 8); a page also
 lists the player's other versions with their type, so cards of other series are skipped without
-being fetched. Each card records the day it first appeared
-("added") for the Build Lab's "new this week" view; the cards of the very first crawl carry
-no date (`--baseline` clears them), so "new" means new on eFHUB since then. Builds are computed separately by
+being fetched. A card is "new" ("added" = the day it was
+first seen) only when its eFHUB id is higher than every id known before the run — ids grow
+with release, while the sitemap rotates its ~1000 entries and brings older cards in each
+week; those arrive undated. The cards of the very first crawl carry no date (`--baseline`). Builds are computed separately by
 `node tools/build_public.js`.
 
     python3 tools/fetch_public.py                 # new cards only
@@ -68,6 +69,7 @@ def main():
     ap.add_argument("--delay", type=float, default=5.0, help="seconds between page requests (robots.txt: 5)")
     ap.add_argument("--ids", nargs="*", default=[], help="extra eFHUB IDs to include besides the sitemap")
     ap.add_argument("--baseline", action="store_true", help="clear every card's 'added' date (after the first crawl) and exit")
+    ap.add_argument("--force", action="store_true", help="re-fetch the --ids cards even if cards.json has them")
     args = ap.parse_args()
     if args.baseline:
         db = load()
@@ -85,8 +87,11 @@ def main():
     types.update({k: int(v) for k, v in db.get("types", {}).items()})
     for pid in [k for k, c in have.items() if types.get(k) and types[k] not in KEEP]:
         db["players"].remove(have.pop(pid))
+    # The highest eFHUB id known before this run: anything above it is new on eFHUB.
+    max_known = max([int(db.get("maxId") or 0)] + [int(k) for k in have])
     ids = sitemap_ids() + [re.sub(r"\D", "", x) for x in args.ids]
-    todo = [pid for pid in ids if (args.all or pid not in have) and (pid not in types or types[pid] in KEEP)]
+    forced = set(re.sub(r"\D", "", x) for x in args.ids) if args.force else set()
+    todo = [pid for pid in ids if (args.all or pid not in have or pid in forced) and (pid not in types or types[pid] in KEEP)]
     if args.limit:
         todo = todo[: args.limit]
     print(f"sitemap: {len(ids)} cards · in cards.json: {len(have)} · known types: {len(types)} · to fetch: {len(todo)}")
@@ -112,8 +117,13 @@ def main():
                 if pid in have:
                     db["players"].remove(have.pop(pid))
                 continue
-            # First seen today, unless the card is already known (a baseline card has no date).
-            card["added"] = have[pid].get("added") if pid in have else today
+            # "added" = the day we first saw a card whose eFHUB id is higher than every id known
+            # before this run — ids grow with release, and the sitemap rotates older cards in,
+            # so a first sighting alone doesn't make a card new. Known cards keep their date.
+            if pid in have:
+                card["added"] = have[pid].get("added")
+            else:
+                card["added"] = today if int(pid) > max_known else None
             used = set(card["skills"]) | set(card["comSkills"])
             for k, v in names.items():
                 if k in used and isinstance(v, str):
@@ -131,6 +141,8 @@ def main():
             save(db)
         if n < len(todo):
             time.sleep(args.delay)
+    db["maxId"] = max([int(db.get("maxId") or 0)] + [int(p["id"]) for p in db["players"]])
+    save(db)
     print(f"\n{len(db['players'])} cards in {OUT.relative_to(ROOT)}, {len(failed)} failed: {failed}")
 
 
