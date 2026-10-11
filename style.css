@@ -1302,3 +1302,58 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .mgr-pick__ph:empty{ display: none; }
 .mgr-pick__ph .mgr-photo--inline{ margin-right: 0; }
 .mgr-photo--kpi{ width: 22px; height: 22px; vertical-align: middle; margin-right: 0.35rem; }
+
+/* ============================================================
+   eFHUB-style player head and stat sheet (11 Oct 2026)
+   ============================================================ */
+.train-head{ grid-template-columns: 118px minmax(0, 1fr) auto auto; gap: 1.25rem 1.5rem; }
+.train-head__media{ box-shadow: 0 14px 30px -14px rgba(0,0,0,0.9); }
+.train-head__phys{ display: grid; grid-template-columns: repeat(3, minmax(4.6rem, auto)); gap: 0.4rem; align-self: center; }
+.phys{ background: rgba(242,243,234,0.045); border: 1px solid var(--line-soft); border-radius: 3px; padding: 0.3rem 0.55rem; min-width: 0; }
+.phys span{ display: block; font-family: var(--font-cond); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--paper-dim); line-height: 1.2; }
+.phys b{ display: block; font-family: var(--font-cond); font-weight: 700; font-size: 0.98rem; line-height: 1.25; white-space: nowrap; }
+@media (max-width: 900px){
+  .train-head{ grid-template-columns: 96px minmax(0, 1fr) auto; }
+  .train-head__phys{ grid-column: 1 / -1; grid-template-columns: repeat(auto-fit, minmax(5.2rem, 1fr)); }
+}
+
+/* flat tier colours, as on eFHUB's stat sheet; blue keeps 90+ visible */
+:root{
+  --t-elite-flat: #39c6ff; --t-good-flat: #7ee23d; --t-ok-flat: #ffd21f; --t-low-flat: #ff9a3c; --t-poor-flat: #ff4d4d;
+}
+.tier-bg-elite{ background: var(--t-elite-flat); color: #04131f; }
+.tier-bg-good{ background: var(--t-good-flat); color: #0a1a04; }
+.tier-bg-ok{ background: var(--t-ok-flat); color: #1f1600; }
+.tier-bg-low{ background: var(--t-low-flat); color: #1f0d00; }
+.tier-bg-poor{ background: var(--t-poor-flat); color: #fff; }
+.srow__label.tier-elite{ color: var(--t-elite-flat); }
+.srow__label.tier-good{ color: var(--t-good-flat); }
+.srow__label.tier-ok{ color: var(--t-ok-flat); }
+.srow__label.tier-low{ color: var(--t-low-flat); }
+.srow__label.tier-poor{ color: var(--t-poor-flat); }
+
+/* stat groups side by side when there is room; each row = label · +boost · value, bar beneath */
+.train-layout{ grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr); }
+#trainStats{ display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.4rem 1.4rem; }
+.sgroup{ margin-bottom: 0.6rem; min-width: 0; }
+.srow{
+  grid-template-columns: minmax(0, 1fr) auto 2.5rem auto; grid-template-areas: "label pills val need" "bar bar bar bar";
+  row-gap: 0.2rem; column-gap: 0.45rem; padding: 0.3rem 0.45rem 0.35rem; border-radius: 3px; background: rgba(242,243,234,0.035);
+  margin-bottom: 0.2rem;
+}
+.srow:nth-child(even){ background: rgba(242,243,234,0.035); }
+.srow:hover{ background: rgba(242,243,234,0.07); }
+.srow__label{ grid-area: label; font-family: var(--font-cond); font-weight: 600; font-size: 0.9rem; letter-spacing: 0.01em; }
+.srow__pills{ grid-area: pills; }
+.srow__val{ grid-area: val; font-family: var(--font-cond); font-weight: 700; font-size: 1.02rem; line-height: 1; padding: 0.32rem 0 0.28rem; border-radius: 3px; min-width: 2.5rem; }
+.srow__need{ grid-area: need; }
+.srow__bar{ grid-area: bar; height: 4px; border-radius: 2px; background: rgba(242,243,234,0.08); }
+.seg--base{ background: rgba(242,243,234,0.28); border-radius: 2px 0 0 2px; }
+.seg--boost{ border-radius: 0 2px 2px 0; }
+.tick{ top: -3px; bottom: -3px; }
+.pill{ font-size: 0.7rem; padding: 0 0.3rem; }
+.pill--boost{ background: rgba(255,194,74,0.18); color: var(--amber); border-color: rgba(255,194,74,0.5); }
+.need{ font-size: 0.68rem; }
+.hit{ margin-left: 0.3rem; }
+/* the same badge look everywhere a stat value is shown */
+.rec-t b{ border-radius: 3px; font-family: var(--font-cond); font-weight: 700; }

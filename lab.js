@@ -523,8 +523,11 @@
         <p class="train-head__eyebrow">${p.position}${p.additionalPositions.length ? " · also " + p.additionalPositions.map((a) => a.position).join(", ") : ""} · ${esc(p.team || "")}</p>
         <h2 class="train-head__name">${esc(p.name)}</h2>
         <p class="train-head__style">${esc(styleText(p))}</p>
-        <p class="train-head__meta">${p.height} cm · ${p.weight} kg · ${esc(p.foot || "")} foot · age ${p.age}</p>
         ${note ? `<p class="train-head__note">${esc(note.role)}</p>` : ""}
+      </div>
+      <div class="train-head__phys">
+        ${[["Height", `${p.height} cm`], ["Weight", `${p.weight} kg`], ["Age", p.age], ["Foot", p.foot || "—"], ["Weak foot", `${p.weakFootUsage ?? "—"} / ${p.weakFootAccuracy ?? "—"}`], ["Card", p.cardType || (p.levelCap ? `Lv cap ${p.levelCap}` : "—")]]
+          .map(([k, v]) => `<div class="phys"><span>${k}</span><b>${esc(String(v ?? "—"))}</b></div>`).join("")}
       </div>
       <div class="train-head__ovr">
         <span class="train-head__ovr-num">${res.ratings[view.position]}${chg(posDiff(view.position))}</span>
@@ -660,7 +663,7 @@
             : miss ? `<span class="need" title="${esc(miss.note)}">${miss.at} −${miss.at - fin}</span>` : "";
           return `
             <div class="srow ${diffOf(k) ? "is-changed" : ""}">
-              <span class="srow__label">${statLabel(k)}${hit.length ? `<i class="hit" title="${hit.map((t) => `${t.at} ✓ ${esc(t.note)}`).join(" · ")}">✓${hit[hit.length - 1].at}</i>` : ""}</span>
+              <span class="srow__label tier-${statTier(fin)}">${statLabel(k)}${hit.length ? `<i class="hit" title="${hit.map((t) => `${t.at} ✓ ${esc(t.note)}`).join(" · ")}">✓${hit[hit.length - 1].at}</i>` : ""}</span>
               <span class="srow__bar">
                 <i class="seg seg--base" style="width:${pct(base)}%"></i>
                 <i class="seg seg--train" style="left:${pct(base)}%;width:${pct(trained) - pct(base)}%"></i>
