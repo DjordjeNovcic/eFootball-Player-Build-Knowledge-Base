@@ -2913,7 +2913,7 @@
 
   const PUB_NEW_DAYS = 14;
   const PUB_PAGE = 60;
-  const pubState = { q: "", group: "ALL", style: "", sort: "rating", newOnly: false, open: new Set(), status: "idle", error: null,
+  const pubState = { q: "", group: "ALL", style: "", sort: "rating", newOnly: false, compare: [], open: new Set(), status: "idle", error: null,
     cards: [], byId: {}, builds: {}, built: null, fetched: null, shown: PUB_PAGE, live: {} };
   const pubIsNew = (p) => !!p.added && (Date.now() - Date.parse(p.added)) / 864e5 <= PUB_NEW_DAYS;
 
@@ -3017,6 +3017,8 @@
       ? POS_ORDER.map((pos) => ({ pos, cards: list.filter((p) => p.position === pos).slice(0, 6) })).filter((g) => g.cards.length) : null;
     const fresh = pubState.cards.filter(pubIsNew).length;
     meta.textContent = `${list.length} of ${pubState.cards.length} cards · eFHUB ${pubState.fetched || "—"} · builds ${pubState.built || "—"}, rated without a manager${fresh ? ` · ${fresh} new in the last ${PUB_NEW_DAYS} days` : ""}`;
+    renderPubNewBox();
+    renderPubCompare();
     $("#pubNew").classList.toggle("is-selected", pubState.newOnly);
     $("#pubSort").value = pubState.sort;
     const shown = groups ? groups.flatMap((g) => g.cards) : list.slice(0, pubState.shown);
@@ -3047,6 +3049,7 @@
             </div>
             <div class="rec-card__ovr"><b>${r.rating}</b><span>${p.position} · card ${p.overall ?? "—"}</span></div>
             <p class="rec-card__line"><code>${cats.map((c) => r.levels[c.key] || 0).join("-")}</code> · ${esc(r.booster)} · ${r.skills.length} skills</p>
+            <button type="button" class="chip chip--small pub-cmp-btn ${pubState.compare.includes(p.id) ? "is-selected" : ""}" data-pub-cmp="${p.id}" title="Compare side by side (up to three cards)">${pubState.compare.includes(p.id) ? "✓ Compare" : "+ Compare"}</button>
           </summary>
           <div class="rec-card__body">
           <section class="rec-sec">
@@ -3108,6 +3111,83 @@
     openInTrainer(id, store.builds[id] || recBuild(id));
   }
 
+  // New this week: the cards that appeared on eFHUB in the last PUB_NEW_DAYS days, best first.
+  function renderPubNewBox() {
+    const box = $("#pubNewBox");
+    if (!box) return;
+    const fresh = pubState.cards.filter(pubIsNew).sort((a, b) => (pubState.builds[b.id]?.rating ?? 0) - (pubState.builds[a.id]?.rating ?? 0));
+    if (!fresh.length) { box.innerHTML = `<p class="pub-newbox__none">No new cards on eFHUB since the last refresh (${esc(pubState.fetched || "—")}). The weekly refresh lists them here, best first.</p>`; return; }
+    const best = {};
+    fresh.forEach((p) => { if (!best[p.position]) best[p.position] = p; });
+    box.innerHTML = `<div class="pub-newbox__head"><b>New this week</b><span>${fresh.length} card${fresh.length === 1 ? "" : "s"} in the last ${PUB_NEW_DAYS} days · best per position: ${POS_ORDER.filter((pos) => best[pos]).map((pos) => `${pos} ${esc(shortName(best[pos]))} ${pubState.builds[best[pos].id]?.rating ?? ""}`).join(" · ")}</span>
+        <button type="button" class="chip chip--small ${pubState.newOnly ? "is-selected" : ""}" data-pub-newonly>${pubState.newOnly ? "Showing only new" : "Show only new"}</button></div>
+      <div class="pub-newbox__list">${fresh.slice(0, 8).map((p) => { const r = pubState.builds[p.id]; return `<button type="button" class="pub-newbox__card" data-pub-jump="${p.id}">${cardImg(p, "pub-newbox__img")}<b>${r?.rating ?? p.overall}</b><span>${esc(shortName(p))}</span><em>${p.position} · ${esc(p.cardType || "")}</em></button>`; }).join("")}</div>`;
+  }
+  // Compare up to three public cards side by side (their AI builds, no manager).
+  function renderPubCompare() {
+    const bar = $("#pubCompare");
+    if (!bar) return;
+    const ids = pubState.compare.filter((id) => pubState.byId[id]);
+    pubState.compare = ids;
+    bar.hidden = !ids.length;
+    if (!ids.length) return;
+    bar.innerHTML = `<span class="field__label">Compare</span>
+      ${ids.map((id) => `<span class="badge badge--lime">${esc(shortName(pubState.byId[id]))} <button type="button" class="pub-cmp__x" data-pub-cmp="${id}" aria-label="Remove">✕</button></span>`).join("")}
+      <button type="button" class="btn btn--icon btn--solid" data-pub-open-cmp ${ids.length < 2 ? "disabled" : ""}>${ids.length < 2 ? "Pick one more" : "Compare side by side"}</button>
+      <button type="button" class="btn btn--icon" data-pub-clear-cmp>Clear</button>`;
+  }
+  function openCompare() {
+    const ids = pubState.compare.filter((id) => pubState.byId[id]);
+    if (ids.length < 2) return;
+    const cards = ids.map((id) => pubState.byId[id]);
+    const builds = cards.map((p) => pubBuild(p));
+    const gk = cards.every((p) => p.position === "GK");
+    const groups = KB.STAT_GROUPS.filter((g) => gk ? g.title === "Goalkeeping" || g.title === "Athleticism" : g.title !== "Goalkeeping");
+    const best = (vals, higher = true) => { const m = higher ? Math.max(...vals) : Math.min(...vals); return vals.map((v) => v === m && vals.filter((x) => x === m).length < vals.length); };
+    const row = (label, vals, hi) => `<tr><th>${label}</th>${vals.map((v, i) => `<td class="${hi && hi[i] ? "is-best" : ""}">${v}</td>`).join("")}</tr>`;
+    const ratings = builds.map((b) => b.rating);
+    const cats = categoriesFor(cards[0]);
+    $("#bdBody").innerHTML = `
+      <h2 id="bdTitle">Compare</h2>
+      <p class="rec-muted">Recommended by AI builds, rated without a manager. Green = the best of the ${cards.length} in that row.</p>
+      <div class="table-wrap"><table class="kb-table cmp-table">
+        <thead><tr><th></th>${cards.map((p) => `<th>${cardImg(p, "cmp-table__img")}<b>${esc(p.name)}</b><small>${esc(p.team || "")} · ${esc(p.cardType || "")}</small></th>`).join("")}</tr></thead>
+        <tbody>
+          ${row("AI rating", ratings.map((r, i) => `<b>${r}</b> <small>${cards[i].position}</small>`), best(ratings))}
+          ${row("Role", builds.map((b) => esc(b.role)))}
+          ${row("Styles", cards.map((p) => esc(styleText(p))))}
+          ${row("Build", builds.map((b) => `<code>${cats.map((c) => b.levels[c.key] || 0).join("-")}</code>`))}
+          ${row("Booster", builds.map((b) => esc(b.booster)))}
+          ${row("Height · weight", cards.map((p) => `${p.height} cm · ${p.weight} kg`))}
+          ${row("Foot · weak foot", cards.map((p) => `${esc(p.foot || "")} · ${p.weakFootUsage ?? "—"}/${p.weakFootAccuracy ?? "—"}`))}
+          ${row("Level cap · points", cards.map((p) => `${p.levelCap} · ${budgetFor(p.levelCap)}`))}
+          ${groups.map((g) => `<tr class="cmp-table__group"><th colspan="${cards.length + 1}">${g.title}</th></tr>` + g.stats.map((k) => { const vals = builds.map((b) => b.final[k]); return row(statLabel(k), vals.map((v) => `<span class="tier-bg-${statTier(v)} cmp-table__val">${v}</span>`), best(vals)); }).join("")).join("")}
+          ${row("Additional skills", builds.map((b) => b.skills.map(esc).join(", ")))}
+          ${row("Native skills", cards.map((p) => p.skills.map((k) => esc(skillLabel(k))).join(", ")))}
+        </tbody>
+      </table></div>`;
+    const dlg = $("#buildDialog");
+    if (dlg?.showModal) dlg.showModal(); else dlg?.setAttribute("open", "");
+  }
+  document.addEventListener("click", (e) => {
+    const cmp = e.target.closest("[data-pub-cmp]");
+    if (cmp) {
+      const id = cmp.dataset.pubCmp;
+      const i = pubState.compare.indexOf(id);
+      if (i >= 0) pubState.compare.splice(i, 1); else if (pubState.compare.length < 3) pubState.compare.push(id); else { flash(cmp, "3 is the max"); return; }
+      document.querySelectorAll(`[data-pub-cmp="${id}"].pub-cmp-btn`).forEach((b) => { const on = pubState.compare.includes(id); b.classList.toggle("is-selected", on); b.textContent = on ? "✓ Compare" : "+ Compare"; });
+      renderPubCompare();
+    }
+    if (e.target.closest("[data-pub-open-cmp]")) openCompare();
+    if (e.target.closest("[data-pub-clear-cmp]")) { pubState.compare = []; renderPublic(); }
+    if (e.target.closest("[data-pub-newonly]")) { pubState.newOnly = !pubState.newOnly; pubState.shown = PUB_PAGE; renderPublic(); }
+    const jump = e.target.closest("[data-pub-jump]");
+    if (jump) {
+      const id = jump.dataset.pubJump;
+      pubState.q = ""; $("#pubSearch").value = ""; pubState.open.add(id); renderPublic();
+      document.querySelector(`#pubGrid [data-pub="${id}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
   bindFilter("pub", pubState, () => { pubState.shown = PUB_PAGE; renderPublic(); });
   $("#pubNew").addEventListener("click", () => { pubState.newOnly = !pubState.newOnly; pubState.shown = PUB_PAGE; renderPublic(); });
   $("#pubSort").addEventListener("change", (e) => { pubState.sort = e.target.value; pubState.shown = PUB_PAGE; renderPublic(); });

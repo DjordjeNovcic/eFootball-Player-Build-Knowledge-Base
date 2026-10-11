@@ -32,7 +32,10 @@ Two parts:
     series are skipped) with its Recommended by AI build, rated without a manager
     (`data/public/cards.json` + `builds.json`, refreshed weekly by a GitHub Action). Search,
     position / "New this week" filters, sort by AI or card rating or **Best per position**
-    (the top six at every position); a card opens into the §15
+    (the top six at every position); **+ Compare** on up to three cards opens them side by
+    side (AI rating, role, build, booster, every stat with the best highlighted, skills); a
+    **New this week** box at the top lists the cards that appeared on eFHUB in the last 14
+    days, best first and best per position; a card opens into the §15
     sections plus **With your manager** (the card re-run live with your manager and
     playstyle); **Add to my squad** copies it into your squad and opens the Trainer. Kept
     apart from every profile's squad — nothing here touches your cards until you add one.
