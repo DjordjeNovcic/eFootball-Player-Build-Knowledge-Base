@@ -315,6 +315,21 @@ goes high); Capello 4-2-1-3 with Pirlo — test only.
 
 ---
 
+## Sub-tactic for the Game Plan — 11 Oct 2026
+
+In-game **Sub Tactic** (Game Plan → Sub Tactic ON): it only re-arranges the eleven on the
+pitch, so the second plan is a shape, not new players. With Deschamps the only strong
+alternative playstyle is **Possession (89)** — Quick Counter 68, Out Wide 59, Long Ball 63.
+
+**Possession · 4-3-1-2**, same eleven: Makélélé DMF; Hazard left CMF (Hole Player is active
+at CMF — late runs from midfield); Seedorf right CMF; Messi AMF (Creative Playmaker — the
+Breakthrough Pass A Link-up to Eto'o stays on); Gullit pulled back from CF into the SS zone
+(Hole Player active again); Eto'o alone on the last defender's shoulder, Counter Target.
+Switch when they sit deep and compact, long balls get cleared and there are few real
+chances by ~55′. If still nothing by ~65′: Pirlo for Makélélé, Puskás for Gullit. Model
+average 105.3 (Hazard 99 at CMF, Gullit 107 at SS). Build Lab: the Game Plan lineup's
+match card.
+
 ## Diamond — 11 Oct 2026 (test, alongside the Game Plan)
 
 The user's own shape, rebuilt after a look at it: attack **4-1-2-1-2**, defence **4-3-1-2**
