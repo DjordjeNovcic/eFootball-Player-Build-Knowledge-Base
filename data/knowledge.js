@@ -365,6 +365,18 @@ window.KB = (() => {
         // 11 Oct: Adriano (Goal Poacher / Attack Outlet, CF 107, Kicking Power +6 fixed) for
         // C. Ronaldo as the Goal Poacher cover — stronger in the duel, a left foot, Low Screamer.
         { id: "2026-10-11-bench-adriano", replace: { "89135066911146": "88045755960841" } },
+        // 11 Oct (user decision): Gullit for Ibrahimović at CF — a 3–5 match test; Ibrahimović
+        // is the first CF off the bench. Two steps: the swap first, then the bench with him on it.
+        { id: "2026-10-11-gullit-cf", replace: { "89136140651034": "88039045074410" } },
+        { id: "2026-10-11-gullit-cf-bench", bench: ["88044145348029", "88045755964131", "88033139494357", "88039581945312", // Vieira, Stam, Zanetti, Pirlo
+          "88040387121974", "89138556700485", "89136140651034", "106773692395554", // Sneijder, Bellingham, Ibrahimović, Dembélé
+          "88040387120260", "88045755861672", "88044145217198", "88045755960841"], // Puskás, Bale, Kaká, Adriano
+          subs: [
+          { minute: 60, out: "89137214427270", in: "89138556700485", note: "Hole Player stays active, LMF high in defence — or Sneijder for a tired Messi (keeps the Link-up)" },
+          { minute: 65, out: "88039045074410", in: "89136140651034", note: "Fresh target: Fox in the Box + Willpower, he positions himself for cutbacks — or Puskás (Plan B: Possession + Deep-Lying Forward next to Eto'o)" },
+          { minute: 72, out: "88040387118554", in: "106773692395554", note: "Fresh pace in behind — Goal Poacher CF, the Link-up stays on (Adriano when you need a duel)" },
+          { minute: 75, out: "88041460859805", in: "88044145348029", note: "If leading: Anchor Man + Defensive instruction" },
+        ] },
         // 11 Oct: Messi has no RMF — defend with him at AMF and Seedorf at RMF.
         { id: "2026-10-11-def-shape", defFormation: "4-3-1-2", defLayout: [["GK", 50, 6], ["LB", 12, 27], ["CB", 37, 20], ["CB", 63, 20], ["RB", 88, 27],
           ["DMF", 50, 40], ["RMF", 88, 55], ["LMF", 12, 55], ["AMF", 50, 62], ["CF", 37, 84], ["CF", 63, 84]] },
@@ -375,21 +387,22 @@ window.KB = (() => {
         "88041460993474", "88039850289220", "89138288270047", "88039581948640", // Maldini, Varane, Desailly, Thuram
         "88045755964130", "88041460859805", // DMF Makélélé, Seedorf
         "89137214427270", "89136409091415", // AMF Hazard (left), Messi — Creative Playmaker card (right)
-        "89136140651034", "88040387118554"], // CF Ibrahimović (Willpower card), Eto'o
+        "88039045074410", "88040387118554"], // CF Gullit (left — test, 11 Oct), Eto'o (right)
       bench: ["88044145348029", "88045755964131", "88033139494357", "88039581945312", // Vieira, Stam, Zanetti, Pirlo
-        "88040387121974", "89138556700485", "88039045074410", "106773692395554", // Sneijder, Bellingham, Gullit, Dembélé
+        "88040387121974", "89138556700485", "89136140651034", "106773692395554", // Sneijder, Bellingham, Ibrahimović (Willpower card), Dembélé
         "88040387120260", "88045755861672", "88044145217198", "88045755960841"], // Puskás, Bale, Kaká, Adriano
       subs: [
         { minute: 60, out: "89137214427270", in: "89138556700485", note: "Hole Player stays active, LMF high in defence — or Sneijder for a tired Messi (keeps the Link-up)" },
-        { minute: 65, out: "89136140651034", in: "88040387120260", note: "Plan B: Possession sub-tactic + Deep-Lying Forward next to Eto'o (Gullit instead when you need headers)" },
-        { minute: 72, out: "88040387118554", in: "106773692395554", note: "Fresh pace in behind — Goal Poacher CF, the Link-up stays on" },
+        { minute: 65, out: "88039045074410", in: "89136140651034", note: "Fresh target: Fox in the Box + Willpower, he positions himself for cutbacks — or Puskás (Plan B: Possession + Deep-Lying Forward next to Eto'o)" },
+        { minute: 72, out: "88040387118554", in: "106773692395554", note: "Fresh pace in behind — Goal Poacher CF, the Link-up stays on (Adriano when you need a duel)" },
         { minute: 75, out: "88041460859805", in: "88044145348029", note: "If leading: Anchor Man + Defensive instruction" },
       ],
       notes: "Instructions: Counter Target — Eto'o; Defensive — Makélélé; Tight Marking — Desailly on their most dangerous striker.\n"
         + "Link-up: Breakthrough Pass A — Messi (Creative Playmaker AMF) → Eto'o (Goal Poacher CF).\n"
         + "Sub-tactic: Possession (Deschamps 89) vs Long Ball Counter / deep blocks — Pirlo for Makélélé.\n"
         + "Stam only for Desailly (Destroyer for Destroyer), never next to him.\n"
-        + "Plan B (it isn't working): Possession sub-tactic, Puskás for Ibrahimović, Pirlo for Makélélé.\n"
+        + "Gullit at CF is a 3–5 match test (user, 11 Oct) — Ibrahimović is the first CF off the bench; back in the XI if Gullit doesn't score more.\n"
+        + "Plan B (it isn't working): Possession sub-tactic, Puskás for Gullit, Pirlo for Makélélé.\n"
         + "Full game plan: Game Plan tab." },
   ];
 
@@ -401,7 +414,7 @@ window.KB = (() => {
     planId: "plan-2026-10-10",
     date: "10 Oct 2026",
     title: "Deschamps · Long Ball Counter · 4-2-2-2 → defends 4-4-2",
-    summary: "Sit in a compact 4-4-2, win the ball, and go forward in three passes or fewer: long to Ibrahimović, in behind for Eto'o, or into Hazard and Messi between the lines. Possession is the plan B when the opponent sits deep.",
+    summary: "Sit in a compact 4-4-2, win the ball, and go forward in three passes or fewer: long to Gullit, in behind for Eto'o, or into Hazard and Messi between the lines. Possession is the plan B when the opponent sits deep. Gullit at CF is a 3–5 match test; Ibrahimović is the first CF off the bench.",
     changes: [
       { text: "Messi (Creative Playmaker card) in for Sneijder at right AMF — Speed 100 vs 89, Momentum Dribbling and Blitz Curler, left foot cutting in from the right, and still the Link-up's Center Piece (Creative Playmaker, AMF). He has no RMF, so he defends at AMF and Seedorf takes the right side.", basis: "reasoning" },
       { text: "Makélélé in for Vieira at DMF — the best DMF in the squad (Speed 96, Defensive Awareness 96, Tackling 98, Stamina 99; DMF rating 106 vs 104) and he gets the Defensive instruction. Vieira is the first sub to protect a lead.", basis: "reasoning" },
@@ -409,6 +422,7 @@ window.KB = (() => {
       { text: "Bench (11 Oct): Puskás in as the Deep-Lying Forward for Plan B, Bellingham is the first attacking sub (AMF 105, LMF high), Bale is the late Attack Outlet. One full-back on the bench — Zanetti covers both sides — so Cafu and Calafiori make room for Kaká (Super-sub) and C. Ronaldo (Goal Poacher CF with Bullet Header: keeps the Link-up and wins headers when chasing).", basis: "reasoning" },
       { text: "Builds (11 Oct): more Passing for the two DMFs, who play the first pass of every counter — Seedorf Low Pass 82 → 87 (0-5-8-8-11-2-9, Agility +1), Makélélé 85 → 88 (0-4-2-8-12-4-10) with his defending unchanged. Physical Contact stays as it is: it is relative (the higher stat wins the duel), so +4 for a forward still loses to 90+ centre-backs.", basis: "reasoning" },
       { text: "Bench (11 Oct, later): Adriano (Goal Poacher / Attack Outlet card, fixed Kicking Power +6) for C. Ronaldo as the Goal Poacher cover — CF 107 vs 106, Physical Contact 94 vs 87, Kicking Power 101, Phenomenal Finishing + Low Screamer + Snap Strike, and a left foot in a right-footed attack. The Link-up still stays on when he comes on for Eto'o; what goes is C. Ronaldo's Bullet Header (Heading 93 vs 87).", basis: "reasoning" },
+      { text: "Gullit for Ibrahimović at CF (11 Oct, user decision — a 3–5 match test). Left CF, Eto'o stays right; nothing else moves. 190 cm, jump height 265 cm (Ibrahimović 252), Bullet Header, Acceleration 95, Physical Contact 93, CF 109 — eFHUB's CF number one. The catch: his Hole Player style is inactive at CF, so he makes few runs of his own — he is the fixed target you play into, Eto'o does the running. Ibrahimović (Fox in the Box + Willpower, CF 108) comes on at ~65′ or returns to the XI if Gullit doesn't score more.", basis: "reasoning" },
       { text: "Messi's build (11 Oct): a Creative Playmaker doesn't buy the 100+ Speed step — 96 is already top speed and he lives on the ball. 5-8-6-6-13-4-0 Passing +1 → 8-9-6-7-9-5-0 Offence Creator +1: Speed 100 → 96 and Kicking Power 95 → 91 pay for Attacking Awareness 90, Finishing 91, Curl 92, Low Pass 94, Ball Control 97, Balance 96 (AMF 106 → 107). Kicking Power 91 still clears the Blitz Curler target.", basis: "reasoning" },
     ],
     instructions: [
@@ -418,26 +432,27 @@ window.KB = (() => {
     ],
     sections: [
       { id: "build", title: "Build-up — first 30 metres", items: [
-        { head: "Goal kicks", text: "Short to Makélélé only if he's free. Under a press, Buffon's GK High Punt to Ibrahimović — longer, faster punts are useful with a tall striker to flick on.", basis: "measured" },
+        { head: "Goal kicks", text: "Short to Makélélé only if he's free. Under a press, Buffon's GK High Punt to Gullit — longer, faster punts are useful with a tall striker to flick on.", basis: "measured" },
         { head: "Three passes, then forward", text: "No more than three passes in your own half. When the press comes, the ball goes long — that's the playstyle, not a panic clearance.", basis: "guides" },
         { head: "CBs don't carry", text: "Varane and Desailly pass or go long — never dribble out. Their Through Passing (AI pick) adds ~20% to both passing stats on low and lofted through balls.", basis: "measured" },
         { head: "First pass after a regain", text: "Makélélé and Seedorf have Phenomenal Pass — the pass out of a tackle works even from an awkward body position. Play it forward at once.", basis: "measured" },
       ] },
       { id: "attack", title: "Attack — five plays", items: [
-        { head: "1 · Long ball to Ibra", text: "Lofted ball to Ibrahimović (195 cm, Physical Contact 99, Jump 93, Aerial Superiority). He holds or flicks on (eFHUB thinks v6 weakened heading, so take it on the chest or flick it, don't head for goal from distance); Eto'o runs past him; Hazard and Messi attack the second ball.", basis: "reasoning" },
+        { head: "1 · Long ball to Gullit", text: "Lofted ball to Gullit (190 cm, jump height 265 cm, Physical Contact 93, Bullet Header, Aerial Superiority as an AI skill). He flicks on or holds; Eto'o runs past him; Hazard and Messi attack the second ball. Near goal he can head for it — Bullet Header cuts the headed-shot error under physical pressure (eFHUB thinks v6 weakened heading, so from distance still flick or take it on the chest). No playing style at CF: he won't start runs himself, so call him into the channel or play a one-two.", basis: "reasoning" },
         { head: "2 · Link-up through ball", text: "The Link-up fires when Messi (Center Piece) receives in the attacking half: Eto'o (Key Man) hunts the space behind, and through balls into him get more accurate — play it chipped (lofted through ball), see the next line — KONAMI only says the pair \"combine in special ways\" with a boost \"at specific moments\"; no measured size.", basis: "guides" },
         { head: "Balls from deep work better in v6", text: "v6.0.0: defenders tracking a runner no longer drop too far, runners shake their marker before going in behind and avoid offside better, and wide players run diagonally in behind — KONAMI says through balls and crosses from deep are easier to land with the right timing.", basis: "official" },
         { head: "Chipped through ball over the ground one", text: "eFHUB's v6 engine survey (Aug 2026): 89% of the pro group say lofted through balls got better, about half say ground through balls got worse, and ground passes are intercepted more easily. Default to the lofted through ball behind the line for Eto'o; keep ground through balls for a clear lane. Through Passing (+20% on low and lofted through balls) and Weighted Pass (backspin, easier to take) both help it.", basis: "guides" },
-        { head: "3 · Hazard carry", text: "Hazard picks it up in the left half-space and carries inside — Momentum Dribbling (attacking third) and Magnetic Feet (holds the ball with up to four opponents within 5 m). Then: curler to the far corner, slip Ibra, or switch to Messi.", basis: "official" },
+        { head: "3 · Hazard carry", text: "Hazard picks it up in the left half-space and carries inside — Momentum Dribbling (attacking third) and Magnetic Feet (holds the ball with up to four opponents within 5 m). Then: curler to the far corner, slip Eto'o, or switch to Messi.", basis: "official" },
         { head: "4 · Messi cut-in", text: "Messi on the right, onto his left foot: a controlled curl shot at 50%+ power fires Blitz Curler — the high dipping curve to the top corner. Kicking Power matters most for it, then Curl.", basis: "measured" },
-        { head: "5 · Cutback to the Fox", text: "When a wide player reaches the byline, cut it back low to Ibrahimović around the penalty spot — Fox in the Box lives on cutbacks, rebounds and low crosses.", basis: "official" },
+        { head: "5 · Cutback", text: "When a wide player reaches the byline, cut it back low to the penalty spot. With Gullit up front aim it at Eto'o's run or at Gullit only when he's already there — without a style at CF he doesn't position himself for it. Once Ibrahimović is on, the cutback is his: Fox in the Box lives on cutbacks, rebounds and low crosses.", basis: "official" },
       ] },
       { id: "finish", title: "Finishing — who shoots what", items: [
-        { head: "Ibrahimović — shoot early", text: "Willpower builds up Finishing and Kicking Power with every shot he takes, up to +8 each (headers don't count). Phenomenal Finishing covers awkward body shapes.", basis: "measured" },
+        { head: "Gullit — low and from range", text: "Low Screamer: a stunning shot under 50% power gets extra speed and never becomes a Dipping Shot. Long-range Curler adds about +10% Finishing and Kicking Power on any curl shot. Headers: Bullet Header.", basis: "measured" },
+        { head: "Ibrahimović (off the bench) — shoot early", text: "Willpower builds up Finishing and Kicking Power with every shot he takes, up to +8 each (headers don't count). Phenomenal Finishing covers awkward body shapes.", basis: "measured" },
         { head: "Eto'o — low and fast", text: "Low Screamer: a stunning shot under 50% power gets extra speed, and it never turns into a Dipping Shot — so don't try to dip with him.", basis: "measured" },
         { head: "Hazard & Messi — curl", text: "Long-range Curler works on any curl shot, not just long ones — about +10% Finishing and Kicking Power, and it can make up for the weak foot.", basis: "measured" },
-        { head: "One-on-one — finish early", text: "Keepers react to dribbling better since v6.0.0 (KONAMI), and the eFHUB pro survey calls them far too strong in one-on-ones. Don't take the keeper on — shoot early low across him, or chip (Chip Shot Control on Messi and Ibrahimović). Long-range shots and Stunning shots still pay off (same survey).", basis: "guides" },
-        { head: "Set pieces", text: "Penalties: Hazard (Finishing 94). Free kicks: Hazard from the left, Messi from the right. Corners and wide free kicks: Hazard. Targets: Ibrahimović, Desailly, Varane (all Aerial Superiority).", basis: "reasoning" },
+        { head: "One-on-one — finish early", text: "Keepers react to dribbling better since v6.0.0 (KONAMI), and the eFHUB pro survey calls them far too strong in one-on-ones. Don't take the keeper on — shoot early low across him, or chip (Chip Shot Control on Messi and Gullit). Long-range shots and Stunning shots still pay off (same survey).", basis: "guides" },
+        { head: "Set pieces", text: "Penalties: Hazard (Finishing 94). Free kicks: Hazard from the left, Messi from the right. Corners and wide free kicks: Hazard. Targets: Gullit (Bullet Header), Desailly, Varane — Ibrahimović once he's on.", basis: "reasoning" },
       ] },
       { id: "defend", title: "Without the ball", items: [
         { head: "Shape first", text: "Fluid Formation defence: Makélélé alone at DMF in front of the CBs, Hazard drops to LMF, Seedorf goes wide to RMF (Box-to-Box stays active there), Messi stays central at AMF — this card has no RMF, and from there he starts the counter to Eto'o at once. Long Ball Counter defends deep and compact — don't press with two players.", basis: "reasoning" },
@@ -453,20 +468,20 @@ window.KB = (() => {
         { head: "Leading at half-time", text: "Stay on Long Ball Counter. Thuram's Fortress improves his defending in the second half while you're ahead.", basis: "official" },
         { head: "Stamina · subs from ~55′", text: "v6.0.0 took away Long Ball Counter's cheap counter-attack stamina — its runs now cost what other playstyles pay. Bring the first attacking sub around 55–60′, not later. eFHUB's v6 engine survey adds that Fluid Formation drains stamina — another reason our two shapes differ only by Seedorf moving wide.", basis: "official" },
         { head: "~60′ · fresh legs", text: "Bellingham for Hazard — Hole Player stays active at AMF, he's high at LMF in the defence shape, and his Attacking Surge (≈ +8% Acceleration and Attacking Awareness on AI runs in the attacking half, skill database) suits the runs in behind. A tired Messi → Sneijder, so the Link-up stays on.", basis: "guides" },
-        { head: "Chasing · from ~65′", text: "Gullit for Ibrahimović (fresh aerial target, Bullet Header), Dembélé for Eto'o (Goal Poacher, Speed 100 / Acceleration 98 against tired legs — Link-up stays on). Against a deep block switch to Possession with Pirlo for Makélélé.", basis: "reasoning" },
+        { head: "Chasing · from ~65′", text: "Ibrahimović for Gullit (fresh target, Fox in the Box + Willpower — he finds the cutbacks himself), Dembélé for Eto'o (Goal Poacher, Speed 100 / Acceleration 98 against tired legs — Link-up stays on; Adriano instead when you need the duel). Against a deep block switch to Possession with Pirlo for Makélélé.", basis: "reasoning" },
         { head: "Protecting · from ~75′", text: "Vieira for Seedorf with the Defensive instruction — two holding midfielders. A tired Desailly → Stam (Destroyer for Destroyer); never Stam next to Desailly.", basis: "reasoning" },
         { head: "Late lead · outlet", text: "Bale for a tired striker: his Attack Outlet style barely tracks back and stays high, ready for the counter — Speed 96 and Low Screamer on the break. At CF his Prolific Winger style doesn't apply, so he makes few runs of his own — trigger them (one-two, called run) (eFHUB review, Sep 2026).", basis: "guides" },
       ] },
       { id: "form", title: "Form before the match", items: [
         { head: "Most of the XI never changes", text: "Condition is set weekly from KONAMI's Live Update Rating; Legend, Epic and Big Time cards are fixed at B (normal) according to the guides — that's nearly your whole squad. Arrows only move on current-season cards (e.g. Dembélé, Calafiori).", basis: "guides" },
         { head: "Arrows break ties, they don't pick the XI", text: "How many points an arrow adds isn't published. A top card on a weaker arrow usually still beats a weaker sub on a good one — swap only between like-for-like players.", basis: "guides" },
-        { head: "Like for like only", text: "Eto'o ↔ Dembélé / Adriano (Goal Poacher CF — the Link-up stays on) · Messi ↔ Sneijder (Creative Playmaker AMF — Link-up stays on) · Hazard ↔ Bellingham · Ibrahimović ↔ Gullit / Bale · Makélélé ↔ Vieira · Desailly ↔ Stam · Maldini / Thuram ↔ Zanetti.", basis: "reasoning" },
+        { head: "Like for like only", text: "Eto'o ↔ Dembélé / Adriano (Goal Poacher CF — the Link-up stays on) · Messi ↔ Sneijder (Creative Playmaker AMF — Link-up stays on) · Hazard ↔ Bellingham · Gullit ↔ Ibrahimović / Bale · Makélélé ↔ Vieira · Desailly ↔ Stam · Maldini / Thuram ↔ Zanetti.", basis: "reasoning" },
         { head: "Never for an arrow", text: "Two Destroyers at CB, Messi on the left, or a change that switches the Link-up off. Puskás only when you start in Plan B.", basis: "reasoning" },
       ] },
       { id: "planb", title: "Plan B — when it isn't working", items: [
         { head: "When", text: "They sit deep and compact, your long balls get cleared, and by ~55′ you've had few real chances — Long Ball Counter is feeding their block.", basis: "reasoning" },
         { head: "Switch to Possession", text: "Sub-tactic Possession (Deschamps 89) — Possession beats Long Ball Counter and deep blocks.", basis: "guides" },
-        { head: "Puskás for Ibrahimović", text: "Deep-Lying Forward drops between the lines, receives, combines and attacks again, while Eto'o runs at the line — the DLF + Goal Poacher pair. Puskás shoots too: Finishing 95, Blitz Curler and Low Screamer.", basis: "official" },
+        { head: "Puskás for Gullit", text: "Deep-Lying Forward drops between the lines, receives, combines and attacks again, while Eto'o runs at the line — the DLF + Goal Poacher pair. Puskás shoots too: Finishing 95, Blitz Curler and Low Screamer.", basis: "official" },
         { head: "Pirlo for Makélélé", text: "Orchestrator at DMF drops deep for the ball and organises the build-up; Seedorf does the running next to him.", basis: "official" },
         { head: "How to play it", text: "Circulate, draw them out, and only play the through ball when Eto'o's run is on. Keep one full-back home — their counter is all they have left.", basis: "reasoning" },
       ] },
@@ -480,7 +495,7 @@ window.KB = (() => {
     alternatives: [
       { name: "Xabi Alonso · Quick Counter · same 4-2-2-2", when: "Against Possession sides when you'd rather press than sit. Same Link-up pair (Creative Playmaker AMF → Goal Poacher CF), Quick Counter 89; Ball Control +1 / Finishing +1 instead of Speed +1." },
       { name: "Thuram to CB, Zanetti at RB", when: "Thuram is 108 at CB (Varane 105), Zanetti 103 at RB — +1 overall, but Zanetti is an Offensive Wingback who goes high. Use it when chasing, not as the base." },
-      { name: "Gullit for Ibrahimović at CF — test it", when: "eFHUB's CF ranking (8 Oct 2026) puts this exact Gullit card first, and our model agrees: CF 109 vs 108, Acceleration 95 vs 91, Stamina 88 vs 85, Bullet Header for the long balls. The catch: his Hole Player style doesn't apply at CF, while Ibrahimović keeps Fox in the Box and Willpower. Play 3–5 matches each way and keep whoever finishes more; until then Gullit is the first CF off the bench." },
+      { name: "Ibrahimović back at CF — the control", when: "The base XI before the Gullit test: Fox in the Box active, Willpower, Phenomenal Finishing, Physical Contact 99 (CF 108). If Gullit (CF 109, no active style) doesn't score more over 3–5 matches, Ibrahimović returns to the left CF slot and Gullit goes back to being the first CF off the bench." },
       { name: "Capello · LBC · 4-2-1-3 with Pirlo at DMF", when: "Over-the-Top Pass A Pirlo → Eto'o. Test only — it gives up Deschamps' Speed +1 and needs wingers the squad uses better elsewhere." },
     ],
   };

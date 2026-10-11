@@ -252,6 +252,17 @@ Finishing + Low Screamer + Snap Strike, and a left foot in a right-footed attack
 Outlet keeps him high late on. C. Ronaldo's edge was Bullet Header (Heading 93 vs 87).
 AI build 8-0-9-9-8-8-0: OA 91, Finishing 92, Speed 95, Acceleration 93, Jump 94.
 
+**XI change (11 Oct 2026, later — user decision): Gullit (`88039045074410`) for
+Ibrahimović at CF**, a 3–5 match test; only the player changes. Gullit takes the left CF
+slot, Eto'o stays right (Messi's deliveries from the right go to the far-post target,
+Eto'o runs the right channel onto the ball in behind); the two don't rotate — Eto'o roams
+as the Goal Poacher, Gullit is the fixed target. Why: 190 cm, jump height 265 cm vs
+Ibrahimović's 252, Bullet Header, Acceleration 95, Physical Contact 93, CF 109 vs 108,
+eFHUB's CF number one. The catch: Hole Player is inactive at CF, so he makes few runs of his
+own. **Ibrahimović goes to the bench** in Gullit's place and is the ~65' sub (Fox in the
+Box + Willpower) — Puskás stays the Plan B option; the Fluid defence shape is unchanged.
+If Gullit doesn't score more over the test, Ibrahimović returns.
+
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
 the Link-up; Speed 100 / Acceleration 98, Acceleration Burst, Phenomenal Finishing), Possession sub-tactic with Pirlo for Makélélé against a deep block;
@@ -261,8 +272,8 @@ protecting — Vieira for Seedorf (~75'), Stam only for Desailly (Destroyer for 
 - **Gullit `88039045074410`** (confirmed) — eFHUB's CF ranking (8 Oct) puts this card first.
   Our model agrees: CF 109, the best CF rating in the squad, against Ibrahimović's 108.
   - Downside: his Hole Player style doesn't apply at CF.
-  - Plan: test him at CF instead of Ibrahimović for 3–5 matches each way. Until then he is
-    the first CF off the bench (Game Plan alternative).
+  - Plan: test him at CF instead of Ibrahimović for 3–5 matches each way. **Test started
+    11 Oct 2026** — he is in the XI at left CF, Ibrahimović is the first CF off the bench.
 - **Bale `88045755861672`** (confirmed) — a "high-speed tank" and the best super-sub.
   - At CF his Prolific Winger style does nothing, so his runs have to be triggered by hand.
 - **Makélélé `88045755964130`** (confirmed) — "ridiculously strong in a double pivot".
@@ -284,8 +295,8 @@ protecting — Vieira for Seedorf (~75'), Stam only for Desailly (Destroyer for 
 Legend / Epic / Big Time cards are fixed at B according to the guides (KNOWLEDGE-BASE §25) —
 nearly the whole squad. Arrows matter for current-season cards (e.g. Dembélé, Calafiori).
 Arrows break ties, they don't pick the XI: swap only like-for-like — Eto'o ↔ Dembélé /
-Adriano, Messi ↔ Sneijder (both keep the Link-up), Hazard ↔ Bellingham, Ibrahimović ↔
-Gullit / Bale, Makélélé ↔ Vieira, Desailly ↔ Stam, Maldini / Thuram ↔ Zanetti. Never two
+Adriano, Messi ↔ Sneijder (both keep the Link-up), Hazard ↔ Bellingham, Gullit ↔
+Ibrahimović / Bale, Makélélé ↔ Vieira, Desailly ↔ Stam, Maldini / Thuram ↔ Zanetti. Never two
 Destroyers, Messi on the left or a Link-up switched off for an arrow.
 
 **Plan B — when Long Ball Counter isn't working** (they sit deep, long balls get cleared,
@@ -295,7 +306,8 @@ CF 105) for Ibrahimović next to Eto'o — the DLF + Goal Poacher pair — and P
 counter outlet.
 
 **Set pieces:** penalties Hazard (Finishing 94); free kicks Hazard (left) / Messi (right);
-corners Hazard; aerial targets Ibrahimović, Desailly, Varane.
+corners Hazard; aerial targets Gullit (Bullet Header), Desailly, Varane — Ibrahimović once
+he's on.
 
 **Alternatives:** Xabi Alonso Quick Counter with the same 4-2-2-2 and the same Link-up pair
 (vs Possession sides); Thuram to CB (108) + Zanetti RB when chasing (+1 overall, but he
