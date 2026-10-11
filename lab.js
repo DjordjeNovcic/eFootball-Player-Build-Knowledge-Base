@@ -760,6 +760,8 @@
     if (left < 0) warns.push(`<b>${-left} points over budget</b> for level cap ${cap}.`);
     if (res.final.speed > 96 && res.trained.speed > p.stats.speed && res.final.speed - (res.trained.speed - p.stats.speed) < 96)
       warns.push(`<b>Speed ${res.final.speed}</b> — 96 is already top speed; training past it is wasted (§3). Take Lower Body down until Speed is 96.`);
+    categoriesFor(p).filter((c) => (b.levels[c.key] || 0) >= 13).forEach((c) =>
+      warns.push(`<b>${c.label} ${b.levels[c.key]}</b> — 13+ levels in one category means the card isn't made for it (§13): the levels past 12 cost 4–5 points each. Spread them unless this stat is the whole role.`));
     const wastedTotal = Object.values(res.wasted).reduce((a, v) => a + v, 0);
     if (wastedTotal) warns.push(`${wastedTotal} stat point(s) lost above the 99 training cap (${Object.keys(res.wasted).map(statLabel).join(", ")}).`);
     skillsOf(p.id).forEach((n) => {

@@ -266,6 +266,15 @@ AI build 8-0-9-9-8-8-0: OA 91, Finishing 92, Speed 95, Acceleration 93, Jump 94.
 
 Neymar and Dembélé (bench) lose Speed 100 the same way. Everyone else is unchanged.
 
+**Build update (11 Oct 2026, don't fight the card — user decision): no category goes
+past level 12** in a recommended build (KNOWLEDGE-BASE §13 "Fighting the card"); levels
+13–20 cost 4–5 points each and mean the card isn't made for that stat. In the XI only
+Maldini changes: 0-0-0-14-8-6-8 → **0-0-0-12-8-7-10 Agility +1** — Acceleration 91 → 88
+(still the §3 stride threshold), the freed points give Defensive Awareness 94 → 96,
+Tackling 95 → 97, Defensive Engagement 96 → 98, Physical Contact 87 → 88. Bench: Gullit
+6-3-9-12-7-6-0 Ball-carrying +1 (AMF 105), Bellingham 8-2-8-12-8-0-0 (106), Rivaldo
+6-3-6-12-11-0-0 (104), Zanetti 0-9-9-8-8-0-7 Defending +1.
+
 **XI change (11 Oct 2026, later — user decision): Gullit (`88039045074410`) for
 Ibrahimović at CF**, a 3–5 match test; only the player changes. Gullit takes the left CF
 slot, Eto'o stays right (Messi's deliveries from the right go to the far-post target,

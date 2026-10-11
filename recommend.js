@@ -204,6 +204,11 @@ window.Recommender = (deps) => {
     const coreW = [...stats].map((x) => x.w).sort((a, b) => b - a)[2] ?? 0;
     // Speed is exempt: 80 → 90 is worth far more than anything above it (§3).
     stats.forEach((x) => { if (x.w < coreW && x.k !== "speed" && x.t - zero[x.k] > 8) x.soft = zero[x.k] + 8; });
+    // Don't fight the card (user decision, 11 Oct 2026 — §7, §13): even a core stat that
+    // starts more than 12 below its target is chased at full value only for +10; the rest
+    // counts half, so a weak base isn't rebuilt with half the budget (Maldini's Acceleration
+    // 70 → 91 took 14 Dexterity levels, 32 of 64 points).
+    stats.forEach((x) => { if (x.w >= coreW && x.k !== "speed" && !x.soft && x.t - zero[x.k] > 12) x.soft = zero[x.k] + 10; });
     // Stamina floor for every outfield role (user decision, KNOWLEDGE-BASE §4): Acceleration
     // drops as stamina runs out (§2), and Long Ball Counter asks for late runs in behind.
     if (p.position !== "GK" && !get("stamina")) stats.push({ k: "stamina", w: 3, t: 85, ...shape("stamina", 85) });
@@ -303,6 +308,12 @@ window.Recommender = (deps) => {
   }
 
   const pointsOf = (levels) => Object.values(levels).reduce((a, l) => a + cumCost(l), 0);
+  // 13+ levels in one category means the card isn't made for it (user decision, 11 Oct
+  // 2026 — §13): no category goes past 12 (levels 13–20 cost 4–5 points each); the points
+  // spread over the role's other stats instead. Goalkeeper categories are the keeper's
+  // whole job and keep the full range.
+  const CAT_CAP = 12;
+  const capFor = (key) => (key.startsWith("gk") ? MAX_LEVEL : CAT_CAP);
 
   function optimise(p, profile, booster2) {
     const levels = optimiseOnce(p, profile, booster2, null);
@@ -335,7 +346,7 @@ window.Recommender = (deps) => {
       for (const c of cats) {
         if (frozen.has(c.key)) continue;
         let cost = 0;
-        for (let d = 1; d <= 4 && levels[c.key] + d <= MAX_LEVEL; d++) {
+        for (let d = 1; d <= 4 && levels[c.key] + d <= capFor(c.key); d++) {
           cost += levelCost(levels[c.key] + d);
           if (cost > left) break;
           const trial = { ...levels, [c.key]: levels[c.key] + d };
@@ -364,7 +375,7 @@ window.Recommender = (deps) => {
       while (left > 0) {
         let best = null;
         for (const c of cats) {
-          if (lv[c.key] >= MAX_LEVEL || levelCost(lv[c.key] + 1) > left) continue;
+          if (lv[c.key] >= capFor(c.key) || levelCost(lv[c.key] + 1) > left) continue;
           const v = value(profile, finalStats(p, { ...lv, [c.key]: lv[c.key] + 1 }, booster2)) + pref(c.key);
           if (!best || v > best.v) best = { key: c.key, v };
         }

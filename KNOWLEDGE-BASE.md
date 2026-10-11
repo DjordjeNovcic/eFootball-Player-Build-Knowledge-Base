@@ -1620,6 +1620,17 @@ unless he is specifically being built as an elite distributor.
 
 ---
 
+## Fighting the card
+
+**13 or more levels in one category means the card isn't made for it (user decision,
+11 Oct 2026).** Levels 13–16 cost 4 points each and 17–20 cost 5 (section 12), so lifting a
+stat from a weak base to its target can eat half the budget — Maldini's Acceleration 70 → 91
+took 14 Dexterity levels, 32 of 64 points. Build what the card is: a core stat that starts
+more than 12 below its target is chased at full value only for about +10, the rest counts
+half, and **no category goes past level 12** in a recommended build (goalkeeper categories
+excepted — they are the keeper's whole job); the points spread over the role's other stats.
+You can't make a goalkeeper out of Thuram. The Trainer warns at 13+.
+
 ## Overall rating optimization
 
 Ignore overall rating when it conflicts with role optimization.
