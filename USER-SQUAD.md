@@ -357,6 +357,12 @@ on the left against the earlier decision. Build Lab lineup `plan-2026-10-11-diam
 | SS | AMF | Hazard (Hole Player active at SS) | 110 |
 | CF / CF | CF / CF | Gullit (L), Eto'o (R) | 109 / 106 |
 
+**Sub-tactic: Long Ball (Beckenbauer 89) · flat 4-4-2**, same eleven — Gullit (190 cm,
+Bullet Header) the focal striker with Eto'o off him, Hazard LMF and Seedorf RMF for the
+second balls and crosses, Pirlo and Makélélé CMF. The Beckenbauer Link-up is off in it
+(Seedorf isn't at CMF); the target man is the point. Ibrahimović for Gullit if they handle
+him, Bellingham for Hazard on the second balls.
+
 Average 106.4. Bench: Ibrahimović (65' for Gullit), Thuram (for Cafu when protecting),
 Vieira (75' for Pirlo when leading), Ronaldinho, Messi (CP), Stam, Zanetti, Bellingham (60'
 for Hazard), Dembélé (72' for Eto'o), Puskás, C. Ronaldo, Sneijder. Instructions: Counter
