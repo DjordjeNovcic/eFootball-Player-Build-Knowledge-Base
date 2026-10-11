@@ -1397,3 +1397,27 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 @media (max-width: 640px){
   .rec-grid{ grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 0.6rem; }
 }
+
+/* ============================================================
+   My Squad as card tiles: art on top with the build rating over it (eFHUB-style),
+   the details underneath, actions at the foot.
+   ============================================================ */
+.squad-grid{ grid-template-columns: repeat(auto-fill, minmax(min(100%, 236px), 1fr)); gap: 0.8rem; }
+.squad-card{ padding: 0; gap: 0; }
+.squad-card::before{ left: 0; right: 0; top: 0; bottom: auto; width: auto; height: 3px; }
+.squad-card__head{ display: block; }
+.squad-card__media{ aspect-ratio: 3 / 4; border-radius: 0; }
+.squad-card__img{ object-position: top; }
+.squad-card__ovr{
+  left: 0.5rem; right: auto; bottom: auto; top: 0.6rem;
+  flex-direction: column; align-items: flex-start; gap: 0;
+  background: rgba(9,13,10,0.88); border: 1px solid rgba(212,255,63,0.35); border-radius: 3px; padding: 0.2rem 0.45rem 0.15rem;
+}
+.squad-card__ovr b{ font-size: 1.6rem; line-height: 0.9; }
+.squad-card__ovr b sup{ font-size: 0.7rem; margin-left: 0.1rem; }
+.squad-card__ovr span{ font-size: 0.58rem; text-transform: uppercase; color: var(--paper-dim); }
+.squad-card__id{ padding: 0.65rem 0.8rem 0.25rem; }
+.squad-card__body{ padding: 0.35rem 0.8rem 0.55rem; }
+.squad-card__foot{ padding: 0.6rem 0.8rem 0.7rem; }
+.squad-card__remove{ padding: 0.35rem 0.5rem; }
+.squad-card__remove svg{ width: 15px; height: 15px; display: block; }

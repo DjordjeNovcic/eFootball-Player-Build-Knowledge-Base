@@ -409,18 +409,16 @@
     root.innerHTML = list.map((p) => {
       const note = notesFor(p.id);
       const saved = store.builds[p.id];
+      // The tile's rating: the saved build's, else the Recommended by AI build's.
+      const rating = saved ? compute(p, saved).ratings[p.position] : REC?.recs[p.id]?.rating ?? p.overall;
       let savedBadge = "";
-      if (saved) {
-        const r = compute(p, saved).ratings[p.position];
-        savedBadge = `<span class="badge badge--lime">Build saved · ${r}</span>`;
-      } else if (note?.snapshot) {
-        savedBadge = `<span class="badge">Snapshot ${esc(note.snapshot.date)}</span>`;
-      }
+      if (saved) savedBadge = `<span class="badge badge--lime">★ Build saved</span>`;
+      else if (note?.snapshot) savedBadge = `<span class="badge">Snapshot ${esc(note.snapshot.date)}</span>`;
       return `
         <article class="squad-card" data-group="${POSITION_GROUP[p.position]}">
           <div class="squad-card__head">
             <div class="squad-card__media">${cardImg(p, "squad-card__img")}
-              <div class="squad-card__ovr"><b>${p.overall}</b><span>${p.position}</span></div>
+              <div class="squad-card__ovr" title="${saved ? "Your saved build" : "Recommended by AI build"} at ${p.position} · card ${p.overall}"><b>${rating}${saved ? "<sup>★</sup>" : ""}</b><span>${p.position} · card ${p.overall}</span></div>
             </div>
             <div class="squad-card__id">
               <h3 class="squad-card__name">${esc(p.name)}</h3>
@@ -445,7 +443,7 @@
             <div class="squad-card__actions">
               <button type="button" class="btn btn--icon btn--solid" data-open-player="${p.id}">Train</button>
               <a class="btn btn--icon" href="https://efhub.com/players/${p.id}" target="_blank" rel="noopener">eFHUB ↗</a>
-              <button type="button" class="btn btn--icon btn--danger squad-card__remove" data-remove-player="${p.id}" aria-label="Remove ${esc(p.name)} from squad" title="Remove from squad">✕</button>
+              <button type="button" class="btn btn--icon btn--danger squad-card__remove" data-remove-player="${p.id}" aria-label="Remove ${esc(p.name)} from squad" title="Remove from squad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
             </div>
           </div>
         </article>`;
