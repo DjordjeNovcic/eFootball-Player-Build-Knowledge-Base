@@ -1637,3 +1637,8 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .rec-bymgr__table td small{ display: block; color: var(--paper-dim); font-size: 0.72rem; }
 .rec-bymgr__table tr.is-current td{ color: var(--lime); }
 .rec-bymgr__table .mgr-photo--inline{ vertical-align: middle; margin-right: 0.35rem; }
+
+/* My Builds — card thumbnail next to the name */
+.mine-who{ display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
+.mine-who > div{ min-width: 0; }
+.mine-img{ width: 36px; aspect-ratio: 3/4; object-fit: cover; border-radius: 3px; background: var(--surface); flex: none; }

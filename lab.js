@@ -2819,7 +2819,7 @@
       }
       return `
         <tr>
-          <td><button type="button" class="linkish linkish--strong" data-open-player="${p.id}">${esc(p.name)}</button><small>${p.position} · ${esc(p.team || "")}</small></td>
+          <td><div class="mine-who">${cardImg(p, "mine-img")}<div><button type="button" class="linkish linkish--strong" data-open-player="${p.id}">${esc(p.name)}</button><small>${p.position} · ${esc(p.team || "")}</small></div></div></td>
           <td><code>${line(rb)}</code><small>${esc(r.booster.name)}</small></td>
           <td class="num">${rOvr}</td>
           <td>${mine ? `<code>${line(mine)}</code>${diffs}` : "<em>—</em>"}</td>
