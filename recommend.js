@@ -42,7 +42,12 @@ window.Recommender = (deps) => {
     destroyer: { label: "Destroyer", stats: [["acceleration", 10, 91, 95], ["defensiveAwareness", 9, 90, 96], ["ballWinning", 8, 88], ["speed", 8, 91, 95], ["physicalContact", 7, 85], ["defensiveEngagement", 6, 88], ["aggression", 5, 88], ["jump", 4, 85], ["heading", 2, 82]] },
     coveringRole: { label: "Covering Role", stats: [["defensiveAwareness", 10, 90, 96], ["speed", 9, 92, 96], ["acceleration", 8, 90], ["ballWinning", 7, 88], ["defensiveEngagement", 6, 88], ["physicalContact", 6, 85], ["jump", 3, 85]] },
     defensiveFullBack: { label: "Defensive Full-back", stats: [["defensiveAwareness", 10, 90, 96], ["ballWinning", 8, 88], ["speed", 8, 92, 96], ["acceleration", 8, 90], ["physicalContact", 6, 85], ["stamina", 6, 88], ["defensiveEngagement", 5, 85], ["loftedPass", 2, 78]] },
-    offensiveFullBack: { label: "Offensive Wingback", stats: [["speed", 9, 92, 96], ["acceleration", 9, 92, 97], ["stamina", 7, 90], ["loftedPass", 7, 90, 92], ["ballControl", 5, 85], ["defensiveAwareness", 7, 86], ["ballWinning", 6, 84], ["defensiveEngagement", 4, 83], ["balance", 4, 85], ["dribbling", 4, 85], ["lowPass", 4, 82]] },
+    // Offensive full-backs (user decision, 16 Oct 2026): pace, the cross and the dribble
+    // first, defending only to a floor — he isn't the one holding the line.
+    offensiveFullBack: { label: "Offensive Wingback", stats: [["speed", 9, 92, 96], ["acceleration", 9, 92, 97], ["loftedPass", 9, 92, 95], ["dribbling", 6, 88], ["ballControl", 6, 88], ["lowPass", 6, 87], ["stamina", 7, 90], ["balance", 5, 88], ["tightPossession", 4, 85], ["curl", 3, 80], ["defensiveAwareness", 5, 82, 86], ["ballWinning", 4, 80], ["defensiveEngagement", 3, 80]] },
+    // Full-back Finisher (§18): underlaps, comes inside, arrives around the box — a winger's
+    // ball skills and a shot, the cross second, defending to the same floor.
+    fullBackFinisher: { label: "Full-back Finisher", stats: [["speed", 9, 92, 96], ["acceleration", 9, 92, 97], ["dribbling", 8, 88], ["ballControl", 7, 88], ["tightPossession", 5, 88], ["balance", 6, 88], ["lowPass", 6, 87], ["loftedPass", 5, 85], ["finishing", 5, 85], ["stamina", 6, 88], ["offensiveAwareness", 3, 80], ["defensiveAwareness", 5, 82, 86], ["ballWinning", 4, 80], ["defensiveEngagement", 3, 80]] },
     goalkeeper: { label: "Goalkeeper", stats: [["gkAwareness", 10, 90], ["gkReflexes", 9, 90], ["gkReach", 8, 90], ["gkClearing", 7, 88], ["gkCatching", 7, 88], ["jump", 4, 85]] },
   };
   const STYLE_TEMPLATE = {
@@ -51,7 +56,7 @@ window.Recommender = (deps) => {
     classicno10: "classicNo10", prolificwinger: "prolificWinger", crossspecialist: "crossSpecialist",
     roamingflank: "roamingFlank", boxtobox: "boxToBox", orchestrator: "orchestrator", anchorman: "anchorMan",
     allactiondefender: "allActionDefender", buildup: "buildUp", destroyer: "destroyer", coveringrole: "coveringRole",
-    defensivefullback: "defensiveFullBack", offensivefullback: "offensiveFullBack", attackinggk: "goalkeeper",
+    defensivefullback: "defensiveFullBack", offensivefullback: "offensiveFullBack", fullbackfinisher: "fullBackFinisher", attackinggk: "goalkeeper",
   };
   const POSITION_TEMPLATE = { GK: "goalkeeper", CB: "buildUp", LB: "defensiveFullBack", RB: "defensiveFullBack", DMF: "anchorMan", CMF: "boxToBox",
     LMF: "crossSpecialist", RMF: "crossSpecialist", AMF: "creativePlaymaker", LWF: "prolificWinger", RWF: "prolificWinger", SS: "holePlayer", CF: "goalPoacher" };
@@ -183,6 +188,12 @@ window.Recommender = (deps) => {
       used.push(hasT("Heading") && hasT("Aerial Superiority") ? "Heading + Aerial Superiority" : hasT("Heading") ? "Heading" : "Aerial Superiority");
     }
     if (hasT("Pinpoint Crossing") && tpl.key !== "crossSpecialist") { ensure("loftedPass", 6, 90); const s = get("loftedPass"); s.w = Math.max(s.w, 6); s.t = Math.max(s.t, 90); used.push("Pinpoint Crossing"); }
+    // A crosser born with Edged Crossing / Pinpoint Crossing (offensive full-back, Cross
+    // Specialist) gets the Lofted Pass to use them: 92 (user decision, 16 Oct 2026).
+    if ((has("Edged Crossing") || has("Pinpoint Crossing")) && ["offensiveFullBack", "fullBackFinisher", "crossSpecialist"].includes(tpl.key)) {
+      ensure("loftedPass", 8, 92); const s = get("loftedPass"); s.w = Math.max(s.w, 8); s.t = Math.max(s.t, 92); s.cap = Math.max(s.cap ?? 0, 95);
+      notes.push(`${[has("Edged Crossing") && "Edged Crossing", has("Pinpoint Crossing") && "Pinpoint Crossing"].filter(Boolean).join(" + ")} — Lofted Pass 92 so the crosses land (§3, §8).`);
+    }
     if (hasT("Weighted Pass")) { ensure("loftedPass", 3, 85); used.push("Weighted Pass"); }
     if (hasT("Long-range Shooting") || hasT("Long-range Curler")) { ensure("kickingPower", 4, 90); const s = get("kickingPower"); s.w = Math.max(s.w, 4); s.t = Math.max(s.t, 90); used.push(hasT("Long-range Shooting") ? "Long-range Shooting" : "Long-range Curler"); }
     if ((hasT("First-time Shot") || hasT("Acrobatic Finishing")) && ATTACKERS.has(p.position)) { ensure("finishing", 6, 90); const s = get("finishing"); s.w = Math.max(s.w, 6); used.push(hasT("First-time Shot") ? "First-time Shot" : "Acrobatic Finishing"); }
@@ -238,7 +249,7 @@ window.Recommender = (deps) => {
     // drops as stamina runs out (§2), and Long Ball Counter asks for late runs in behind.
     if (p.position !== "GK" && !get("stamina")) stats.push({ k: "stamina", w: 3, t: 85, ...shape("stamina", 85) });
     const inTpl = new Set(stats.map((x) => x.k));
-    const group = p.position === "GK" ? SECONDARY.GK : ["CB", "LB", "RB"].includes(p.position) ? SECONDARY.DEF
+    const group = p.position === "GK" ? SECONDARY.GK : ["offensiveFullBack", "fullBackFinisher"].includes(tpl.key) ? SECONDARY.MID : ["CB", "LB", "RB"].includes(p.position) ? SECONDARY.DEF
       : ["DMF", "CMF"].includes(p.position) ? SECONDARY.MID : SECONDARY.ATT;
     const tallAttacker = ATTACKERS.has(p.position) && p.height >= 188;
     const secondary = group.filter((k) => !inTpl.has(k) && !(tallAttacker && (k === "dribbling" || k === "tightPossession")));

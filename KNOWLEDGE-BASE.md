@@ -312,6 +312,11 @@ Especially relevant for:
 - wingbacks
 - crossing specialists
 
+**92** for an offensive full-back or Cross Specialist who carries Edged Crossing or Pinpoint
+Crossing natively (user decision, 16 Oct 2026) — the skills only pay if the ball arrives.
+An offensive full-back's defending stops at a floor (Defensive Awareness ~82, Tackling 80):
+he isn't the one holding the line, the points go to pace, the cross and the dribble.
+
 Do not overspend above 90 unless crossing is the player's main identity.
 
 ---
@@ -757,24 +762,20 @@ Do not overinvest in passing unless needed.
 
 ## Offensive Wingback
 
-Needs balance between:
+Priorities (revised 16 Oct 2026, user decision — "the pass, pace and the dribble, less
+defending"):
 
-- Speed
-- Acceleration
-- Stamina
-- Passing
-- crossing
-- Ball Control
-- defensive ability
+1. Speed 92, Acceleration 92
+2. Lofted Pass — **92 with Edged Crossing or Pinpoint Crossing** on the card, 90 without
+3. Dribbling 88, Ball Control 88 (Tight Possession 85) — he beats his man before the cross
+4. Low Pass 87 — the cutback and the switch
+5. Stamina 90, Balance 88
+6. Defending only to a floor: Defensive Awareness 82, Tackling 80, Defensive Engagement 80.
+   He isn't the one holding the line; a Defensive Full-back (above) is.
 
-Typical targets:
-
-- Speed 90+
-- Acceleration 92+
-- Lofted Pass around 90
-- decent defensive stats
-
-Do NOT build an offensive wingback with almost zero defending unless intentionally used as an attacking weapon.
+Full-back Finisher (section 18) is the same pace with a winger's ball skills — Dribbling,
+Ball Control, Tight Possession and Balance 88, Low Pass 87, Finishing 85 — and the cross
+second (Lofted Pass 85, 92 with a crossing skill), defending to the same floor.
 
 ---
 
@@ -2051,6 +2052,22 @@ CMF/AMF in some sequences.
 
 Example: Offensive Wingback fits Cafu; Full-back Finisher would be a completely
 different profile for him.
+
+**Builds (user decision, 16 Oct 2026 — "offensive full-backs need the pass, pace and the
+dribble, less defending"):**
+
+- **Offensive Wingback:** Speed 92 / Acceleration 92, Lofted Pass 92 with Edged or Pinpoint
+  Crossing (90 without), Low Pass 87, Dribbling 88 / Ball Control 88, Stamina 90, Balance
+  88; defending only to a floor — Defensive Awareness 82, Tackling 80, Defensive Engagement
+  80. Cafu 2-10-10-8-5-0-6 Crossing +1 (Lofted Pass 92, Low Pass 90, Dribbling 91, Tight
+  Possession 91; Defensive Awareness 86 → 82, Tackling 90 → 85).
+- **Full-back Finisher:** the same pace, then Dribbling 88 / Ball Control 88 / Tight
+  Possession 88 / Balance 88, Low Pass 87, Finishing 85, Lofted Pass 85 (92 with a crossing
+  skill), defending to the same floor. Marcelo is the squad's first: 5-7-7-9-9-0-6 Agility
+  +1 — Speed 92, Acceleration 95, Ball Control 94, Tight Possession 94, Balance 92, Lofted
+  Pass 92, Low Pass 91, Finishing 78; LB 105 (was 104 as a Covering Role build with
+  Defending 12).
+- A Defensive Full-back (Maldini, Thuram) keeps section 7's defensive priorities.
 
 ## Defensive Playing Styles
 

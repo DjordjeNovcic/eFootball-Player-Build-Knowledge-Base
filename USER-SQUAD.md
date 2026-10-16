@@ -119,7 +119,7 @@ Known role context used repeatedly in Build Lab discussions:
 | Pirlo | CMF/DMF — Orchestrator. |
 | Del Piero | Goal Poacher card context. |
 | Buffon | GK; exact current progression/additional skills require a current screenshot. |
-| Marcelo | LB — Full-back Finisher / Covering Role; bought 16 Oct 2026, the attacking alternative to Maldini. |
+| Marcelo | LB — Full-back Finisher / Covering Role; bought 16 Oct 2026, built as a Full-back Finisher (§18), the attacking alternative to Maldini. |
 
 ---
 
@@ -347,6 +347,19 @@ Kicking Power 91; Ball Control 99, Tight Possession 98, Low Pass 93; Speed 92, A
 on a near-tie swaps Accuracy +1 for **Physicality +1** with 8-9-9-7-7-4-0 (Finishing 91,
 Ball Control 99, Tight Possession 97, Balance 97; still 109). Eze and Salah move a level.
 
+**Build update (16 Oct 2026, later — offensive full-backs, user decision):** "they need the
+pass, especially with Edged Crossing, pace and the dribble — less defending." Offensive
+Wingback: Lofted Pass 92 with Edged / Pinpoint Crossing, Low Pass 87, Dribbling / Ball
+Control 88, defending only to a floor (Defensive Awareness 82, Tackling 80); a Full-back
+Finisher template for Marcelo (KNOWLEDGE-BASE §18). Zanetti (bench) 0-9-9-8-8-0-7
+Defending +1 → **3-9-10-8-8-0-4 Passing +1** (Low Pass 91, Lofted 88, Dribbling 88, Tight
+Possession 89; Defensive Awareness 86 → 82, Tackling 90 → 85; 102). Marcelo (bench) →
+**5-7-7-9-9-0-6 Agility +1** (§4; 105). Not in the plans but rebuilt the same way: Cafu
+2-10-10-8-5-0-6 Crossing +1 (Lofted 92, Low Pass 90, Dribbling 91), van Bronckhorst
+2-10-9-9-8-0-5 Crossing +1 (Lofted 92), Calafiori 1-8-10-8-9-0-5 Crossing +1 (Lofted 92),
+Timber 1-8-10-8-10-0-3 Crossing +1 (Lofted 84 — base 73, not fought). Maldini and Thuram
+(Defensive Full-backs) unchanged.
+
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
 the Link-up; Speed 100 / Acceleration 98, Acceleration Burst, Phenomenal Finishing), Possession sub-tactic with Pirlo for Makélélé against a deep block;
@@ -514,11 +527,13 @@ snapshots**, not permanent locks. A newer screenshot always overrides them.
 
 - Bought 16 Oct 2026 — the Epic LB card from the public database (Madrid Chamartín B,
   174 cm, left foot, Level Cap 33, slot 1 Ball Protection +4). Role: **LB — Full-back
-  Finisher / Covering Role**; the Build Lab builds him as Covering Role (no template for
-  Full-back Finisher).
-- AI build (Deschamps, LBC): `0 - 1 - 0 - 5 - 9 - 10 - 12` (64/64), **Shutdown +1** — Speed 92,
-  Acceleration 90, Defensive Awareness 91, Tackling 93, Defensive Engagement 88, Physical
-  Contact 85, Stamina 93, Lofted Pass 85; LB rating 104, level with Maldini (104).
+  Finisher / Covering Role**; the Build Lab builds him as a Full-back Finisher (template added
+  16 Oct 2026, KNOWLEDGE-BASE §18).
+- AI build (Deschamps, LBC, 16 Oct 2026 later): `5 - 7 - 7 - 9 - 9 - 0 - 6` (64/64), **Agility +1**
+  — Speed 92, Acceleration 95, Ball Control 94, Tight Possession 94, Dribbling 89, Balance 92,
+  Lofted Pass 92, Low Pass 91, Curl 84, Finishing 78, Stamina 94; Defensive Awareness 83,
+  Tackling 85, Defensive Engagement 80. LB rating 105 (Maldini 104). The first version of the
+  day (0-1-0-5-9-10-12 Shutdown +1, Covering Role, 104) treated him as a defender.
 - AI additional skills: Interception, Blocker, Man Marking, Sliding Tackle, One-touch Pass.
 - Natural skills worth noting: Double Touch, Flip Flap, Sole Control, Pinpoint Crossing,
   Phenomenal Pass, Edged Crossing, Momentum Dribbling — the attacking full-back package
