@@ -369,7 +369,9 @@ Rivaldo AMF 104 → **SS 107**; Stojković AMF 104 → SS 106; Rooney CF 103 →
 104 → LWF 108; Hazard AMF 106 → LWF 110; Ronaldinho AMF 106 → LWF 108; Eze AMF 102 → LWF 105;
 Vinícius LMF 104 → LWF 107; Marcelo LB 105 → LMF 108; Maldini LB 104 → CB 107; Thuram RB 105
 → CB 108. Wingers and LMF are hints only in the 4-2-2-2; the SS and CMF ones matter for the
-Possession sub-tactic and the diamond.
+Possession sub-tactic and the diamond. The Lineup tab shows each player's rating at the slot
+he stands in (user, 16 Oct 2026 — Gullit at CF 109, not his AMF card's 105); the bench shows
+the card's position, or `buildAs`.
 
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps

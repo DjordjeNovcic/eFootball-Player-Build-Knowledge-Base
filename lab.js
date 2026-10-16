@@ -1396,10 +1396,13 @@
   function slotRating(p, pos, l, tactic = l.tactic) {
     return compute(p, lineupBuild(p), l.manager, tactic).ratings[pos];
   }
-  // What the lineup shows (user decision, 11 Oct 2026): the build's rating — at the card's
-  // main position, as in the Trainer — wherever the player stands. The picker still ranks
+  // What the lineup shows (user decision, 16 Oct 2026, replacing 11 Oct): the build's rating
+  // at the slot he stands in — Gullit at CF 109, not his AMF card's 105; the bench and the
+  // average use the same rule (bench: the card's position, or USER-SQUAD's buildAs). The picker still ranks
   // candidates by their rating at the slot.
-  const buildRating = (p, l, tactic) => slotRating(p, p.position, l, tactic);
+  // The position a card is rated at off the pitch: USER-SQUAD's buildAs (Gullit CF) or its own.
+  const homePos = (p) => REC?.recs[p.id]?.buildAs || p.position;
+  const buildRating = (p, l, tactic) => slotRating(p, homePos(p), l, tactic);
 
   // Best XI: the strongest assignment of the squad to this lineup's slots. Each player's
   // rating at the slot comes from his build (saved or AI) with this manager and playstyle
@@ -1596,13 +1599,13 @@
         }
         const r = buildRating(p, l, shownTactic(l));
         const atSlot = slotRating(p, pos, l, shownTactic(l));
-        ratings.push(r);
+        ratings.push(atSlot);
         const prof = proficiency(p, pos);
         const bad = styleFit(p, pos).some((f) => !f.ok);
         return `<button type="button" class="slot slot--${prof} ${sel ? "is-selected" : ""} ${bad ? "slot--style" : ""}" style="left:${x}%;bottom:${slotBottom(y)}" data-slot="${i}"
-            title="${esc(p.name)} — ${p.position} ${r} (${buildTag(p)})${atSlot !== r ? ` · at ${pos}: ${atSlot}` : ""}">
+            title="${esc(p.name)} — at ${pos} ${atSlot} (${buildTag(p)})${atSlot !== r ? ` · ${homePos(p)} ${r}` : ""}">
           ${cardImg(p, "slot__img")}
-          <span class="slot__ovr">${r}${store.builds[p.id] ? "<sup>★</sup>" : ""}</span>
+          <span class="slot__ovr">${atSlot}${store.builds[p.id] ? "<sup>★</sup>" : ""}</span>
           <span class="slot__name">${esc(shortName(p))}</span>
           <span class="slot__pos">${pos}</span></button>`;
       }).join("");
@@ -1617,9 +1620,9 @@
       const p = byId[id];
       if (!p) return "";
       const sel = lu.sel?.area === "bench" && lu.sel.i === i;
-      const r = slotRating(p, p.position, l);
-      return `<button type="button" class="bench-cell ${sel ? "is-selected" : ""}" data-bench="${i}" title="${esc(p.name)} — ${p.position} ${r} (${buildTag(p)})">
-        ${cardImg(p, "bench-cell__img")}<b>${r}${store.builds[p.id] ? "<sup>★</sup>" : ""}</b><span>${esc(p.name)}</span><em>${p.position}</em></button>`;
+      const r = slotRating(p, homePos(p), l);
+      return `<button type="button" class="bench-cell ${sel ? "is-selected" : ""}" data-bench="${i}" title="${esc(p.name)} — ${homePos(p)} ${r} (${buildTag(p)})">
+        ${cardImg(p, "bench-cell__img")}<b>${r}${store.builds[p.id] ? "<sup>★</sup>" : ""}</b><span>${esc(p.name)}</span><em>${homePos(p)}</em></button>`;
     });
     if (l.bench.length < BENCH_MAX) {
       const sel = lu.sel?.area === "bench" && lu.sel.i === l.bench.length;
@@ -1806,7 +1809,7 @@
   // and at the manager's own best one, plus which Link-up plays this XI switches on.
   function xiAverage(l, managerKey, tactic) {
     const slots = layoutOf(l);
-    const r = l.xi.map((id, i) => (byId[id] ? compute(byId[id], lineupBuild(byId[id]), managerKey, tactic).ratings[byId[id].position] : null)).filter((x) => x != null);
+    const r = l.xi.map((id, i) => (byId[id] ? compute(byId[id], lineupBuild(byId[id]), managerKey, tactic).ratings[slots[i]?.[0] || byId[id].position] : null)).filter((x) => x != null);
     return r.length ? r.reduce((a, b) => a + b, 0) / r.length : null;
   }
   function renderManagerFit(l) {
@@ -1999,7 +2002,7 @@
         return `<tr>
           <td class="pos-list">${esc(pos)}${dpos !== pos ? `<small> → ${esc(dpos)}</small>` : ""}</td>
           <td><a href="#train/${esc(id)}" data-open-player="${esc(id)}"><b>${esc(p.name)}</b></a>${store.builds[id] ? " ★" : ""}<br><small class="rec-muted">${styles}</small></td>
-          <td class="num hot" title="${c.ratings[pos] !== c.ratings[p.position] ? `at ${esc(pos)}: ${c.ratings[pos]}` : ""}">${c.ratings[p.position] ?? "—"}</td>
+          <td class="num hot" title="${c.ratings[pos] !== c.ratings[p.position] ? `card position ${esc(p.position)}: ${c.ratings[p.position]}` : ""}">${c.ratings[pos] ?? "—"}</td>
           <td class="gp-lv">${lv}<br><small class="rec-muted">${b2 ? esc(b2.name) : "no slot-2 booster"}</small></td>
           <td class="gp-keys">${keys}</td>
           <td class="gp-skills">${skillsOf(id).map(esc).join(", ") || "—"}</td>
