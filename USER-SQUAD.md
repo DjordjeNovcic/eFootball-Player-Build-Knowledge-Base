@@ -373,6 +373,19 @@ Possession sub-tactic and the diamond. The Lineup tab shows each player's rating
 he stands in (user, 16 Oct 2026 — Gullit at CF 109, not his AMF card's 105); the bench shows
 the card's position, or `buildAs`.
 
+**XI — 16 Oct 2026, later (the user's, set in the app):** Deschamps, Long Ball Counter,
+4-3-1-2 with the second striker's marker set to SS; no Fluid Formation, no sub-tactic (the
+user switches to Possession by hand when it gets tight). Buffon; Marcelo, Varane, Desailly,
+Thuram; Vieira (Makélélé 106 recommended instead, 104), Seedorf; Messi — the Creative
+Playmaker card — at AMF (107, style active; the Deep-Lying Forward SS card played there as
+Basic and went off the sheet); Hazard SS (110); **Gullit SS** next to Ibrahimović CF (108):
+with the SS role his Hole Player is active — runs from deep, the late arrival he lacked at
+CF — at 107 against 109 as a Basic CF; the CF build stays, it rates the same 107 at SS as a
+dedicated Hole Player build. Mourinho (LBC 90) was tried and dropped: both Link-ups
+inactive, Aggression +1 idle, the XI rates the same. Link-up off with this front pair (no
+Goal Poacher CF) — Eto'o for Ibrahimović lights Breakthrough Pass A. Bench: Eto'o, Puskás,
+C. Ronaldo, Bale, Ronaldinho, Bellingham, Sneijder, Pirlo, Makélélé, Maldini, Cafu, Stam.
+
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
 the Link-up; Speed 100 / Acceleration 98, Acceleration Burst, Phenomenal Finishing), Possession sub-tactic with Pirlo for Makélélé against a deep block;
