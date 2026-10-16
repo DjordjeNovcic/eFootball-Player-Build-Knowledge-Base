@@ -305,14 +305,14 @@
     return `Frees ${r.boosterFreed} training pts: ${drops.join(", ")} (its +1s stand in for those levels), spent on ${ups.join(", ")} (§11, §12).`;
   }
 
-  // Managers: the user's seven (with Link-up data, §22) plus every eFHUB manager card.
+  // Managers: the user's eight (with Link-up data, §22) plus every eFHUB manager card.
   // Keys: "kb:<name>" / "ef:<id>"; older saves stored the bare name.
   // Photos and Link-up plays come from amine250's manager database (tools/fetch_players.py);
-  // the seven KB cards borrow the photo of the eFHUB card with the same proficiencies.
+  // the KB cards borrow the photo of the eFHUB card with the same proficiencies.
   const efSame = (m) => (window.EF_MANAGERS || []).find((e) => e.prof.slice(0, 5).join() === m.prof.slice(0, 5).join());
   const ALL_MANAGERS = [
     ...KB.MANAGERS.map((m) => ({ ...m, key: `kb:${m.name}`, photo: efSame(m)?.photo || null,
-      linkUps: m.linkUp ? [{ name: m.linkUp, centerPiece: m.centerPiece, keyMan: m.keyMan }] : [] })),
+      linkUps: m.linkUps || (m.linkUp ? [{ name: m.linkUp, centerPiece: m.centerPiece, keyMan: m.keyMan }] : []) })),
     ...(window.EF_MANAGERS || []).map((m) => ({ ...m, key: `ef:${m.id}`, linkUps: m.linkUps || [], affinity: null })),
   ];
   const mgrPhoto = (m, cls = "mgr-photo") => (m?.photo
@@ -1088,7 +1088,7 @@
     const list = me ? profileManagers() : ALL_MANAGERS.filter((m) => m.key.startsWith("ef:") && store.ownedManagers.includes(m.key));
     const current = managerKey(me ? KB.CURRENT_MANAGER : store.manager);
     $("#mgrMeta").textContent = me
-      ? "Seven owned cards · team booster is a flat +1/+1 on the whole squad (§17)"
+      ? `${list.length} owned cards · team booster is a flat +1/+1 on the whole squad (§17)`
       : `${list.length} owned by ${isMe() ? "you" : store.name} · pick them from eFHUB's ${ALL_MANAGERS.filter((m) => m.key.startsWith("ef:")).length} manager cards below`;
     const head = `<tr><th>Manager</th><th>Team booster</th>${KB.TACTICS.map((t) => `<th class="num">${t}</th>`).join("")}<th>Link-up · Center Piece → Key Man</th>${me ? "" : "<th></th>"}</tr>`;
     const row = (m, owned) => `
@@ -1112,7 +1112,10 @@
       return;
     }
 
-    $("#mgrLinks").innerHTML = KB.MANAGERS.map((m) => {
+    // One card per Link-up play — Mourinho's card carries two.
+    const linkCards = KB.MANAGERS.flatMap((mgr) => (mgr.linkUps || [{ name: mgr.linkUp, centerPiece: mgr.centerPiece, keyMan: mgr.keyMan }])
+      .map((l) => ({ ...mgr, linkUp: l.name, centerPiece: l.centerPiece, keyMan: l.keyMan })));
+    $("#mgrLinks").innerHTML = linkCards.map((m) => {
       const cp = playersFitting(m.centerPiece);
       const km = playersFitting(m.keyMan);
       const live = cp.length && km.length;

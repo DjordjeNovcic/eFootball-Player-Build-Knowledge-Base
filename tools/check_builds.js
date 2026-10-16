@@ -39,7 +39,7 @@ const MANAGER_SKILL = [.65, .6675, .685, .7025, .72, .7375, .755, .7725, .79, .8
   1, 1, 1.01163, 1.01389, 1.015625, 1.01755, 1.01925, 1.02125, 1.02275, 1.0244, 1.026, 1.02725, 1.029, 1.03, 1.03196, 1.03275, 1.03375, 1.034091,
   1.0355, 1.036, 1.0365, 1.036];
 const ALL_MANAGERS = [
-  ...KB.MANAGERS.map((m) => ({ ...m, key: `kb:${m.name}`, linkUps: m.linkUp ? [{ name: m.linkUp, centerPiece: m.centerPiece, keyMan: m.keyMan }] : [] })),
+  ...KB.MANAGERS.map((m) => ({ ...m, key: `kb:${m.name}`, linkUps: m.linkUps || (m.linkUp ? [{ name: m.linkUp, centerPiece: m.centerPiece, keyMan: m.keyMan }] : []) })),
   ...(window.EF_MANAGERS || []).map((m) => ({ ...m, key: `ef:${m.id}`, linkUps: m.linkUps || [] })),
 ];
 const managerObj = (v) => ALL_MANAGERS.find((m) => m.key === v) || ALL_MANAGERS.find((m) => m.name === v) || null;

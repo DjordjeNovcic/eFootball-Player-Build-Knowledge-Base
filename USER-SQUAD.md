@@ -129,7 +129,7 @@ Recent saved context (Sep 2026):
 - Primary style in the latest discussions: **Long Ball Counter**; Possession has also been
   considered/used as a secondary style.
 - Deschamps team booster: **Speed +1, Ball Control +1**.
-- Link-up/manager proficiency data for all seven owned managers remains in section 22 of
+- Link-up/manager proficiency data for all eight owned managers remains in section 22 of
   `KNOWLEDGE-BASE.md` and should be treated as canonical.
 - Fluid Formation and sub-tactics have been tested. Do not assume an older static XI is the
   current one if a new formation screenshot is supplied.
@@ -305,8 +305,8 @@ booster in training points: Hazard (Striker's Instinct), Eto'o (Physicality), Ka
 the booster is the only +1 left there (Hazard: Acceleration 96 → 97, Ball Control 96 → 97);
 Gullit 16, Messi 13, Makélélé 9, Pirlo 9, Dembélé 9, Varane 8, Vieira 8, Buffon 8, Maldini 7, Thuram 6,
 Seedorf 6, Sneijder 6, Stam 6, Zanetti 5, Desailly 4. Manager: Deschamps'
-Speed +1 / Ball Control +1 is worth ~19 points across the XI (Capello 19, Beckenbauer 15 —
-all LBC 89), so the manager stays.
+Speed +1 / Ball Control +1 is worth ~20 points across the XI (Capello 19, Beckenbauer 15, all LBC 89; Mourinho 15 — LBC 90
+but Finishing / Aggression), so the manager stays.
 
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
@@ -492,7 +492,8 @@ section 9 and section 19 of `KNOWLEDGE-BASE.md`:
 
 # 6. Owned Managers
 
-The user confirmed these seven manager cards from screenshots on 24 Sep 2026:
+The user confirmed these seven manager cards from screenshots on 24 Sep 2026, and the
+eighth on 16 Oct 2026:
 
 - D. Deschamps
 - R. Martínez
@@ -501,6 +502,12 @@ The user confirmed these seven manager cards from screenshots on 24 Sep 2026:
 - Xabi Alonso
 - Fabio Capello
 - Frank Lampard
+- José Mourinho — screenshot 16 Oct 2026: Finishing +1 / Aggression +1, Long Ball Counter 90
+  (Quick Counter 82, Long Ball 75), Link-ups Shadow Link A (Deep-Lying Forward CF →
+  Classic No. 10 AMF) and 1-2 Cut-in C (Prolific Winger LWF/RWF → Deep-Lying Forward CF).
+  The eFHUB card released 10 Sep 2026 (`17608560707469`), not his two older cards. Worth
+  ~15 training points across the current XI against Deschamps' 20 and no Link-up fits the
+  4-2-2-2 (KNOWLEDGE-BASE §22), so he is not the current manager.
 
 Do **not** duplicate their full booster/proficiency/link-up matrix here. The canonical matrix
 is section 22 of `KNOWLEDGE-BASE.md` so there is only one place to update it.

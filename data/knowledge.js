@@ -258,9 +258,11 @@ window.KB = (() => {
     },
   };
 
-  /* ---- Sections 17 & 22 + USER-SQUAD §3/§6: the user's seven managers ---- */
+  /* ---- Sections 17 & 22 + USER-SQUAD §3/§6: the user's eight managers ---- */
   const TACTICS = ["Possession", "Quick Counter", "Long Ball Counter", "Out Wide", "Long Ball", "Overload"];
-  const M = (name, boost, prof, linkUp, centerPiece, keyMan, affinity = null) => ({ name, boost, prof, linkUp, centerPiece, keyMan, affinity });
+  // A card can carry two Link-up plays (Mourinho): `linkUps` lists them all, `linkUp` stays the first.
+  const M = (name, boost, prof, linkUp, centerPiece, keyMan, affinity = null, moreLinkUps = []) => ({ name, boost, prof, linkUp, centerPiece, keyMan, affinity,
+    linkUps: [{ name: linkUp, centerPiece, keyMan }, ...moreLinkUps] });
   const MANAGERS = [
     M("D. Deschamps", ["speed", "ballControl"], [89, 68, 89, 59, 63, null], "Breakthrough Pass A", ["Creative Playmaker", "AMF"], ["Goal Poacher", "CF"]),
     M("R. Martínez", ["finishing", "offensiveAwareness"], [58, 90, 70, 64, 89, null], "Diagonal Long Pass B", ["Creative Playmaker", "LWF/RWF"], ["Offensive Full-back", "LB/RB"], "Star Players+ (5★ +200% XP)"),
@@ -269,6 +271,9 @@ window.KB = (() => {
     M("Xabi Alonso", ["ballControl", "finishing"], [71, 89, 54, 89, 56, null], "Breakthrough Pass A", ["Creative Playmaker", "AMF"], ["Goal Poacher", "CF"], "MF Players+ (MF +400% XP)"),
     M("Fabio Capello", ["defensiveAwareness", "finishing"], [46, 57, 89, 64, 89, null], "Over-the-Top Pass A", ["Orchestrator", "DMF"], ["Goal Poacher", "CF"], "Veteran Players+ (30+ +200% XP)"),
     M("Frank Lampard", ["lowPass", "defensiveEngagement"], [75, 60, 58, 69, 89, 89], "1-2 Cut-in A", ["Creative Playmaker", "LWF/RWF"], ["Fox in the Box", "CF"], "Young Players+ (≤23 +200% XP)"),
+    // Screenshot 16 Oct 2026 (USER-SQUAD §6): the 10 Sep 2026 eFHUB card (id 17608560707469), not his two older ones.
+    M("José Mourinho", ["finishing", "aggression"], [62, 82, 90, 67, 75, 59], "Shadow Link A", ["Deep-Lying Forward", "CF"], ["Classic No. 10", "AMF"], null,
+      [{ name: "1-2 Cut-in C", centerPiece: ["Prolific Winger", "LWF/RWF"], keyMan: ["Deep-Lying Forward", "CF"] }]),
   ];
   const CURRENT_MANAGER = "D. Deschamps"; // USER-SQUAD §3 (Sep 2026)
 
@@ -481,7 +486,7 @@ window.KB = (() => {
       { text: "Builds (11 Oct, don't fight the card): no category goes past level 12 — levels 13–20 cost 4–5 points each and mean the card isn't made for that stat (§13). Maldini 0-0-0-14-8-6-8 → 0-0-0-12-8-7-10 Agility +1: Acceleration 88 (the stride threshold) instead of 91, Defensive Awareness 96, Tackling 97, Defensive Engagement 98.", basis: "reasoning" },
       { text: "Builds (11 Oct, Speed): training never takes Speed past 96, and a holding midfielder stops at 92 (§3). Eto'o 8-0-10-8-10-2-0 → 9-1-12-8-5-4-0 Physicality +1 (Speed 100 → 96; Ball Control 95, Finishing 93, Physical Contact 83). Makélélé 0-4-2-8-12-4-10 → 0-6-4-10-8-4-10 Hard Worker +1 (Speed 96 → 92; Low Pass 90, Acceleration 96, Balance 94, defending unchanged). Messi 8-11-6-7-7-4-1 Shooting +1 (Speed 94, Low Pass 95, Finishing 92). Ibrahimović 5-1-6-10-11-8-0 Fantasista +1 (Finishing 93, Kicking Power 98).", basis: "reasoning" },
       // 16 Oct: boosters valued as the progression levels they replace (KNOWLEDGE-BASE §11).
-      { text: "Builds (16 Oct, booster = progression points — user insight): a slot-2 +1 stands in for a category level, 3 points each at levels 9–12, so every booster is now judged on the build it frees (§11). In the XI only Messi changes: 8-11-6-7-7-4-1 Shooting +1 → 9-10-6-7-7-4-1 Offence Creator +1 (Attacking Awareness 89 → 90, Curl 93, Finishing 92, Ball Control 97; Lofted Pass 90 → 89) — worth about 13 training points. Bench: Ibrahimović 5-1-6-10-11-8-0 Fantasista +1 → 5-0-8-10-10-8-0 Agility +1 (Acceleration 91, Tight Possession 87; Finishing 92), Puskás 7-3-8-9-8-7-0 Agility +1 → 7-2-8-8-10-6-0 Hard Worker +1 (Speed 94, Kicking Power 94, Stamina 85). Everyone else keeps booster and build; Hazard's, Eto'o's and Kaká's boosters buy what no training can (Dexterity / Dribbling at the level-12 cap). Deschamps' Speed / Ball Control is worth about 19 points across the XI (Capello 19, Beckenbauer 15) — no manager change.", basis: "reasoning" },
+      { text: "Builds (16 Oct, booster = progression points — user insight): a slot-2 +1 stands in for a category level, 3 points each at levels 9–12, so every booster is now judged on the build it frees (§11). In the XI only Messi changes: 8-11-6-7-7-4-1 Shooting +1 → 9-10-6-7-7-4-1 Offence Creator +1 (Attacking Awareness 89 → 90, Curl 93, Finishing 92, Ball Control 97; Lofted Pass 90 → 89) — worth about 13 training points. Bench: Ibrahimović 5-1-6-10-11-8-0 Fantasista +1 → 5-0-8-10-10-8-0 Agility +1 (Acceleration 91, Tight Possession 87; Finishing 92), Puskás 7-3-8-9-8-7-0 Agility +1 → 7-2-8-8-10-6-0 Hard Worker +1 (Speed 94, Kicking Power 94, Stamina 85). Everyone else keeps booster and build; Hazard's, Eto'o's and Kaká's boosters buy what no training can (Dexterity / Dribbling at the level-12 cap). Deschamps' Speed / Ball Control is worth about 20 points across the XI (Capello 19, Beckenbauer 15, Mourinho 15 — Long Ball Counter 90 but Finishing / Aggression, and Link-ups that need a Deep-Lying Forward CF) — no manager change.", basis: "reasoning" },
       { text: "Messi's build (11 Oct): a Creative Playmaker doesn't buy the 100+ Speed step — 96 is already top speed and he lives on the ball. 5-8-6-6-13-4-0 Passing +1 → 8-9-6-7-9-5-0 Offence Creator +1: Speed 100 → 96 and Kicking Power 95 → 91 pay for Attacking Awareness 90, Finishing 91, Curl 92, Low Pass 94, Ball Control 97, Balance 96 (AMF 106 → 107). Kicking Power 91 still clears the Blitz Curler target.", basis: "reasoning" },
     ],
     instructions: [

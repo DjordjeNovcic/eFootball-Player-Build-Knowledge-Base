@@ -1501,10 +1501,11 @@ Rules that follow:
   42 of 50 free-slot cards already had the best booster, and 8 changed (in the XI only
   Messi: Shooting +1 → Offence Creator +1, Offensive Awareness 89 → 90).
 - **Manager Booster, same arithmetic** (section 17): Deschamps' Speed +1 / Ball Control +1
-  is worth about 19 training points across the current XI; Capello (Defensive Awareness /
-  Finishing) also 19, Beckenbauer (Dribbling / Defensive Awareness) 15 — all three at Long
-  Ball Counter 89, so the manager stays. The other four owned managers are out on
-  proficiency alone. Re-run: `node tools/booster_audit.js`.
+  is worth about 20 training points across the current XI; Capello (Defensive Awareness /
+  Finishing) 19, Beckenbauer (Dribbling / Defensive Awareness) 15 — all three at Long
+  Ball Counter 89 — and Mourinho (Finishing / Aggression, Long Ball Counter 90, owned since
+  16 Oct 2026) 15: Aggression does nothing for this XI. The manager stays; the other four
+  owned managers are out on proficiency alone. Re-run: `node tools/booster_audit.js`.
 
 ---
 
@@ -2356,9 +2357,9 @@ that snapshot, current role notes and dated build snapshots are maintained in
 
 ---
 
-# 22. User's Owned Managers (screenshots, 24 Sep 2026)
+# 22. User's Owned Managers (screenshots, 24 Sep 2026; Mourinho 16 Oct 2026)
 
-These seven **specific manager cards are confirmed owned by the user**. Keep
+These eight **specific manager cards are confirmed owned by the user**. Keep
 their Link-up requirements separate from their team playstyle proficiency;
 the manager's listed effect cannot be assumed active until both player roles
 and positions match the card.
@@ -2372,11 +2373,17 @@ and positions match the card.
 | Xabi Alonso | Ball Control +1; Finishing +1 | 71 | 89 | 54 | 89 | 56 | N/A | Breakthrough Pass A | Creative Playmaker, AMF | Goal Poacher, CF |
 | Fabio Capello | Defensive Awareness +1; Finishing +1 | 46 | 57 | 89 | 64 | 89 | N/A | Over-the-Top Pass A | Orchestrator, DMF | Goal Poacher, CF |
 | Frank Lampard | Low Pass +1; Defensive Engagement +1 | 75 | 60 | 58 | 69 | 89 | 89 | 1-2 Cut-in A | Creative Playmaker, LWF/RWF | Fox in the Box, CF |
+| José Mourinho | Finishing +1; Aggression +1 | 62 | 82 | 90 | 67 | 75 | 59 | Shadow Link A; 1-2 Cut-in C | Deep-Lying Forward, CF; Prolific Winger, LWF/RWF | Classic No. 10, AMF; Deep-Lying Forward, CF |
 
 The first screenshot contains two cards. Screenshots in displayed order: `14.07.50` (Deschamps/Martínez),
 `14.07.55` (Beckenbauer), `14.08.00` (Klopp), `14.08.06` (Alonso),
 `14.08.23` (Capello), `14.08.36` (Lampard). `N/A` is as shown on the
 manager card; do not record it as 0 proficiency.
+
+José Mourinho: screenshot `19.14.39` (16 Oct 2026) — the eFHUB card released 10 Sep 2026
+(id `17608560707469`, Finishing +1 / Aggression +1), not his two older cards (Physical
+Contact / Stamina, Aug 2025; Tackling, Feb 2025). One card, two Link-up plays: Shadow Link A
+and 1-2 Cut-in C.
 
 ## Application to the current 4-2-2-2 Quick Counter XI
 
@@ -2397,6 +2404,13 @@ manager card; do not record it as 0 proficiency.
   (Eto'o). **Deschamps (LBC 89)** has the same role/position Link-up pair as
   Alonso. Capello's LBC 89 Link-up specifically calls for an **Orchestrator
   DMF**; Vieira's Anchor Man at DMF would not satisfy it.
+- **Mourinho (LBC 90, owned 16 Oct 2026)** has the squad's highest Long Ball Counter
+  proficiency, but for the current 4-2-2-2 his Finishing +1 / Aggression +1 is worth
+  about 15 training points across the XI against Deschamps' 20 (section 11 — Aggression
+  does nothing for this XI), and neither Link-up fits: Shadow Link A needs a Deep-Lying
+  Forward CF with a Classic No. 10 AMF (Puskás or Messi's SS card, with Stojković), 1-2
+  Cut-in C a Prolific Winger with a Deep-Lying Forward CF. Deschamps stays; Mourinho is
+  the manager for a Deep-Lying Forward front line, not this one.
 
 ---
 
