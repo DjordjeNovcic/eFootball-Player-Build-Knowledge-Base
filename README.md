@@ -17,7 +17,10 @@ Two parts:
     optimised for OVR, rated with your manager and playstyle; plus the **spending order**
     (the build at every 5th level while he trains up) and Open in Trainer / Use as my build.
     Filter by position group, playing style, or **Starting XI** / **Bench** of the active
-    lineup. The old `#recommended` link opens this tab. Originally:
+    lineup. A **manager / playstyle picker** in the toolbar (also on My Builds, remembered in
+    the browser) makes every Recommended by AI build for that manager — his +1/+1 booster and
+    playstyle proficiency move the points and can change the slot-2 booster (§11, §17) — and
+    each sheet has **Build by manager**: the same card under every owned manager, side by side. The old `#recommended` link opens this tab. Originally:
     boosters, level cap and role notes. **+ Add player** imports a card from its eFHUB
     page via a "Copy to Build Lab" bookmarklet (eFHUB pages can't be fetched cross-site);
     ✕ removes a card (restorable). Both are stored in the browser.

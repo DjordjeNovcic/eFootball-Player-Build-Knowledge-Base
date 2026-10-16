@@ -1624,3 +1624,16 @@ input[type="email"]:focus, input[type="password"]:focus{ border-color: var(--lim
 .cmp-table__val{ display: inline-block; min-width: 2.4rem; padding: 0.15rem 0.3rem; border-radius: 3px; font-family: var(--font-cond); font-weight: 700; }
 .cmp-table td.is-best .cmp-table__val{ box-shadow: 0 0 0 2px var(--lime); }
 .build-dialog{ max-width: min(96vw, 64rem); }
+
+/* Recommended by AI — build by manager (sheet) and the manager / playstyle picker */
+.rec-ctx{ max-width: 17rem; }
+.rec-bymgr{ padding: 0; }
+.rec-bymgr summary{ cursor: pointer; padding: 0.7rem 1rem; font-family: var(--font-cond); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--lime-dim); list-style: none; display: flex; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+.rec-bymgr summary::-webkit-details-marker{ display: none; }
+.rec-bymgr summary::before{ content: "▸"; margin-right: 0.4rem; }
+.rec-bymgr[open] summary::before{ content: "▾"; }
+.rec-bymgr__body{ padding: 0 1rem 0.7rem; }
+.rec-bymgr__table td b{ font-weight: 600; }
+.rec-bymgr__table td small{ display: block; color: var(--paper-dim); font-size: 0.72rem; }
+.rec-bymgr__table tr.is-current td{ color: var(--lime); }
+.rec-bymgr__table .mgr-photo--inline{ vertical-align: middle; margin-right: 0.35rem; }

@@ -804,8 +804,11 @@
   }
 
   $("#trainPlayer").addEventListener("change", (e) => go("train", e.target.value));
-  $("#trainManager").addEventListener("change", (e) => { store.manager = e.target.value; syncMgrPhoto("trainManager"); saveStore(); renderTrainer(); renderSquad(); });
-  $("#trainTactic").addEventListener("change", (e) => { store.tactic = e.target.value; saveStore(); renderTrainer(); renderSquad(); });
+  // A friend's recommendations follow the Trainer's manager / playstyle (recContext) unless
+  // the toolbar picker overrides them — rebuild them only when the context really moved.
+  const afterTrainCtx = (before) => { if (JSON.stringify(recContext()) !== before) setRecContext({}); else renderSquad(); };
+  $("#trainManager").addEventListener("change", (e) => { const before = JSON.stringify(recContext()); store.manager = e.target.value; syncMgrPhoto("trainManager"); saveStore(); renderTrainer(); afterTrainCtx(before); });
+  $("#trainTactic").addEventListener("change", (e) => { const before = JSON.stringify(recContext()); store.tactic = e.target.value; saveStore(); renderTrainer(); afterTrainCtx(before); });
   $("#trainBoost2").addEventListener("change", (e) => { view.draft.booster2 = e.target.value ? Number(e.target.value) : null; renderTrainer(); });
   $("#trainCap").addEventListener("change", (e) => {
     const v = Math.max(1, Math.min(99, Number(e.target.value) || byId[view.playerId].levelCap));
@@ -2523,8 +2526,19 @@
   --------------------------------------------------------- */
 
   // Recommendations are rated in the profile's own context: USER-SQUAD §3 for me,
-  // the chosen manager/playstyle for a friend.
-  const recContext = () => (ownsRepo() ? { manager: KB.CURRENT_MANAGER, tactic: "Long Ball Counter" } : { manager: store.manager, tactic: store.tactic });
+  // the chosen manager/playstyle for a friend — unless a manager / playstyle is picked in
+  // the My Squad or My Builds toolbar (kept in this browser): a manager's +1/+1 and his
+  // playstyle proficiency move the points, so every card gets the best build for *that*
+  // manager (§11 "Booster = progression points", §17).
+  const REC_CTX_KEY = "efblab.recCtx";
+  const recState = (() => { try { return JSON.parse(localStorage.getItem(REC_CTX_KEY) || "{}"); } catch { return {}; } })();
+  const baseRecContext = () => (ownsRepo() ? { manager: KB.CURRENT_MANAGER, tactic: "Long Ball Counter" } : { manager: store.manager, tactic: store.tactic });
+  const recContext = () => {
+    const base = baseRecContext();
+    const manager = recState.manager && profileManagers().some((m) => m.key === recState.manager) ? recState.manager : base.manager;
+    const tactic = KB.TACTICS.includes(recState.tactic) ? recState.tactic : base.tactic;
+    return { manager, tactic };
+  };
   const recContextLabel = () => { const c = recContext(); return `${managerObj(c.manager)?.name || "no manager"} at ${c.tactic}`; };
   const recContextHtml = () => { const c = recContext(); const m = managerObj(c.manager); return `${mgrPhoto(m, "mgr-photo mgr-photo--inline")}${esc(m?.name || "no manager")} at ${esc(c.tactic)}`; };
   let REC = null; // filled at init (needs the multiplier table above)
@@ -2534,6 +2548,54 @@
     onBench: (id) => lineupRole(id)?.label === "Bench",
   });
   const makeRecommender = () => window.Recommender(recDeps());
+
+  // The manager / playstyle pickers on My Squad and My Builds (one choice, two places).
+  function syncRecControls() {
+    const ctx = recContext();
+    const mOpts = profileManagers().map((m) => `<option value="${esc(m.key)}">${esc(m.name)} — ${m.boost.map(statLabel).join(" +1, ")} +1</option>`).join("");
+    const tOpts = KB.TACTICS.map((t) => { const prof = managerProficiency(ctx.manager, t); return `<option value="${esc(t)}">${esc(t)}${prof != null ? ` · ${prof}` : ""}</option>`; }).join("");
+    ["squad", "mine"].forEach((prefix) => {
+      const m = $(`#${prefix}Manager`), t = $(`#${prefix}Tactic`);
+      if (!m || !t) return;
+      m.innerHTML = mOpts; m.value = managerKey(ctx.manager);
+      t.innerHTML = tOpts; t.value = ctx.tactic;
+    });
+  }
+  function setRecContext(patch) {
+    Object.assign(recState, patch);
+    try { localStorage.setItem(REC_CTX_KEY, JSON.stringify(recState)); } catch { /* private mode */ }
+    REC = makeRecommender();
+    // Open sheets were built for the old context — drop them so they're rebuilt on render.
+    document.querySelectorAll("#squadGrid .rec-card__body").forEach((el) => el.remove());
+    syncRecControls();
+    renderSquad(); renderMyBuilds();
+  }
+  ["squad", "mine"].forEach((prefix) => {
+    $(`#${prefix}Manager`)?.addEventListener("change", (e) => setRecContext({ manager: e.target.value }));
+    $(`#${prefix}Tactic`)?.addEventListener("change", (e) => setRecContext({ tactic: e.target.value }));
+  });
+  // "Build by manager" in a card's sheet: the card through recommend.js once per owned
+  // manager (same playstyle), computed on first open.
+  $("#squadGrid").addEventListener("toggle", (e) => {
+    const d = e.target.closest?.("[data-rec-managers]");
+    if (!d || !d.open || d.dataset.done) return;
+    d.dataset.done = "1";
+    const p = byId[d.dataset.recManagers];
+    const box = d.querySelector(".rec-bymgr__body");
+    if (!p || !box) return;
+    setTimeout(() => {
+      const ctx = recContext();
+      const line = (lv) => categoriesFor(p).map((c) => lv[c.key] || 0).join("-");
+      const rows = profileManagers().map((m) => {
+        const r = window.Recommender({ ...recDeps(), players: [p], context: { manager: m.key, tactic: ctx.tactic } }).recs[p.id];
+        const prof = managerProficiency(m.key, ctx.tactic);
+        const cur = m.key === managerKey(ctx.manager);
+        return `<tr class="${cur ? "is-current" : ""}"><td>${mgrPhoto(m, "mgr-photo mgr-photo--inline")}<b>${esc(m.name)}</b><small>${m.boost.map((k) => `${statLabel(k)} +1`).join(", ")}${prof != null ? ` · ${esc(ctx.tactic)} ${prof}` : ""}</small></td><td><code>${line(r.levels)}</code></td><td>${esc(r.booster.name)}</td><td class="num">${r.rating}</td></tr>`;
+      });
+      box.innerHTML = `<div class="table-wrap"><table class="kb-table rec-bymgr__table"><thead><tr><th>Manager</th><th>Build</th><th>Slot 2</th><th class="num">OVR</th></tr></thead><tbody>${rows.join("")}</tbody></table></div>
+        <p class="rec-muted">Same playstyle (${esc(ctx.tactic)}); the manager's +1/+1 and his proficiency move the points (§11, §17). Pick a manager in the toolbar to make every build for him.</p>`;
+    }, 0);
+  }, true);
   // One card's recommendation again (its ★ skills changed) without redoing the whole squad;
   // the squad-relative rank is kept.
   function refreshRec(id) {
@@ -2644,6 +2706,11 @@
             <p class="rec-muted">${r.boosterFixed ? "Slot 2 is pre-assigned on this card." : `Picked last, on the finished build (§11)${slot1.length ? ` — slot 1 (${esc(p.booster1.name)}) already covers ${slot1.map(statLabel).join(", ")}` : ""}${r.boosterOverlap ? `; overlaps ${r.boosterOverlap} of them` : ""}.`}</p>
             ${r.boosterFixed ? "" : `<p class="rec-muted">${esc(boosterTradeText(r))}</p>`}
           </section>
+
+          <details class="rec-sec rec-bymgr" data-rec-managers="${p.id}">
+            <summary>Build by manager <span class="rec-muted">this one: ${esc(managerObj(recContext().manager)?.name || "no manager")} at ${esc(recContext().tactic)} · ${profileManagers().length} managers</span></summary>
+            <div class="rec-bymgr__body"><p class="rec-muted">Computing…</p></div>
+          </details>
 
           <section class="rec-sec">
             <h4>Target stats</h4>
@@ -2798,7 +2865,12 @@
 
   document.addEventListener("click", (e) => {
     const open = e.target.closest("[data-rec-open]");
-    if (open) openInTrainer(open.dataset.recOpen, recBuild(open.dataset.recOpen));
+    if (open) {
+      // The Trainer rates with the same manager and playstyle the build was made for.
+      const ctx = recContext();
+      store.manager = managerKey(ctx.manager); store.tactic = ctx.tactic; saveStore();
+      openInTrainer(open.dataset.recOpen, recBuild(open.dataset.recOpen));
+    }
     const use = e.target.closest("[data-rec-use]");
     if (use) useRecommendation(use.dataset.recUse);
     const edit = e.target.closest("[data-mine-edit]");
@@ -3301,6 +3373,7 @@
     rebuildNativeIndex();
     REC = makeRecommender();
     ensureSkillPlans();
+    syncRecControls();
     if (!byId[view.playerId]) view.playerId = null;
     renderPlayerSelect();
     renderSquad(); renderSkills(); renderManagers(); renderStyles(); renderLineup(); renderMyBuilds();
@@ -3445,6 +3518,7 @@
   seedMatchPlans();
   REC = makeRecommender();
   ensureSkillPlans();
+  syncRecControls();
   renderProfileBar();
   renderRemoved();
   renderPlayerSelect();
