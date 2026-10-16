@@ -149,7 +149,7 @@
   function blankProfile(kind, name, extra = {}) {
     return { kind, name, builds: {}, manager: kind === "me" ? KB.CURRENT_MANAGER : "", tactic: "Long Ball Counter",
       lineups: [], activeLineup: null, positions: {}, customPlayers: {}, removed: [], ownedManagers: [],
-      playerSkills: {}, skillSource: {}, ...extra };
+      playerSkills: {}, skillSource: {}, buildAs: {}, ...extra };
   }
   function normaliseProfile(p, kind, name) {
     return { ...blankProfile(kind, name), ...p, kind, name: p.name || name };
@@ -292,6 +292,23 @@
   function booster2Of(p, build) {
     if (p.booster2Fixed) return p.booster2Fixed;
     return DATA.boosterPool.find((b) => b.id === build.booster2) || null;
+  }
+
+  // §14 step 1: a card that rates clearly higher at another position it can play gets that
+  // position's build next to its own — Gullit's AMF card as a 109 CF. "Build as CF" keeps
+  // the choice in this browser (store.buildAs); USER-SQUAD's buildAs is the default.
+  function betterAsHtml(p, r) {
+    const alt = r.betterAs;
+    if (!alt || !REC) return "";
+    const as = REC.recommendAs(p, alt.pos);
+    const line = categoriesFor(p).map((c) => as.levels[c.key] || 0).join("-");
+    const here = r.buildAs || p.position;
+    return `
+          <section class="rec-sec rec-alt">
+            <h4>Better as ${esc(alt.pos)}? <span class="rec-muted">this build rates ${alt.r} there · ${esc(here)} ${r.rating}</span></h4>
+            <p>Built for ${esc(alt.pos)} (${esc(as.roleLabel)}): <code>${line}</code> · ${esc(as.booster.name)} · <b>${as.rating}</b>${as.rating > r.rating ? "" : " — no gain once rebuilt for it"}.</p>
+            <div class="rec-card__actions"><button type="button" class="btn btn--icon btn--solid" data-build-as="${p.id}|${esc(alt.pos)}">Build as ${esc(alt.pos)}</button></div>
+          </section>`;
   }
 
   // §11/§12: the trade the recommended slot-2 booster enabled — its +1s stand in for
@@ -511,6 +528,7 @@
             <div class="squad-card__meta">
               ${role ? `<span class="badge badge--lime">${esc(role.label)} in lineup</span>` : ""}
               ${r ? `<span class="badge" title="By the AI build, among the ${p.position} cards in your squad">#${r.depth.rank}/${r.depth.of} ${p.position}</span>` : ""}
+              ${r?.betterAs ? `<span class="badge badge--violet" title="This build rates ${r.betterAs.r} at ${r.betterAs.pos} — open the card for the ${r.betterAs.pos} build">Better as ${r.betterAs.pos}?</span>` : ""}
               ${r ? (r.lock ? `<span class="badge badge--green">Lock</span>` : `<span class="badge badge--amber">Test variant</span>`) : ""}
               ${p.custom ? `<span class="badge badge--amber" title="Added in this browser">Added here</span>` : ""}
               ${savedBadge}
@@ -2548,6 +2566,8 @@
     players, KB, OVR, norm, skillLabel, categoriesFor, levelCost, cumCost, budgetFor, profAt,
     skillMultiplier, managerProficiency, managerObj, notesFor, myPicks, context: recContext(), MAX_LEVEL, boosterPool: DATA.boosterPool,
     onBench: (id) => lineupRole(id)?.label === "Bench",
+    // "Build as CF": the position a card is built for in this browser (overrides USER-SQUAD).
+    buildAsFor: (id) => store.buildAs?.[id] || null,
   });
   const makeRecommender = () => window.Recommender(recDeps());
 
@@ -2687,10 +2707,13 @@
           <section class="rec-sec">
             <h4>Role</h4>
             <p><b>${r.buildAs || p.position} — Attacking: ${esc(att?.name || p.playingStyle || "Basic")} · Defensive: ${esc(p.playingStyleDefensive ? (def?.name || p.playingStyleDefensive) : "—")}</b></p>
-            <p class="rec-muted">${esc(r.roleLabel)} priorities (§7).${r.buildAs ? ` Built for ${esc(r.buildAs)}, where he plays (USER-SQUAD) — the card is ${esc(p.position)} and its style is inactive there (§18).` : ""}</p>
+            <p class="rec-muted">${esc(r.roleLabel)} priorities (§7).${r.buildAs ? ` Built for ${esc(r.buildAs)}, where he plays${store.buildAs?.[p.id] ? "" : " (USER-SQUAD)"} — the card is ${esc(p.position)} and its style is inactive there (§18).` : ""}</p>
             <div class="rec-style">${styleGuideHtml(p, r.buildAs || p.position)}</div>
             ${r.notes.map((n) => `<p class="rec-note">${esc(n)}</p>`).join("")}
+            ${store.buildAs?.[p.id] ? `<p><button type="button" class="btn btn--icon" data-build-as="${p.id}|">Back to the default build${notesFor(p.id)?.buildAs ? ` (${esc(notesFor(p.id).buildAs)}, USER-SQUAD)` : ` (${p.position})`}</button></p>`
+              : r.buildAs ? `<p><button type="button" class="btn btn--icon" data-build-as="${p.id}|${p.position}">Build as ${p.position} instead</button></p>` : ""}
           </section>
+          ${betterAsHtml(p, r)}
 
           <section class="rec-sec">
             <h4>Build <span class="rec-muted">${pts}/${budgetFor(p.levelCap)} pts</span></h4>
@@ -2875,6 +2898,15 @@
     }
     const use = e.target.closest("[data-rec-use]");
     if (use) useRecommendation(use.dataset.recUse);
+    const ba = e.target.closest("[data-build-as]");
+    if (ba) {
+      const [id, pos] = ba.dataset.buildAs.split("|");
+      store.buildAs ||= {};
+      if (pos) store.buildAs[id] = pos; else delete store.buildAs[id];
+      saveStore();
+      setRecContext({}); // rebuilds the recommendations and the open sheets
+      renderLineup();
+    }
     const edit = e.target.closest("[data-mine-edit]");
     if (edit) {
       const id = edit.dataset.mineEdit;

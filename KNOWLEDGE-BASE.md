@@ -1717,6 +1717,15 @@ Do NOT build before deciding this. A raw stat is not equally valuable across
 playstyles even at the same position — see section 18's Hole Player vs Creative
 Playmaker comparison for why.
 
+**Check the other positions he can play (16 Oct 2026, user decision — "recommend him as a
+CF even if the card says AMF, like Gullit").** When the finished build already rates two or
+more points higher at another position with high or intermediate proficiency, say so and
+show the build made for that position (section 18's "build for the position he plays"):
+Gullit's AMF Hole Player card is a 109 Goal Poacher at CF. The Build Lab flags it on the
+card ("Better as CF?"), shows the CF build in the sheet and "Build as CF" keeps it. A
+Defensive Full-back rating higher at CB, or an AMF at LWF, is only a hint — the squad's
+shape decides whether the slot exists.
+
 ---
 
 ## Step 2 - Inspect player model
