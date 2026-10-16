@@ -373,18 +373,18 @@ Possession sub-tactic and the diamond. The Lineup tab shows each player's rating
 he stands in (user, 16 Oct 2026 — Gullit at CF 109, not his AMF card's 105); the bench shows
 the card's position, or `buildAs`.
 
-**XI — 16 Oct 2026, later (the user's, set in the app):** Deschamps, Long Ball Counter,
-4-3-1-2 with the second striker's marker set to SS; no Fluid Formation, no sub-tactic (the
-user switches to Possession by hand when it gets tight). Buffon; Marcelo, Varane, Desailly,
-Thuram; Vieira (Makélélé 106 recommended instead, 104), Seedorf; Messi — the Creative
-Playmaker card — at AMF (107, style active; the Deep-Lying Forward SS card played there as
-Basic and went off the sheet); Hazard SS (110); **Gullit SS** next to Ibrahimović CF (108):
-with the SS role his Hole Player is active — runs from deep, the late arrival he lacked at
-CF — at 107 against 109 as a Basic CF; the CF build stays, it rates the same 107 at SS as a
-dedicated Hole Player build. Mourinho (LBC 90) was tried and dropped: both Link-ups
-inactive, Aggression +1 idle, the XI rates the same. Link-up off with this front pair (no
-Goal Poacher CF) — Eto'o for Ibrahimović lights Breakthrough Pass A. Bench: Eto'o, Puskás,
-C. Ronaldo, Bale, Ronaldinho, Bellingham, Sneijder, Pirlo, Makélélé, Maldini, Cafu, Stam.
+**XI — 16 Oct 2026, evening (the user's, set in the app):** Deschamps, Long Ball Counter,
+4-3-1-2; no Fluid Formation, no sub-tactic (the user switches to Possession by hand when it
+gets tight). Buffon; Maldini, Varane, Desailly, Thuram; Makélélé DMF, Seedorf CMF (left);
+Messi — the Creative Playmaker card — at AMF in the right half-space (108, style active; the
+Deep-Lying Forward SS card played there as Basic and went off the sheet); Hazard SS (109);
+Ibrahimović CF (108) and **Gullit CF (108, Basic)**. Average 106.5. Mourinho (LBC 90) was
+tried and dropped: both Link-ups inactive, Aggression +1 idle, the XI rates the same.
+Breakthrough Pass A is one player short: Messi is the Center Piece, the Key Man (Goal Poacher
+CF) is on the bench — Eto'o for Gullit or Ibrahimović lights it. Alternative kept open:
+Gullit's marker set to SS (Hole Player active, 107 — the CF build rates the same there as a
+dedicated Hole Player build). Bench: Eto'o, Puskás, C. Ronaldo, Bale, Ronaldinho, Bellingham,
+Sneijder, Pirlo, Vieira, Marcelo, Cafu, Stam.
 
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
