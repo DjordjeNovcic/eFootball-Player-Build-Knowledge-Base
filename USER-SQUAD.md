@@ -92,6 +92,7 @@ They may represent cards added later, older variants, or cards that were not par
 | Jude Bellingham | `56166629640005` | Older exact card URL previously supplied; do not confuse with `89138556700485`. |
 | Gareth Bale | `88045755861672` | Added via tools/fetch_players.py --add (10 Oct 2026). |
 | Riccardo Calafiori | `106788993239598` | Added via tools/fetch_players.py --add (10 Oct 2026). |
+| Marcelo | `88045755861084` | Added via tools/fetch_players.py --add (16 Oct 2026). |
 
 ---
 
@@ -118,6 +119,7 @@ Known role context used repeatedly in Build Lab discussions:
 | Pirlo | CMF/DMF — Orchestrator. |
 | Del Piero | Goal Poacher card context. |
 | Buffon | GK; exact current progression/additional skills require a current screenshot. |
+| Marcelo | LB — Full-back Finisher / Covering Role; bought 16 Oct 2026, the attacking alternative to Maldini. |
 
 ---
 
@@ -469,6 +471,21 @@ snapshots**, not permanent locks. A newer screenshot always overrides them.
 - Additional skills: **Super-sub** (user already added), Through Passing, One-touch Pass,
   Fighting Spirit, Chip Shot Control.
 
+## Marcelo (`88045755861084`) — 16 Oct 2026
+
+- Bought 16 Oct 2026 — the Epic LB card from the public database (Madrid Chamartín B,
+  174 cm, left foot, Level Cap 33, slot 1 Ball Protection +4). Role: **LB — Full-back
+  Finisher / Covering Role**; the Build Lab builds him as Covering Role (no template for
+  Full-back Finisher).
+- AI build (Deschamps, LBC): `0 - 1 - 0 - 5 - 9 - 10 - 12` (64/64), **Shutdown +1** — Speed 92,
+  Acceleration 90, Defensive Awareness 91, Tackling 93, Defensive Engagement 88, Physical
+  Contact 85, Stamina 93, Lofted Pass 85; LB rating 104, level with Maldini (104).
+- AI additional skills: Interception, Blocker, Man Marking, Sliding Tackle, One-touch Pass.
+- Natural skills worth noting: Double Touch, Flip Flap, Sole Control, Pinpoint Crossing,
+  Phenomenal Pass, Edged Crossing, Momentum Dribbling — the attacking full-back package
+  Maldini doesn't have. Maldini stays the defensive choice in the 4-2-2-2; Marcelo is the
+  option when the left side needs to attack.
+
 ---
 
 # 5. Additional-Skill Preference Rules Specific to This User
@@ -505,7 +522,7 @@ eighth on 16 Oct 2026:
 - José Mourinho — screenshot 16 Oct 2026: Finishing +1 / Aggression +1, Long Ball Counter 90
   (Quick Counter 82, Long Ball 75), Link-ups Shadow Link A (Deep-Lying Forward CF →
   Classic No. 10 AMF) and 1-2 Cut-in C (Prolific Winger LWF/RWF → Deep-Lying Forward CF).
-  The eFHUB card released 10 Sep 2026 (`17608560707469`), not his two older cards. Worth
+  The eFHUB card released 10 Sep 2026 (manager id 17608560707469, no backticks: fetch_players reads backticked ids as players), not his two older cards. Worth
   ~15 training points across the current XI against Deschamps' 20 and no Link-up fits the
   4-2-2-2 (KNOWLEDGE-BASE §22), so he is not the current manager.
 

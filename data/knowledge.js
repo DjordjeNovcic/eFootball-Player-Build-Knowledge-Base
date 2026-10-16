@@ -301,6 +301,7 @@ window.KB = (() => {
     "88039581945312": { role: "CMF/DMF — Orchestrator." },
     "88039581945358": { role: "Goal Poacher." },
     "88040387118039": { role: "GK — current squad keeper; trained build needs a current screenshot." },
+    "88045755861084": { role: "LB — Full-back Finisher / Covering Role; bought 16 Oct 2026. The attacking full-back package (Pinpoint Crossing, Phenomenal Pass, Edged Crossing, Flip Flap) Maldini doesn't have — Maldini stays the defensive choice." },
     "88045755861672": { role: "CF — striker off the bench (user, 11 Oct 2026); Attack Outlet stays active at CF, Prolific Winger doesn't.",
       snapshot: { date: "11 Oct 2026 · CF build", levels: [8, 1, 5, 12, 12, 1, 0], skills: ["Super-sub", "Through Passing", "One-touch Pass", "Fighting Spirit", "Chip Shot Control"],
         note: "Built as a Goal Poacher-type CF: Speed 100, Acceleration 97, Finishing 91, OA 90 (CF 108). Super-sub is the user's pick." },
