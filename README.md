@@ -13,7 +13,7 @@ Two parts:
     boosters, level cap and role notes, as card tiles. **A tile opens into the card's
     Recommended by AI build** (`recommend.js`): role from position + styles → §7
     priorities and §3 thresholds → player-model and native-skill adjustments → every point
-    spent → slot-2 booster last → 5 additional skills → verdict, in the §15 format, never
+    spent → slot-2 booster chosen with the build (what its +1s free, §11) → 5 additional skills → verdict, in the §15 format, never
     optimised for OVR, rated with your manager and playstyle; plus the **spending order**
     (the build at every 5th level while he trains up) and Open in Trainer / Use as my build.
     Filter by position group, playing style, or **Starting XI** / **Bench** of the active
@@ -183,6 +183,10 @@ not run it by hand (needs Settings → Actions → Workflow permissions: read an
 ## Checks on every push
 
 `.github/workflows/ci.yml` runs on every push and pull request: every script parses, and
+`tools/booster_audit.js` prices every slot-2 booster in training points — the extra budget a
+no-booster build would need to match it — for each card with a free slot (KNOWLEDGE-BASE §11,
+"Booster = progression points"); `--only Hazard,Gullit` filters by name. About a minute.
+
 `tools/check_builds.js` confirms that each Recommended by AI build spends its card's exact
 point budget.
 

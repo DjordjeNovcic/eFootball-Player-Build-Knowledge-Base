@@ -286,6 +286,28 @@ own. **Ibrahimović goes to the bench** in Gullit's place and is the ~65' sub (F
 Box + Willpower) — Puskás stays the Plan B option; the Fluid defence shape is unchanged.
 If Gullit doesn't score more over the test, Ibrahimović returns.
 
+**Build update (16 Oct 2026, booster = progression points — user insight):** a slot-2 +1
+stands in for a category level on that stat (3 points each at levels 9–12), so every
+booster is now judged on the build it frees up, not pasted on top of a finished build
+(KNOWLEDGE-BASE §11, "Booster = progression points"; `node tools/booster_audit.js`). Audit
+of all 50 free-slot cards: 42 keep their booster, 8 change — in the XI only Messi, on the
+bench Ibrahimović and Puskás:
+
+| Player | Was | Now | What changes (worth = training points a no-booster build would need) |
+|---|---|---|---|
+| Messi (CP, `89136409091415`) | 8-11-6-7-7-4-1 Shooting +1 | **9-10-6-7-7-4-1 Offence Creator +1** | Attacking Awareness 89 → 90, Curl 92 → 93, Finishing 92, Ball Control 97, Low Pass 95; Lofted Pass 90 → 89. Worth ~13 — against the no-booster build it frees Passing 11 → 10 (3 pts) for Shooting 8 → 9 |
+| Ibrahimović (`89136140651034`, bench) | 5-1-6-10-11-8-0 Fantasista +1 | **5-0-8-10-10-8-0 Agility +1** | Acceleration 90 → 91, Tight Possession 84 → 87, Ball Control / Dribbling 88 → 89; Finishing 93 → 92, Kicking Power 98 → 97. Worth ~9 — frees Lower Body 11 → 10 (3 pts) for Dexterity 9 → 10 |
+| Puskás (`88040387120260`, bench) | 7-3-8-9-8-7-0 Agility +1 | **7-2-8-8-10-6-0 Hard Worker +1** | Speed 93 → 94, Kicking Power 92 → 94, Stamina 83 → 85; Attacking Awareness 91 → 90, Balance 90 → 88. Worth ~8 — frees Dexterity 9 → 8, Aerial 7 → 6, Passing 3 → 2 (6 pts) for Lower Body 8 → 10 |
+
+Everyone else in the XI and on the bench keeps booster and build. Worth of the current
+booster in training points: Hazard (Striker's Instinct), Eto'o (Physicality), Kaká (Balancer)
+— more than any training can buy, their Dexterity / Dribbling sit at the level-12 cap and
+the booster is the only +1 left there (Hazard: Acceleration 96 → 97, Ball Control 96 → 97);
+Gullit 16, Messi 13, Makélélé 9, Pirlo 9, Dembélé 9, Varane 8, Vieira 8, Buffon 8, Maldini 7, Thuram 6,
+Seedorf 6, Sneijder 6, Stam 6, Zanetti 5, Desailly 4. Manager: Deschamps'
+Speed +1 / Ball Control +1 is worth ~19 points across the XI (Capello 19, Beckenbauer 15 —
+all LBC 89), so the manager stays.
+
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
 the Link-up; Speed 100 / Acceleration 98, Acceleration Burst, Phenomenal Finishing), Possession sub-tactic with Pirlo for Makélélé against a deep block;

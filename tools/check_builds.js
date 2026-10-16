@@ -72,7 +72,7 @@ for (const p of DATA.players) {
   const waste = Object.entries(r.waste).map(([k, v]) => `${SHORT[k] || k}+${v}`).join(" ");
   const missed = r.missed.map((t) => `${SHORT[t.stat] || t.stat} ${t.value}/${t.target}`).join(" ");
   if (spent !== budget) bad++;
-  if (json) { out.push({ id: p.id, name: p.name, position: p.position, role: r.roleLabel, levels: r.levels, booster2: r.booster.name, rating: r.rating, final: r.final, aiSkills: r.aiSkills, waste: r.waste, missed: r.missed }); continue; }
+  if (json) { out.push({ id: p.id, name: p.name, position: p.position, role: r.roleLabel, levels: r.levels, booster2: r.booster.name, boosterShift: r.boosterShift, boosterFreed: r.boosterFreed, rating: r.rating, final: r.final, aiSkills: r.aiSkills, waste: r.waste, missed: r.missed }); continue; }
   const flags = [spent !== budget ? `BUDGET ${spent}/${budget}` : "", waste ? `waste ${waste}` : "", missed ? `missed ${missed}` : ""].filter(Boolean).join(" · ");
   console.log(`${p.name.padEnd(22)} ${p.position.padEnd(3)} ${r.roleLabel.padEnd(20)} ${line.padEnd(20)} ${r.booster.name.padEnd(22)} ${String(r.rating).padStart(3)}${flags ? "   " + flags : ""}`);
 }
@@ -81,4 +81,4 @@ else {
   const flagged = DATA.players.filter((p) => Object.keys(R.recs[p.id].waste).length || R.recs[p.id].missed.length).length;
   console.log(`\n${DATA.players.length} cards · ${manager} at ${tactic} · ${flagged} flagged (waste or missed target) · ${bad} off budget`);
 }
-process.exit(bad ? 1 : 0);
+process.exitCode = bad ? 1 : 0; // not process.exit(): it truncates a piped --json dump

@@ -294,6 +294,17 @@
     return DATA.boosterPool.find((b) => b.id === build.booster2) || null;
   }
 
+  // §11/§12: the trade the recommended slot-2 booster enabled — its +1s stand in for
+  // category levels (3 pts each at levels 9–12), read against the no-booster build.
+  function boosterTradeText(r) {
+    const short = (l) => l.replace("Lower Body Strength", "Lower Body").replace("Aerial Strength", "Aerial");
+    const step = (s) => `${short(s.label)} ${s.from}→${s.to}`;
+    const drops = (r.boosterShift || []).filter((s) => s.to < s.from).map(step);
+    const ups = (r.boosterShift || []).filter((s) => s.to > s.from).map(step);
+    if (!drops.length || !ups.length) return "Adds on top of the finished build — none of its stats sits on a category level worth trading away (§11, §12).";
+    return `Frees ${r.boosterFreed} training pts: ${drops.join(", ")} (its +1s stand in for those levels), spent on ${ups.join(", ")} (§11, §12).`;
+  }
+
   // Managers: the user's seven (with Link-up data, §22) plus every eFHUB manager card.
   // Keys: "kb:<name>" / "ef:<id>"; older saves stored the bare name.
   // Photos and Link-up plays come from amine250's manager database (tools/fetch_players.py);
@@ -2628,6 +2639,7 @@
             <h4>Booster</h4>
             <p><b>${esc(b.name)}</b> — ${Object.keys(b.stats).map(statLabel).join(", ")}${r.boosterFixed ? " <span class=\"rec-muted\">(fixed on this card)</span>" : ""}</p>
             <p class="rec-muted">${r.boosterFixed ? "Slot 2 is pre-assigned on this card." : `Picked last, on the finished build (§11)${slot1.length ? ` — slot 1 (${esc(p.booster1.name)}) already covers ${slot1.map(statLabel).join(", ")}` : ""}${r.boosterOverlap ? `; overlaps ${r.boosterOverlap} of them` : ""}.`}</p>
+            ${r.boosterFixed ? "" : `<p class="rec-muted">${esc(boosterTradeText(r))}</p>`}
           </section>
 
           <section class="rec-sec">

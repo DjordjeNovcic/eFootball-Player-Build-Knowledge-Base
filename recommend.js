@@ -422,8 +422,50 @@ window.Recommender = (deps) => {
     return steps;
   }
 
+  // §11 + §12: a booster's +1 on a stat is the level in that stat's category the build no
+  // longer has to buy — 3 points at levels 9–12 — and on a category already at the
+  // level-12 cap (§13) it is the only +1 still available. So a candidate is ranked on a
+  // build that has traded such levels away (drop a level the booster covers, respend the
+  // freed points, repeat while it improves), not on the no-booster build with +1 on top.
+  function tradeLevels(p, profile, b, start, budget) {
+    const cats = categoriesFor(p).filter((c) => !c.gk || p.position === "GK");
+    const covers = new Set(Object.keys(b.stats));
+    let levels = { ...start };
+    let v = value(profile, finalStats(p, levels, b));
+    const fill = (lv) => {
+      let left = budget - pointsOf(lv);
+      while (left > 0) {
+        let best = null;
+        for (const c of cats) {
+          const at = lv[c.key] || 0;
+          if (at >= capFor(c.key) || levelCost(at + 1) > left) continue;
+          const x = value(profile, finalStats(p, { ...lv, [c.key]: at + 1 }, b));
+          if (!best || x > best.v) best = { key: c.key, v: x };
+        }
+        if (!best) return null;
+        lv[best.key] = (lv[best.key] || 0) + 1;
+        left = budget - pointsOf(lv);
+      }
+      return lv;
+    };
+    for (let i = 0; i < 4; i++) {
+      let best = null;
+      for (const c of cats) {
+        if (!levels[c.key] || !c.stats.some((s) => covers.has(s))) continue;
+        const lv = fill({ ...levels, [c.key]: levels[c.key] - 1 });
+        if (!lv) continue;
+        const x = value(profile, finalStats(p, lv, b));
+        if (x > v + 0.01 && (!best || x > best.v)) best = { levels: lv, v: x };
+      }
+      if (!best) break;
+      levels = best.levels; v = best.v;
+    }
+    return { levels, v };
+  }
+
   function chooseBooster(p, profile, levels) {
     if (p.booster2Fixed) return { booster: p.booster2Fixed, fixed: true };
+    const budget = budgetFor(p.levelCap);
     const gk = p.position === "GK";
     const pool = deps.boosterPool.filter((b) => gk ? /Goalkeeping|Saving/.test(b.name) : !/Goalkeeping|Saving/.test(b.name));
     const slot1 = new Set(Object.keys(p.booster1?.stats || {}));
@@ -439,10 +481,13 @@ window.Recommender = (deps) => {
       // §11: pick by the exact stats — only role stats still below target count.
       const weak = Object.keys(b.stats).filter((k) => profile.stats.some((st) => st.k === k && before[k] < st.t)).length;
       const dead = Object.keys(b.stats).filter((k) => !used(k)).length;
-      const adj = -overlap * 0.5 - saturated * 3 + weak * 1.5 - dead * 1.5;
-      return { booster: b, overlap, adj, v: value(profile, finalStats(p, levels, b)) + adj };
+      // Near-ties (a few tenths on a value in the thousands) go to the booster whose four
+      // stats carry the most role weight — "pick by the exact stats" (§11), not by noise.
+      const core = 0.02 * Object.keys(b.stats).reduce((a, k) => a + (profile.stats.find((st) => st.k === k)?.w || 0), 0);
+      const adj = -overlap * 0.5 - saturated * 3 + weak * 1.5 - dead * 1.5 + core;
+      return { booster: b, overlap, adj, v: tradeLevels(p, profile, b, levels, budget).v + adj };
     }).sort((x, y) => y.v - x.v);
-    return { booster: ranked[0].booster, fixed: false, overlap: ranked[0].overlap, shortlist: ranked.slice(0, 3) };
+    return { booster: ranked[0].booster, fixed: false, overlap: ranked[0].overlap, shortlist: ranked.slice(0, 4) };
   }
 
   /* ---------- additional skills (§9, USER-SQUAD §5) ---------- */
@@ -627,7 +672,8 @@ window.Recommender = (deps) => {
 
   function recommend(p) {
     const profile = profileFor(p);
-    let levels = optimise(p, profile, null);
+    const levels0 = optimise(p, profile, null);
+    let levels = levels0;
     let b = chooseBooster(p, profile, levels);
     if (!b.fixed) {
       // §14 step 6: the booster comes last, on the finished build — but the levels then
@@ -649,8 +695,13 @@ window.Recommender = (deps) => {
     const notes = short.length ? [...profile.notes, `Not forced from a weak base (§7, §12): ${short.join(", ")} — the points do more elsewhere.`] : profile.notes;
     const { skills, why } = chooseSkills(p, profile, f);
     const ai = chooseSkills(p, profile, f, true);
+    // §11/§12: the trade the booster enabled — category levels it made redundant and
+    // where the freed points went, read against the no-booster build.
+    const boosterShift = categoriesFor(p).filter((c) => (!c.gk || p.position === "GK") && (levels0[c.key] || 0) !== (levels[c.key] || 0))
+      .map((c) => ({ key: c.key, label: c.label, from: levels0[c.key] || 0, to: levels[c.key] || 0 }));
+    const boosterFreed = boosterShift.filter((s) => s.to < s.from).reduce((a, s) => a + cumCost(s.from) - cumCost(s.to), 0);
     return { aiSkills: ai.skills, aiWhy: ai.why, id: p.id, template: profile.tpl.key, roleLabel: profile.tpl.label, levels, booster2: b.fixed ? null : b.booster.id,
-      booster: b.booster, boosterFixed: b.fixed, boosterOverlap: b.overlap || 0, final: f, rating, targets, skills, skillWhy: why, notes, path, waste: wasteOf(f, profile) };
+      booster: b.booster, boosterFixed: b.fixed, boosterOverlap: b.overlap || 0, boosterShift, boosterFreed, final: f, rating, targets, skills, skillWhy: why, notes, path, waste: wasteOf(f, profile) };
   }
 
   const recs = Object.fromEntries(players.map((p) => [p.id, recommend(p)]));
@@ -677,5 +728,7 @@ window.Recommender = (deps) => {
     r.altPosition = alt || null;
   });
 
-  return { recs, context: { manager: MANAGER, tactic: TACTIC } };
+  return { recs, context: { manager: MANAGER, tactic: TACTIC },
+    // Exposed for tools (tools/check_builds.js audits) — not used by the UI.
+    internals: { profileFor, optimise, value, finalStats, chooseBooster, pointsOf } };
 };

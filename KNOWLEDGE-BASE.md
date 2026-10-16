@@ -1469,6 +1469,43 @@ Offence Creator:
 
 or another booster that fixes actual weaknesses.
 
+## Booster = progression points (user insight, audited 16 Oct 2026)
+
+Every +1 from slot 2 — and the manager's +1/+1 (section 17) — is one category level on
+that stat that the build no longer has to buy. By section 12's cost table that level is
+worth **3 points at category levels 9–12** (2 at 5–8, 4 at 13–16), so a booster whose four
+stats sit on the role's expensive categories stands in for 6–9 points of progression, and
+the freed points buy something else. Measured across the whole squad (the smallest extra
+budget a no-booster build needs to reach the same value in the `recommend.js` model):
+
+- a slot-2 booster is worth **4–9 training points** for most cards, 13 for Messi (Creative
+  Playmaker) and 16 for Gullit;
+- for **Hazard, Eto'o, Kaká and Rivaldo it buys what no training can** — the category is
+  already at the level-12 cap (section 13), so the booster is the only +1 still available
+  there. Hazard's Striker's Instinct takes Acceleration 96 → 97 and Ball Control 96 → 97;
+  Dexterity and Dribbling can't go higher.
+
+Rules that follow:
+
+- **Choose the booster with the build, not after it.** For each candidate, compare the
+  no-booster build with the build around the candidate and read what it frees. The Build
+  Lab's Recommended by AI card prints it ("Frees 6 training pts: Dexterity 9→8, Lower Body
+  11→10, spent on Dribbling 6→8"). `recommend.js` ranks every candidate on such a traded
+  build and re-optimises the best four.
+- Prefer stats in categories the build already holds at level 12 (the only +1 left), then
+  categories at 9–12 (3 points a level), then 5–8. A +1 on a stat whose category sits at
+  0–4 is worth 1 point and only matters when it crosses a threshold.
+- A level is not dropped just because the booster covers one of its stats: Dexterity −1
+  also costs Offensive Awareness or Balance −1. The trade pays only when the uncovered
+  stats are past their targets or the freed points buy more elsewhere — the audit found
+  42 of 50 free-slot cards already had the best booster, and 8 changed (in the XI only
+  Messi: Shooting +1 → Offence Creator +1, Offensive Awareness 89 → 90).
+- **Manager Booster, same arithmetic** (section 17): Deschamps' Speed +1 / Ball Control +1
+  is worth about 19 training points across the current XI; Capello (Defensive Awareness /
+  Finishing) also 19, Beckenbauer (Dribbling / Defensive Awareness) 15 — all three at Long
+  Ball Counter 89, so the manager stays. The other four owned managers are out on
+  proficiency alone. Re-run: `node tools/booster_audit.js`.
+
 ---
 
 # 12. Progression Point Efficiency
@@ -1735,6 +1772,11 @@ After progression is close to final:
 Choose the booster that fixes remaining weaknesses or crosses useful thresholds.
 
 Do NOT choose the booster before understanding the final build.
+
+Choose it **with** the build: for each candidate, see which category levels its +1s make
+redundant (3 points each at levels 9–12 — section 11, "Booster = progression points") and
+where the freed points go; the booster + build pair that ends best wins. On a category
+already at the level-12 cap the booster is the only +1 left — that is where it is worth most.
 
 ---
 
