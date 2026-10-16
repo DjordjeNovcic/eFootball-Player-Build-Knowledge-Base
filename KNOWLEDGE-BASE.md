@@ -829,6 +829,13 @@ Blitz Curler build: **Kicking Power > Curl > Finishing**.
 Do not max all three — push Kicking Power and Curl first, and treat Finishing as the
 stat you're most willing to leave a few points short on.
 
+**With Long-range Curler or Long-range Shooting on the same card (user decision, 16 Oct
+2026):** he is a shooter from range, not a creator who shoots now and then, so Finishing 90
+and Curl 90 become targets next to Kicking Power 90. Ronaldinho (Blitz Curler + Long-range
+Curler + Outside Curler, right foot only): Finishing 85 → 90, Curl 93, Kicking Power 91
+(8-5-8-9-10-1-0, Accuracy +1); Sneijder Finishing 87 → 90. A plain Blitz Curler keeps the
+rule above.
+
 ---
 
 ## Aerial Superiority

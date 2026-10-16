@@ -336,6 +336,17 @@ Bellingham, Puskás and Marcelo are unchanged. Kept against eFHUB: Speed trained
 also set 96 for Dembélé and Haaland), Finishing 90–95 (they stop at 90–91; one Eto'o card
 even 84), every point spent (they park leftovers in GK categories).
 
+**Build update (16 Oct 2026, later — Blitz Curler shooters, user question "Ronaldinho has
+Blitz and Finishing 85?"):** a Blitz Curler with Long-range Curler / Long-range Shooting is
+built as a shooter from range, Finishing 90 and Curl 90 (KNOWLEDGE-BASE §8). Ronaldinho
+5-5-8-10-11-1-0 Passing +1 → **8-5-8-9-10-1-0 Accuracy +1** (Finishing 85 → 90, Curl 93,
+Kicking Power 91; Ball Control 99, Tight Possession 98, Low Pass 93; Speed 92, Acceleration
+96). Sneijder (bench) 4-4-11-11-8-2-0 Agility +1 → **6-3-10-10-9-2-0 Fantasista +1**
+(Finishing 87 → 90, Curl 92, Kicking Power 97). Puskás (bench) 7-2-8-8-10-6-0 Hard Worker +1
+→ **8-3-8-9-8-6-0 Ball Protection +1** (Finishing 96, OA 91, Balance 90; CF 106). Messi (CP)
+on a near-tie swaps Accuracy +1 for **Physicality +1** with 8-9-9-7-7-4-0 (Finishing 91,
+Ball Control 99, Tight Possession 97, Balance 97; still 109). Eze and Salah move a level.
+
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
 the Link-up; Speed 100 / Acceleration 98, Acceleration Burst, Phenomenal Finishing), Possession sub-tactic with Pirlo for Makélélé against a deep block;

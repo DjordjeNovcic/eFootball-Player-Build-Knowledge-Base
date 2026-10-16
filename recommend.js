@@ -139,6 +139,15 @@ window.Recommender = (deps) => {
     }
     if (has("Blitz Curler")) {
       ensure("kickingPower", 5, 90); ensure("curl", 5, 85);
+      // A Blitz Curler who also carries Long-range Curler / Long-range Shooting is a shooter
+      // from range, not a creator who shoots now and then: Finishing 90 and Curl 90 are
+      // targets (user decision, 16 Oct 2026 — Ronaldinho at Finishing 85 "has Blitz").
+      if (has("Long-range Curler") || has("Long-range Shooting")) {
+        ensure("finishing", 4, 90);
+        const fin = get("finishing"); fin.t = Math.max(fin.t, 90); fin.cap = Math.max(fin.cap ?? 0, 93);
+        const cu = get("curl"); cu.t = Math.max(cu.t, 90);
+        notes.push(`Blitz Curler with ${has("Long-range Curler") ? "Long-range Curler" : "Long-range Shooting"} — a shooter from range: Finishing 90, Curl 90 (§8, 16 Oct 2026).`);
+      }
       scale("kickingPower", 1.5); scale("finishing", 0.8);
       notes.push("Blitz Curler — Kicking Power > Curl > Finishing (§8).");
     }
