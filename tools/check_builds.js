@@ -73,7 +73,7 @@ for (const p of DATA.players) {
   const missed = r.missed.map((t) => `${SHORT[t.stat] || t.stat} ${t.value}/${t.target}`).join(" ");
   if (spent !== budget) bad++;
   if (json) { out.push({ id: p.id, name: p.name, position: p.position, role: r.roleLabel, levels: r.levels, booster2: r.booster.name, boosterShift: r.boosterShift, boosterFreed: r.boosterFreed, rating: r.rating, final: r.final, aiSkills: r.aiSkills, waste: r.waste, missed: r.missed }); continue; }
-  const better = r.betterAs ? `better as ${r.betterAs.pos} ${r.betterAs.r}?` : "";
+  const better = r.goodAt?.length ? `good at ${r.goodAt.map((a) => `${a.pos} ${a.r}`).join(", ")}` : "";
   const flags = [spent !== budget ? `BUDGET ${spent}/${budget}` : "", waste ? `waste ${waste}` : "", missed ? `missed ${missed}` : "", better].filter(Boolean).join(" · ");
   console.log(`${p.name.padEnd(22)} ${(p.position + (r.buildAs ? "→" + r.buildAs : "")).padEnd(7)} ${r.roleLabel.padEnd(20)} ${line.padEnd(20)} ${r.booster.name.padEnd(22)} ${String(r.rating).padStart(3)}${flags ? "   " + flags : ""}`);
 }

@@ -360,17 +360,15 @@ Possession 89; Defensive Awareness 86 → 82, Tackling 90 → 85; 102). Marcelo 
 Timber 1-8-10-8-10-0-3 Crossing +1 (Lofted 84 — base 73, not fought). Maldini and Thuram
 (Defensive Full-backs) unchanged.
 
-**Position hints (16 Oct 2026, user request — "recommend him as a CF even if the card says
-AMF, like Gullit"):** the Build Lab now flags a card whose build rates two or more points
-higher at another position it can play, and offers that position's build ("Better as …?",
-KNOWLEDGE-BASE §14 step 1). In the squad today: Pirlo DMF 102 → **CMF 107** (same Orchestrator
-build — the Possession sub-tactic's CMF, not a DMF); Rivaldo AMF 104 → **SS 107** (Hole Player
-active at SS); Stojković AMF 104 → SS 106; Rooney CF 103 → SS 105; Kaká AMF 104 → LWF 108
-(7-4-7-12-9-1-0 Hard Worker +1); Hazard AMF 106 → LWF 109 (8-1-8-10-10-3-0 Crossing +1);
-Ronaldinho AMF 106 → LWF 108; Eze AMF 102 → LWF 105; Vinícius LMF 104 → LWF 106; Marcelo LB
-105 → LMF 108 (Cross Specialist 7-7-7-10-9-0-1 Off the Ball +1); Maldini LB 104 → CB 108 and
-Thuram RB 105 → CB 108 (Build Up builds 0-0-0-12-7-8-10 / 0-1-0-9-7-10-12). Wingers and
-CMFs are hints only — the 4-2-2-2 has no slot for them; the SS and CMF ones matter for the
+**Position hints (16 Oct 2026, user request — "say where the ratings recommend him, like
+Gullit at CF; don't change roles"):** the Build Lab marks a card whose build rates a point or
+more higher at another position it can play ("Good as SS 107", KNOWLEDGE-BASE §14 step 1).
+The build stays his; only `buildAs` (Gullit, Bale — user decisions) builds a card for another
+position. By this build: Pirlo DMF 102 → **CMF 107** (the Possession sub-tactic's CMF);
+Rivaldo AMF 104 → **SS 107**; Stojković AMF 104 → SS 106; Rooney CF 103 → SS 105; Kaká AMF
+104 → LWF 108; Hazard AMF 106 → LWF 110; Ronaldinho AMF 106 → LWF 108; Eze AMF 102 → LWF 105;
+Vinícius LMF 104 → LWF 107; Marcelo LB 105 → LMF 108; Maldini LB 104 → CB 107; Thuram RB 105
+→ CB 108. Wingers and LMF are hints only in the 4-2-2-2; the SS and CMF ones matter for the
 Possession sub-tactic and the diamond.
 
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;

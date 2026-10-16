@@ -77,8 +77,8 @@ window.Recommender = (deps) => {
     const st = KB.ATT_STYLES.find((s) => norm(s.name) === norm(name)) || KB.DEF_STYLES.find((s) => norm(s.name) === norm(name));
     return !st || !st.positions || st.positions.split(/,\s*/).includes(pos);
   };
-  function templateFor(p, posOverride) {
-    const pos = posOverride || deps.buildAsFor?.(p.id) || notesFor(p.id)?.buildAs || p.position;
+  function templateFor(p) {
+    const pos = notesFor(p.id)?.buildAs || p.position;
     const on = (name) => name && (pos === p.position || styleOnAt(name, pos));
     const key = (on(p.playingStyle) && STYLE_TEMPLATE[norm(p.playingStyle)])
       || (on(p.playingStyleDefensive) && STYLE_TEMPLATE[norm(p.playingStyleDefensive)])
@@ -87,8 +87,8 @@ window.Recommender = (deps) => {
   }
 
   /* ---------- player-model and native-skill adjustments ---------- */
-  function profileFor(p, posOverride) {
-    const tpl = templateFor(p, posOverride);
+  function profileFor(p) {
+    const tpl = templateFor(p);
     const native = new Set(p.skills.map((k) => norm(skillLabel(k))));
     const has = (n) => native.has(norm(n));
     // Skills the user trained on the card — ★ picks in the Trainer, USER-SQUAD choices —
@@ -727,10 +727,8 @@ window.Recommender = (deps) => {
   /* ---------- assemble ---------- */
   const STARTER_SLOTS = { GK: 1, CB: 2, LB: 1, RB: 1, DMF: 2, CMF: 2, LMF: 1, RMF: 1, AMF: 2, LWF: 1, RWF: 1, SS: 1, CF: 2 };
 
-  // `posOverride` builds the card for another position it can play (the Build Lab's
-  // "Build as CF" — Gullit's case, §14 step 1).
-  function recommend(p, posOverride) {
-    const profile = profileFor(p, posOverride);
+  function recommend(p) {
+    const profile = profileFor(p);
     const levels0 = optimise(p, profile, null);
     let levels = levels0;
     let b = chooseBooster(p, profile, levels);
@@ -787,13 +785,15 @@ window.Recommender = (deps) => {
     r.lock = missed.length === 0 && Object.keys(r.waste).length === 0;
     r.missed = missed;
     r.altPosition = alt || null;
-    // §14 step 1 (16 Oct 2026): when this build already rates higher at another position the
-    // card can play, say so — Gullit's AMF card is a 109 CF. The Build Lab then offers the
-    // build made for that position (recommendAs).
-    r.betterAs = alt && alt.r >= r.rating + 2 ? alt : null;
+    // §14 step 1 (16 Oct 2026): where the ratings also recommend him — this build's rating
+    // at the other positions he can play, when at least a point higher (top three). A hint,
+    // never a role change: the role stays unless USER-SQUAD's buildAs says where he plays.
+    r.goodAt = OVR.POSITIONS.filter((pos) => pos !== at && (pos === p.position || profAt(p, pos) !== "none"))
+      .map((pos) => ({ pos, r: OVR.rating(pos, p.height, p.weakFootAccuracy, r.final) }))
+      .filter((a) => a.r >= r.rating + 1).sort((a, b) => b.r - a.r).slice(0, 3);
   });
 
-  return { recs, context: { manager: MANAGER, tactic: TACTIC }, recommendAs: (p, pos) => recommend(p, pos),
+  return { recs, context: { manager: MANAGER, tactic: TACTIC },
     // Exposed for tools (tools/check_builds.js audits) — not used by the UI.
     internals: { profileFor, optimise, value, finalStats, chooseBooster, pointsOf } };
 };

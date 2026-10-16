@@ -23,9 +23,9 @@ Two parts:
     each sheet has **Build by manager**: the same card under every owned manager, side by side.
     A card's USER-SQUAD note can say where he actually plays (`buildAs: "CF"` — Gullit and Bale
     are built as Goal Poachers, §18) and pin the slot-2 booster (`prefBooster`), like ★ skills.
-    A card that rates two or more points higher at another position it can play is flagged
-    **Better as CF?** on the tile; the sheet shows the build made for that position and **Build
-    as CF** keeps it in this browser (§14 step 1). The old `#recommended` link opens this tab. Originally:
+    A card whose build rates a point or more higher at another position it can play carries
+    **Good as SS 107** badges (My Squad and Public Cards) — a hint for the lineup, the build
+    stays his role; only USER-SQUAD's `buildAs` builds a card for another position (§14 step 1). The old `#recommended` link opens this tab. Originally:
     boosters, level cap and role notes. **+ Add player** imports a card from its eFHUB
     page via a "Copy to Build Lab" bookmarklet (eFHUB pages can't be fetched cross-site);
     ✕ removes a card (restorable). Both are stored in the browser.

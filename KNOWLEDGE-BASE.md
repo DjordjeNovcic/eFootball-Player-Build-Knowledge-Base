@@ -1717,14 +1717,13 @@ Do NOT build before deciding this. A raw stat is not equally valuable across
 playstyles even at the same position — see section 18's Hole Player vs Creative
 Playmaker comparison for why.
 
-**Check the other positions he can play (16 Oct 2026, user decision — "recommend him as a
-CF even if the card says AMF, like Gullit").** When the finished build already rates two or
-more points higher at another position with high or intermediate proficiency, say so and
-show the build made for that position (section 18's "build for the position he plays"):
-Gullit's AMF Hole Player card is a 109 Goal Poacher at CF. The Build Lab flags it on the
-card ("Better as CF?"), shows the CF build in the sheet and "Build as CF" keeps it. A
-Defensive Full-back rating higher at CB, or an AMF at LWF, is only a hint — the squad's
-shape decides whether the slot exists.
+**Say where the ratings also recommend him (16 Oct 2026, user decision — "like Gullit at
+CF; don't change his role").** When the finished build rates at least a point higher at
+another position with high or intermediate proficiency, say so: Gullit's AMF Hole Player
+card is a 109 CF, Rivaldo's AMF card a 107 SS, Pirlo's DMF card a 107 CMF. The Build Lab
+shows it as "Good as CF 109" on the card and in the sheet. It is a hint for the lineup — the
+build stays the card's role. Only the user decides to build a card for another position
+(USER-SQUAD `buildAs`: Gullit and Bale at CF), and such a card says "CF build".
 
 ---
 

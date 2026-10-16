@@ -60,7 +60,7 @@ for (const p of players) {
   out[p.id] = {
     role: r.roleLabel, template: r.template, levels: r.levels, booster2: r.booster2, booster: r.booster.name, boosterFixed: r.boosterFixed,
     rating: r.rating, final: r.final, targets: r.targets, skills: r.aiSkills, why: r.aiWhy, notes: r.notes,
-    lock: r.lock, missed: r.missed, waste: r.waste, altPosition: r.altPosition,
+    lock: r.lock, missed: r.missed, waste: r.waste, altPosition: r.altPosition, goodAt: r.goodAt,
   };
 }
 fs.writeFileSync(OUT, JSON.stringify({ built: new Date().toISOString().slice(0, 10), cards: db.fetched, builds: out }) + "\n");
