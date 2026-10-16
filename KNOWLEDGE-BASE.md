@@ -228,6 +228,13 @@ For explosive roles:
 
 For Goal Poachers / Hole Players / Destroyers, Acceleration is especially important.
 
+**Build-tool lines (16 Oct 2026):** an explosive role (Goal Poacher, Hole Player, Dummy
+Runner, wingers, Offensive Wingback — template cap 97) may train Acceleration to 99; other
+roles stop at 97. Waste is counted on trained points only (with the manager's proficiency
+multiplier): a booster or the manager's +1 landing past 96 Speed or 99 Acceleration is
+fine, and Ball Control, Dribbling, Tight Possession and Balance are never waste below 99.
+eFHUB's CF builds (Oct 2026) sit at Acceleration 97–100 with Speed 96–99 from boosters.
+
 ---
 
 ## Finishing
@@ -264,6 +271,12 @@ Typical good range:
 Especially if the player has:
 
 **Through Passing**
+
+**Forwards (user decision, 16 Oct 2026, after eFHUB's CF builds):** Low Pass is not a build
+target for a Goal Poacher, Fox in the Box, Dummy Runner or winger — he won't play the pass
+the points would buy. His leftovers go to Dribbling (Tight Possession 88 / Ball Control 90,
+so he can turn away from his marker) or Aerial, never Passing. Creators (Hole Player,
+Creative Playmaker, Deep-Lying Forward, Classic No. 10) keep their Low Pass targets.
 
 ### General ideal range
 
@@ -484,11 +497,12 @@ Primary:
 6. Balance
 7. Kicking Power
 
-Secondary:
+Secondary (order revised 16 Oct 2026 — eFHUB's CF builds, user decision):
 
+- Tight Possession (target 88) and Ball Control (target 90) — the first touch that turns
+  away from the marker
 - Dribbling
-- Tight Possession
-- Passing
+- Passing last; leftovers go to Dribbling or Aerial, not Passing (section 3)
 
 For tall aerial CF:
 
@@ -1949,6 +1963,13 @@ activates only in its compatible position; an incompatible position acts as **Ba
 The tables below distinguish the in-game description from our tactical interpretation.
 Source: user screenshots IMG_1229–IMG_1236 (24 Sep 2026).
 
+**Build for the position he actually plays (16 Oct 2026).** When a card is used where its
+attacking style is inactive, the build follows that position's role, not the card's label:
+Gullit (AMF Hole Player) at CF is built as a Goal Poacher, Bale (RWF Prolific Winger) at CF
+too. USER-SQUAD records it as `buildAs` on the card's note (data/knowledge.js SQUAD_NOTES);
+the Build Lab rates him at that position and says so on the card. At the card's own position
+its styles are taken as active, as eFHUB files them.
+
 Section 7's role priorities describe the attacking-side profile. Defensive Playing
 Style is an additional, independent layer on top of that — read both before building.
 
@@ -2731,3 +2752,34 @@ Fabio Capello, so they are popularity data, not tests. Patterns:
   and full-backs (section 19: presses from the front line), Heel Trick (no measured effect).
 - Interception is not an addable pick in any top build; every Game Plan defender already
   has it natively — it matters more since v6 (positioning depends on it).
+
+## eFHUB "Top 10 CFs" progression builds for 90-proficiency managers (article 3 Oct 2026, read 16 Oct 2026)
+
+Fourteen builds (Mourinho — Finishing +1 / Aggression +1, Long Ball Counter 90), compared
+with ours card by card: the same eFHUB card, identified by its slot-1 booster, under the same
+manager (`node tools/check_builds.js "José Mourinho"`). Ratings: 9 equal, ours +1 on 3, theirs
++1 on 2 — the difference is philosophy, not OVR.
+
+- **Where we agreed:** Speed 96 (they set it for Dembélé and Haaland), Passing 0–1,
+  Defending 0, Aerial by height; Gullit and C. Ronaldo build for build.
+- **Where they differed:** poachers get Offensive Awareness 94–98 and Acceleration 97–100
+  (Dexterity 10–12, Lower Body 8–12, Agility / Off the Ball), Finishing stays 90–91
+  (Shooting 3–6; one Eto'o card even 84), and the first touch — Dribbling 9–10 for Ball
+  Control / Tight Possession 91–93 — comes before any Passing. Ours bought Finishing 93–95
+  and stopped Acceleration at 97, because the build tool counted a booster landing on Speed
+  97 as waste, treated Acceleration past 97 as waste, and parked a capped forward's
+  leftovers in Passing (Bale: Passing 9 for Lofted Pass 80).
+- **Adopted (user decision, 16 Oct 2026):** Tight Possession 88 / Ball Control 90 as forward
+  targets and no Passing for forwards (sections 3, 7); Acceleration to 99 for explosive
+  roles and waste counted on trained points only (section 3); a card built for the position
+  it plays (section 18 — Gullit and Bale at CF); Gullit's slot 2 pinned to Striker's Instinct
+  (`prefBooster`). Result: Eto'o OA 95 / Acceleration 99 (Finishing 93 kept), Hazard OA 94 /
+  Acceleration 99, Gullit at CF 6-0-8-12-8-8-0 Striker's Instinct — within a level of eFHUB's
+  5-1-9-12-8-7. Builds in USER-SQUAD §3.
+- **Not adopted:** Finishing capped at 90–91 and Speed 97–99 (section 3, user decision
+  11 Oct); leftovers in GK categories (Ibrahimović 2, Haaland 3, Šeško 4 points — nothing for
+  an outfield player; ours go to Aerial / Defending); two of their builds leave 2–4 points
+  unspent (section 12).
+- Their "+3 manager boost threshold" is the proficiency multiplier — 1.0365 at 90 against
+  1.036 at 89, so the +3 rounding starts from a base of 83 instead of 84. Our pipeline
+  computes it exactly (section 17).

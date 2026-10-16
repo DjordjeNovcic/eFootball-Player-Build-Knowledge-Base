@@ -105,7 +105,7 @@ Known role context used repeatedly in Build Lab discussions:
 | Ibrahimović | CF — Fox in the Box; used as a central striker/target finisher. |
 | Eto'o | CF — Goal Poacher. |
 | Hazard | AMF/SS — Hole Player. |
-| Gullit | AMF/SS/CMF use depending on shape; Hole Player card context. |
+| Gullit | AMF/SS/CMF use depending on shape; Hole Player card context. In the XI at CF since 11 Oct 2026 (test) — built as a CF (`buildAs`), slot 2 Striker's Instinct by user choice (16 Oct). |
 | Sneijder | AMF — Creative Playmaker card context. |
 | Seedorf | CMF/DMF — Box-to-Box. |
 | Vieira | DMF — Anchor Man; may drop into CB in defensive structure/sub-tactic. |
@@ -310,6 +310,32 @@ Seedorf 6, Sneijder 6, Stam 6, Zanetti 5, Desailly 4. Manager: Deschamps'
 Speed +1 / Ball Control +1 is worth ~20 points across the XI (Capello 19, Beckenbauer 15, all LBC 89; Mourinho 15 — LBC 90
 but Finishing / Aggression), so the manager stays.
 
+**Build update (16 Oct 2026, eFHUB CF cross-check — first touch over passing, user
+decision):** eFHUB's "Top 10 CFs" builds (3 Oct, Mourinho) were compared card by card with
+ours (KNOWLEDGE-BASE §25). Direction adopted: forwards buy Tight Possession 88 / Ball Control
+90 (turning away from the marker) and never Passing; explosive roles may train Acceleration
+to 99; waste counts trained points only, so Agility / Off the Ball are no longer penalised for
+landing on Speed 97; and a card is built for the position it plays (`buildAs` — Gullit and
+Bale at CF). Builds (Deschamps, LBC):
+
+| Player | Was | Now | What moved |
+|---|---|---|---|
+| Eto'o | 9-1-12-8-5-4-0 Physicality +1 | **8-0-11-11-5-2-0 Fantasista +1** | OA 92 → 95, Acceleration 97 → 99, Balance 88 → 91; Finishing 93, Ball Control 95, Dribbling 96, Tight Possession 90; Physical Contact 83 → 80 |
+| Hazard | 8-4-6-9-11-4-0 Striker's Instinct +1 | **8-0-7-11-10-3-0 Off the Ball +1** | OA 92 → 94, Acceleration 97 → 99, Balance 97 → 99, Dribbling 98, Tight Possession 97; Low Pass 89 → 85, Finishing 94 → 93; AMF 107 → 106 |
+| Messi (CP) | 9-10-6-7-7-4-1 Offence Creator +1 | **8-8-10-7-7-4-0 Accuracy +1** | Ball Control 97 → 100, Dribbling 97 → 101, Tight Possession 94 → 98; Low Pass 95 → 93, OA 90 → 89; 108 → 109 |
+| Gullit (as CF) | 6-3-9-12-7-6-0 Ball-carrying +1 (AMF 105) | **6-0-8-12-8-8-0 Striker's Instinct +1 (CF 109)** | OA 89, Finishing 91, Acceleration 94, Speed 92, Ball Control 92, Physical Contact 95, Heading 91, Jump 93; Tight Possession 85, Low Pass 79 — eFHUB's 5-1-9-12-8-7 Striker's Instinct within a level |
+| Ibrahimović (bench) | 5-0-8-10-10-8-0 Agility +1 | **5-0-9-9-10-8-0 Agility +1** | Ball Control / Dribbling 90, Tight Possession 88; OA 95 → 94, Acceleration 91 → 90 |
+| Bale (bench, as CF) | 6-9-8-11-8-0-0 (RWF 107) | **8-0-10-12-8-2-0 (CF 108)** | Ball Control 96, Dribbling 99, Tight Possession 93, Finishing 91, OA 90, Acceleration 97, Physical Contact 90; Low Pass 83 → 74 |
+| Adriano (bench) | 8-0-9-9-8-8-0 | **8-0-8-10-8-8-0** | OA 92, Acceleration 94; Tight Possession 87 → 85 |
+| Sneijder (bench) | 4-4-10-11-9-2-0 Fantasista +1 | **4-4-11-11-8-2-0 Agility +1** | Tight Possession 98, Acceleration 93; Finishing 88 → 87 |
+| Kaká (bench) | 10-0-5-12-9-1-0 Balancer +1 | **9-0-6-12-9-2-0 Balancer +1** | Ball Control 95, Dribbling 97, Tight Possession 92; Finishing 91 → 90 |
+| Dembélé (bench) | 7-0-8-12-8-4-0 Offence Creator +1 | **6-0-9-12-8-3-0 Shooting +1** | Ball Control 93, Dribbling 95, Tight Possession 92; OA 91 → 90 |
+
+Buffon, Maldini, Varane, Desailly, Thuram, Makélélé, Seedorf, Vieira, Stam, Zanetti, Pirlo,
+Bellingham, Puskás and Marcelo are unchanged. Kept against eFHUB: Speed trained to 96 (they
+also set 96 for Dembélé and Haaland), Finishing 90–95 (they stop at 90–91; one Eto'o card
+even 84), every point spent (they park leftovers in GK categories).
+
 **Substitutions:** ~60' Bellingham for Hazard, or Sneijder for a tired Messi;
 chasing — Gullit for Ibrahimović (~68'), Dembélé for Eto'o (~72', Goal Poacher CF keeps
 the Link-up; Speed 100 / Acceleration 98, Acceleration Burst, Phenomenal Finishing), Possession sub-tactic with Pirlo for Makélélé against a deep block;
@@ -465,9 +491,11 @@ snapshots**, not permanent locks. A newer screenshot always overrides them.
 
 - Role: **CF — striker off the bench** (user decision; the card is RWF Prolific Winger /
   Attack Outlet — at CF only Attack Outlet stays active).
-- Build (Deschamps, LBC): `8 - 1 - 5 - 12 - 12 - 1 - 0` (68/68), slot 2 fixed Kicking Power +6.
-  Speed 100, Acceleration 97, Balance 93, Finishing 91, OA 90, Ball Control 91, Dribbling 94,
-  Kicking Power 103, Physical Contact 89 — CF rating 108.
+- Build (Deschamps, LBC, 16 Oct 2026 — built as a CF, `buildAs`): `8 - 0 - 10 - 12 - 8 - 2 - 0`
+  (68/68), slot 2 fixed Kicking Power +6. Speed 96, Acceleration 97, Balance 93, Finishing 91,
+  OA 90, Ball Control 96, Dribbling 99, Tight Possession 93, Kicking Power 99, Physical Contact
+  90 — CF rating 108. (Earlier: 8-1-5-12-12-1-0 on 11 Oct, then 6-9-8-11-8-0-0 with Passing 9 as
+  the dump — the Prolific Winger template wanted Lofted Pass 80; as a CF he doesn't.)
 - Additional skills: **Super-sub** (user already added), Through Passing, One-touch Pass,
   Fighting Spirit, Chip Shot Control.
 

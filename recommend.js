@@ -18,18 +18,22 @@ window.Recommender = (deps) => {
   // Weights follow the order of §7's priority lists; targets are §3 thresholds or
   // the §7 "ideal profile" numbers. Past the target a stat keeps 25% of its value up
   // to the cap, then nothing (diminishing returns, §3/§13).
+  // Forwards (user decision, 16 Oct 2026, after eFHUB's CF builds): Tight Possession 88
+  // and Ball Control 90 are targets — he turns away from his marker with the first touch —
+  // and Low Pass is not: the points a forward would spend on a pass he won't play go to
+  // Dribbling or Aerial instead (secW below, spendRemainder).
   const T = {
-    goalPoacher: { label: "Goal Poacher", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 91, 97], ["finishing", 8, 90, 94], ["speed", 8, 92, 96], ["ballControl", 6, 88], ["balance", 5, 88], ["kickingPower", 4, 90], ["dribbling", 2, 85], ["tightPossession", 2, 85]] },
-    foxInTheBox: { label: "Fox in the Box", stats: [["offensiveAwareness", 10, 90, 95], ["finishing", 9, 90, 94], ["physicalContact", 7, 85], ["ballControl", 6, 88], ["acceleration", 6, 88, 92], ["heading", 4, 89], ["jump", 3, 85], ["kickingPower", 4, 90], ["balance", 4, 85], ["speed", 4, 90, 93]] },
+    goalPoacher: { label: "Goal Poacher", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 91, 97], ["finishing", 8, 90, 94], ["speed", 8, 92, 96], ["ballControl", 6, 90], ["balance", 5, 88], ["kickingPower", 4, 90], ["dribbling", 2, 85], ["tightPossession", 4, 88]] },
+    foxInTheBox: { label: "Fox in the Box", stats: [["offensiveAwareness", 10, 90, 95], ["finishing", 9, 90, 94], ["physicalContact", 7, 85], ["ballControl", 6, 90], ["tightPossession", 3, 88], ["acceleration", 6, 88, 92], ["heading", 4, 89], ["jump", 3, 85], ["kickingPower", 4, 90], ["balance", 4, 85], ["speed", 4, 90, 93]] },
     targetMan: { label: "Target Man", stats: [["physicalContact", 9, 88], ["heading", 8, 89], ["jump", 7, 88], ["ballControl", 7, 88], ["offensiveAwareness", 6, 88], ["finishing", 6, 88], ["lowPass", 4, 80], ["kickingPower", 4, 88], ["acceleration", 3, 85], ["speed", 2, 86]] },
     holePlayer: { label: "Hole Player", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 92, 97], ["balance", 8, 90], ["finishing", 7, 90, 94], ["ballControl", 6, 90], ["tightPossession", 5, 88], ["lowPass", 4, 82], ["speed", 8, 92, 96], ["kickingPower", 3, 88], ["dribbling", 3, 88]] },
     creativePlaymaker: { label: "Creative Playmaker", stats: [["ballControl", 9, 90], ["dribbling", 8, 90], ["tightPossession", 8, 88], ["lowPass", 8, 87], ["balance", 7, 88], ["acceleration", 6, 88, 94], ["kickingPower", 5, 85], ["finishing", 4, 85], ["offensiveAwareness", 3, 85, 88], ["loftedPass", 3, 80], ["speed", 3, 89, 94]] },
     deepLyingForward: { label: "Deep-Lying Forward", stats: [["ballControl", 9, 90], ["tightPossession", 8, 88], ["dribbling", 7, 88], ["lowPass", 7, 85], ["finishing", 7, 90], ["offensiveAwareness", 6, 88], ["acceleration", 6, 90], ["balance", 6, 88], ["kickingPower", 3, 88], ["speed", 3, 90, 94]] },
-    dummyRunner: { label: "Dummy Runner", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 92, 97], ["speed", 8, 92, 96], ["finishing", 7, 90], ["balance", 6, 88], ["ballControl", 5, 88]] },
+    dummyRunner: { label: "Dummy Runner", stats: [["offensiveAwareness", 10, 90, 95], ["acceleration", 9, 92, 97], ["speed", 8, 92, 96], ["finishing", 7, 90], ["balance", 6, 88], ["ballControl", 5, 90], ["tightPossession", 3, 88]] },
     classicNo10: { label: "Classic No. 10", stats: [["ballControl", 8, 90], ["lowPass", 8, 87], ["tightPossession", 7, 88], ["dribbling", 7, 88], ["finishing", 6, 88], ["offensiveAwareness", 6, 88], ["kickingPower", 5, 88], ["balance", 5, 88], ["acceleration", 5, 88], ["speed", 2, 89]] },
-    prolificWinger: { label: "Prolific Winger", stats: [["acceleration", 9, 92, 97], ["speed", 9, 92, 96], ["dribbling", 8, 90], ["ballControl", 7, 88], ["balance", 7, 88], ["finishing", 6, 88], ["offensiveAwareness", 6, 88], ["kickingPower", 4, 88], ["tightPossession", 4, 85], ["loftedPass", 3, 80]] },
+    prolificWinger: { label: "Prolific Winger", stats: [["acceleration", 9, 92, 97], ["speed", 9, 92, 96], ["dribbling", 8, 90], ["ballControl", 7, 88], ["balance", 7, 88], ["finishing", 6, 88], ["offensiveAwareness", 6, 88], ["kickingPower", 4, 88], ["tightPossession", 4, 88], ["loftedPass", 3, 80]] },
     crossSpecialist: { label: "Cross Specialist", stats: [["loftedPass", 9, 90, 92], ["speed", 8, 92, 96], ["acceleration", 8, 90], ["dribbling", 6, 88], ["ballControl", 6, 88], ["curl", 5, 85], ["balance", 5, 85], ["stamina", 4, 88], ["offensiveAwareness", 3, 85], ["finishing", 3, 80]] },
-    roamingFlank: { label: "Roaming Flank", stats: [["acceleration", 9, 92, 97], ["offensiveAwareness", 8, 90], ["dribbling", 8, 90], ["finishing", 7, 88], ["speed", 8, 92, 96], ["ballControl", 7, 88], ["balance", 7, 88], ["kickingPower", 4, 88]] },
+    roamingFlank: { label: "Roaming Flank", stats: [["acceleration", 9, 92, 97], ["offensiveAwareness", 8, 90], ["dribbling", 8, 90], ["finishing", 7, 88], ["speed", 8, 92, 96], ["ballControl", 7, 88], ["balance", 7, 88], ["kickingPower", 4, 88], ["tightPossession", 4, 88]] },
     boxToBox: { label: "Box-to-Box", stats: [["stamina", 8, 90], ["speed", 7, 90], ["acceleration", 7, 90], ["lowPass", 7, 87], ["ballControl", 6, 88], ["defensiveAwareness", 6, 85], ["ballWinning", 6, 85], ["balance", 6, 88], ["defensiveEngagement", 4, 85], ["physicalContact", 4, 82], ["kickingPower", 3, 85], ["finishing", 2, 80]] },
     orchestrator: { label: "Orchestrator", stats: [["lowPass", 10, 87, 92], ["tightPossession", 8, 88], ["ballControl", 8, 88], ["balance", 7, 88], ["acceleration", 6, 88], ["stamina", 6, 88], ["loftedPass", 5, 85], ["defensiveAwareness", 5, 82, 86], ["kickingPower", 2, 85], ["ballWinning", 3, 80, 84], ["dribbling", 3, 85], ["speed", 4, 88, 92]] },
     anchorMan: { label: "Anchor Man", stats: [["defensiveAwareness", 10, 90, 96], ["defensiveEngagement", 9, 88], ["ballWinning", 9, 88], ["speed", 7, 90, 92], ["acceleration", 7, 88], ["physicalContact", 6, 85], ["stamina", 6, 88], ["lowPass", 3, 78], ["aggression", 3, 85], ["jump", 2, 80]] },
@@ -60,9 +64,21 @@ window.Recommender = (deps) => {
     GK: ["gkAwareness", "gkReflexes", "gkReach", "gkClearing", "gkCatching", "jump"],
   };
 
+  // §18: a style works only in its compatible positions — elsewhere the card plays "Basic"
+  // and the build follows the position. USER-SQUAD can say where a card is actually used
+  // (`buildAs`: Gullit and Bale at CF, 16 Oct 2026); at the card's own position the
+  // styles are taken as active, as eFHUB files them.
+  const styleOnAt = (name, pos) => {
+    const st = KB.ATT_STYLES.find((s) => norm(s.name) === norm(name)) || KB.DEF_STYLES.find((s) => norm(s.name) === norm(name));
+    return !st || !st.positions || st.positions.split(/,\s*/).includes(pos);
+  };
   function templateFor(p) {
-    const key = STYLE_TEMPLATE[norm(p.playingStyle)] || STYLE_TEMPLATE[norm(p.playingStyleDefensive)] || POSITION_TEMPLATE[p.position];
-    return { key, ...T[key] };
+    const pos = notesFor(p.id)?.buildAs || p.position;
+    const on = (name) => name && (pos === p.position || styleOnAt(name, pos));
+    const key = (on(p.playingStyle) && STYLE_TEMPLATE[norm(p.playingStyle)])
+      || (on(p.playingStyleDefensive) && STYLE_TEMPLATE[norm(p.playingStyleDefensive)])
+      || POSITION_TEMPLATE[pos] || POSITION_TEMPLATE[p.position];
+    return { key, pos, ...T[key] };
   }
 
   /* ---------- player-model and native-skill adjustments ---------- */
@@ -217,7 +233,9 @@ window.Recommender = (deps) => {
       : ["DMF", "CMF"].includes(p.position) ? SECONDARY.MID : SECONDARY.ATT;
     const tallAttacker = ATTACKERS.has(p.position) && p.height >= 188;
     const secondary = group.filter((k) => !inTpl.has(k) && !(tallAttacker && (k === "dribbling" || k === "tightPossession")));
-    return { tpl, stats, notes, has, secondary, trained: trainedList };
+    // Secondary weights (default 0.25 a point): a forward's Low Pass counts for little.
+    const secW = ATTACKERS.has(p.position) ? { lowPass: 0.1 } : {};
+    return { tpl, stats, notes, has, secondary, trained: trainedList, secW };
   }
 
   /* ---------- stat pipeline (mirrors lab.js compute) ---------- */
@@ -239,10 +257,12 @@ window.Recommender = (deps) => {
     });
     const f = {};
     Object.keys(t).forEach((k) => { f[k] = mult === 1 ? t[k] : Math.min(99, t[k] + Math.floor(t[k] * (mult - 1))); });
+    const base = { ...f }; // trained stats with the proficiency multiplier, before any +1
     if (mgr) mgr.boost.forEach((k) => { f[k] += 1; });
     [p.booster1, p.booster2Fixed || booster2].forEach((b) => b && Object.entries(b.stats).forEach(([k, v]) => { f[k] += v; }));
     Object.defineProperty(f, "$gain", { value: gain });
     Object.defineProperty(f, "$lost", { value: lost });
+    Object.defineProperty(f, "$base", { value: base });
     return f;
   }
 
@@ -254,14 +274,24 @@ window.Recommender = (deps) => {
   // manager may still land there).
   const WASTE = { offensiveAwareness: 95, acceleration: 97, speed: 96, defensiveAwareness: 98, finishing: 95,
     lowPass: 95, loftedPass: 94, ballWinning: 98, defensiveEngagement: 98, aggression: 96,
-    ballControl: 97, dribbling: 97, tightPossession: 97, balance: 97 };
+    // Ball skills and Balance stop at 99 (16 Oct 2026): §14 never called them waste, and a
+    // forward keeps buying Tight Possession / Ball Control to the end.
+    ballControl: 99, dribbling: 99, tightPossession: 99, balance: 99 };
   // Speed's waste line is the role's own cap when that is lower than 96 (a holding
   // midfielder stops at 92 — user decision, 11 Oct 2026: "what does Makélélé need 96 for").
   const speedLimit = (profile) => Math.min(96, profile?.stats.find((s) => s.k === "speed")?.cap ?? 96);
+  // Explosive roles (Acceleration cap 97 in the template) may train Acceleration to 99 —
+  // §3: 96–99 "strong", 100+ overkill; eFHUB's CF builds (16 Oct 2026) sit at 97–100.
+  const accelLimit = (profile) => ((profile?.stats.find((s) => s.k === "acceleration")?.cap ?? 0) >= 97 ? 99 : 97);
   function wasteOf(f, profile) {
     const out = {};
+    // Only trained points count (with the manager's proficiency multiplier): a booster or
+    // the manager's +1 landing past the line is fine — §3 "boosters and the manager may
+    // still land there" (fixed 16 Oct 2026; it used to penalise Agility for Speed 97).
+    const base = f.$base || f;
     Object.entries(WASTE).forEach(([k, lim]) => {
-      const over = Math.min(f.$gain?.[k] || 0, f[k] - (k === "speed" ? speedLimit(profile) : lim));
+      const limit = k === "speed" ? speedLimit(profile) : k === "acceleration" ? accelLimit(profile) : lim;
+      const over = Math.min(f.$gain?.[k] || 0, base[k] - limit);
       if (over > 0) out[k] = over;
     });
     Object.entries(f.$lost || {}).forEach(([k, v]) => { out[k] = (out[k] || 0) + v; });
@@ -300,7 +330,7 @@ window.Recommender = (deps) => {
     }
     // Secondary stats: once the role's priorities are met, every extra point in a stat the
     // role still uses beats parking it somewhere useless (§4: KP/Jump/Stamina stay linear).
-    for (const k of profile.secondary) v += 0.25 * Math.min(effective(k, f[k]), WASTE[k] ?? 99);
+    for (const k of profile.secondary) v += (profile.secW?.[k] ?? 0.25) * Math.min(effective(k, f[k]), WASTE[k] ?? 99);
     // Trained points past the useful range (dead-zone Speed included) are pure loss —
     // penalised hard enough that the optimiser moves them to a stat the role still uses.
     for (const over of Object.values(wasteOf(f, profile))) v -= 8 * over;
@@ -369,7 +399,8 @@ window.Recommender = (deps) => {
   // When they can't be matched exactly, or trading one level back buys something better,
   // one level is traded back and the points refilled.
   function spendRemainder(p, profile, booster2, levels, cats, budget) {
-    const pref = (k) => ({ aerial: 0.02, defending: 0.01, passing: 0.005 }[k] || 0);
+    // Ties: a forward's leftovers go to Dribbling, then Aerial, last Passing (16 Oct 2026).
+    const pref = (k) => ((ATTACKERS.has(p.position) ? { dribbling: 0.03, aerial: 0.02, passing: 0.002 } : { aerial: 0.02, defending: 0.01, passing: 0.005 })[k] || 0);
     const fill = (lv) => {
       let left = budget - pointsOf(lv);
       while (left > 0) {
@@ -465,6 +496,12 @@ window.Recommender = (deps) => {
 
   function chooseBooster(p, profile, levels) {
     if (p.booster2Fixed) return { booster: p.booster2Fixed, fixed: true };
+    // USER-SQUAD can name the slot-2 booster (`prefBooster`, like prefSkills) — the user's
+    // call on a near-tie (Gullit: Striker's Instinct, 16 Oct 2026); the build is then
+    // optimised around it.
+    const pref = notesFor(p.id)?.prefBooster;
+    const pick = pref && deps.boosterPool.find((b) => b.name === pref || b.name.replace(" +1", "") === pref);
+    if (pick) return { booster: pick, fixed: false, userPick: true, overlap: 0, shortlist: [{ booster: pick, adj: 0, overlap: 0, v: -Infinity }] };
     const budget = budgetFor(p.levelCap);
     const gk = p.position === "GK";
     const pool = deps.boosterPool.filter((b) => gk ? /Goalkeeping|Saving/.test(b.name) : !/Goalkeeping|Saving/.test(b.name));
@@ -684,11 +721,12 @@ window.Recommender = (deps) => {
         return { ...c, levels: lv, v: value(profile, finalStats(p, lv, c.booster)) + c.adj };
       }).reduce((x, y) => (y.v > x.v ? y : x));
       levels = pick.levels;
-      b = { booster: pick.booster, fixed: false, overlap: pick.overlap };
+      b = { booster: pick.booster, fixed: false, overlap: pick.overlap, userPick: !!b.userPick };
     }
     const f = finalStats(p, levels, b.fixed ? null : b.booster);
     const path = spendingPath(p, profile, levels, b.fixed ? null : b.booster);
-    const rating = OVR.rating(p.position, p.height, p.weakFootAccuracy, f);
+    const buildAs = profile.tpl.pos && profile.tpl.pos !== p.position ? profile.tpl.pos : null;
+    const rating = OVR.rating(buildAs || p.position, p.height, p.weakFootAccuracy, f);
     const targets = [...profile.stats].sort((x, y) => y.w - x.w).slice(0, 8)
       .map((s) => ({ stat: s.k, value: f[s.k], target: s.t, hit: f[s.k] >= s.t, weight: s.w, soft: !!s.soft }));
     const short = profile.stats.filter((s) => s.soft && f[s.k] < s.t).map((s) => `${KB.STAT_LABELS[s.k] || s.k} ${f[s.k]}`);
@@ -700,8 +738,8 @@ window.Recommender = (deps) => {
     const boosterShift = categoriesFor(p).filter((c) => (!c.gk || p.position === "GK") && (levels0[c.key] || 0) !== (levels[c.key] || 0))
       .map((c) => ({ key: c.key, label: c.label, from: levels0[c.key] || 0, to: levels[c.key] || 0 }));
     const boosterFreed = boosterShift.filter((s) => s.to < s.from).reduce((a, s) => a + cumCost(s.from) - cumCost(s.to), 0);
-    return { aiSkills: ai.skills, aiWhy: ai.why, id: p.id, template: profile.tpl.key, roleLabel: profile.tpl.label, levels, booster2: b.fixed ? null : b.booster.id,
-      booster: b.booster, boosterFixed: b.fixed, boosterOverlap: b.overlap || 0, boosterShift, boosterFreed, final: f, rating, targets, skills, skillWhy: why, notes, path, waste: wasteOf(f, profile) };
+    return { aiSkills: ai.skills, aiWhy: ai.why, id: p.id, template: profile.tpl.key, roleLabel: profile.tpl.label, buildAs, levels, booster2: b.fixed ? null : b.booster.id,
+      booster: b.booster, boosterFixed: b.fixed, boosterUserPick: !!b.userPick, boosterOverlap: b.overlap || 0, boosterShift, boosterFreed, final: f, rating, targets, skills, skillWhy: why, notes, path, waste: wasteOf(f, profile) };
   }
 
   const recs = Object.fromEntries(players.map((p) => [p.id, recommend(p)]));

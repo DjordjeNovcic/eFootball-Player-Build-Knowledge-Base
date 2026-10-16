@@ -478,7 +478,9 @@
       const note = notesFor(p.id);
       const saved = store.builds[p.id];
       // The tile's rating: the saved build's, else the Recommended by AI build's.
-      const rating = saved ? compute(p, saved).ratings[p.position] : REC?.recs[p.id]?.rating ?? p.overall;
+      // Rated where he actually plays when USER-SQUAD says so (buildAs — Gullit, Bale at CF).
+      const ratedAt = REC?.recs[p.id]?.buildAs || p.position;
+      const rating = saved ? compute(p, saved).ratings[ratedAt] : REC?.recs[p.id]?.rating ?? p.overall;
       let savedBadge = "";
       if (saved) savedBadge = `<span class="badge badge--lime">★ Build saved</span>`;
       else if (note?.snapshot) savedBadge = `<span class="badge">Snapshot ${esc(note.snapshot.date)}</span>`;
@@ -489,7 +491,7 @@
           <summary class="squad-card__sum" title="${r ? "Open the Recommended by AI build" : ""}">
           <div class="squad-card__head">
             <div class="squad-card__media">${cardImg(p, "squad-card__img")}
-              <div class="squad-card__ovr" title="${saved ? "Your saved build" : "Recommended by AI build"} at ${p.position} · card ${p.overall}"><b>${rating}${saved ? "<sup>★</sup>" : ""}</b><span>${p.position} · card ${p.overall}</span></div>
+              <div class="squad-card__ovr" title="${saved ? "Your saved build" : "Recommended by AI build"} at ${ratedAt} · card ${p.overall}"><b>${rating}${saved ? "<sup>★</sup>" : ""}</b><span>${p.position} · card ${p.overall}</span></div>
             </div>
             <div class="squad-card__id">
               <h3 class="squad-card__name">${esc(p.name)}</h3>
@@ -2632,7 +2634,7 @@
     view.position = p.position;
     go("train", id);
   }
-  const ctxRating = (p, build, pos = p.position) => compute(p, build, recContext().manager, recContext().tactic).ratings[pos];
+  const ctxRating = (p, build, pos = REC?.recs[p.id]?.buildAs || p.position) => compute(p, build, recContext().manager, recContext().tactic).ratings[pos];
   const sameBuild = (a, b) => JSON.stringify(Object.entries(a.levels).filter(([, v]) => v).sort())
     === JSON.stringify(Object.entries(b.levels).filter(([, v]) => v).sort());
 
@@ -2684,9 +2686,9 @@
 
           <section class="rec-sec">
             <h4>Role</h4>
-            <p><b>${p.position} — Attacking: ${esc(att?.name || p.playingStyle || "Basic")} · Defensive: ${esc(p.playingStyleDefensive ? (def?.name || p.playingStyleDefensive) : "—")}</b></p>
-            <p class="rec-muted">${esc(r.roleLabel)} priorities (§7).</p>
-            <div class="rec-style">${styleGuideHtml(p, p.position)}</div>
+            <p><b>${r.buildAs || p.position} — Attacking: ${esc(att?.name || p.playingStyle || "Basic")} · Defensive: ${esc(p.playingStyleDefensive ? (def?.name || p.playingStyleDefensive) : "—")}</b></p>
+            <p class="rec-muted">${esc(r.roleLabel)} priorities (§7).${r.buildAs ? ` Built for ${esc(r.buildAs)}, where he plays (USER-SQUAD) — the card is ${esc(p.position)} and its style is inactive there (§18).` : ""}</p>
+            <div class="rec-style">${styleGuideHtml(p, r.buildAs || p.position)}</div>
             ${r.notes.map((n) => `<p class="rec-note">${esc(n)}</p>`).join("")}
           </section>
 
@@ -2703,7 +2705,7 @@
           <section class="rec-sec">
             <h4>Booster</h4>
             <p><b>${esc(b.name)}</b> — ${Object.keys(b.stats).map(statLabel).join(", ")}${r.boosterFixed ? " <span class=\"rec-muted\">(fixed on this card)</span>" : ""}</p>
-            <p class="rec-muted">${r.boosterFixed ? "Slot 2 is pre-assigned on this card." : `Picked last, on the finished build (§11)${slot1.length ? ` — slot 1 (${esc(p.booster1.name)}) already covers ${slot1.map(statLabel).join(", ")}` : ""}${r.boosterOverlap ? `; overlaps ${r.boosterOverlap} of them` : ""}.`}</p>
+            <p class="rec-muted">${r.boosterFixed ? "Slot 2 is pre-assigned on this card." : r.boosterUserPick ? "Your pick (USER-SQUAD) — the build is optimised around it (§11)." : `Picked last, on the finished build (§11)${slot1.length ? ` — slot 1 (${esc(p.booster1.name)}) already covers ${slot1.map(statLabel).join(", ")}` : ""}${r.boosterOverlap ? `; overlaps ${r.boosterOverlap} of them` : ""}.`}</p>
             ${r.boosterFixed ? "" : `<p class="rec-muted">${esc(boosterTradeText(r))}</p>`}
           </section>
 
